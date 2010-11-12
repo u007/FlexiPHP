@@ -1,0 +1,424 @@
+
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	background-color: #1D1D1D;
+	color: #ffffff;
+	font-family: Verdana,Arial,sans-serif;
+	font-size: 12px;
+}
+
+p {
+	padding: 2px;
+}
+
+a {
+	color: #d86111;
+	text-decoration: none;
+}
+
+.flexiphp_div_label {
+	font-weight: bold;
+}
+
+.flexiphp_div_description {
+	font-style: italic;
+}
+
+.flexi_field {
+	margin-bottom: 5px;
+}
+
+.flexiphp_div_input input[type="checkbox"] {
+	float: left;
+	margin: 0 2px 5px 2px;
+}
+
+.flexiphp_div_description, .flexi_field {
+	clear: both;
+	display: block;
+}
+
+.flexiphp_div_title {
+	clear: both;
+	display: block;
+	margin-bottom: 2px;
+	border-bottom: 1px solid #888888;
+}
+
+.flexiNotice {
+	padding: 1px;
+}
+
+.flexiNotice .noticeInfo, .flexiNotice .noticeSuccess, .flexiNotice .noticeWarn, .flexiNotice .noticeError {
+	border: 1px solid;
+  margin: 2px 0px;
+  padding:10px 10px 10px 50px;
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+
+.flexiNotice .noticeInfo {
+	color: #00529B;
+  background-color: #BDE5F8;
+  background-image: url('../img/notice/info.png');
+}
+
+.flexiNotice .noticeSuccess {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+  background-image:url('../img/notice/success.png');
+}
+
+.flexiNotice .noticeWarn {
+  color: #9F6000;
+  background-color: #FEEFB3;
+  background-image: url('../img/notice/warning.png');
+}
+
+.flexiNotice .noticeError {
+  color: #D8000C;
+  background-color: #FFBABA;
+  background-image: url('../img/notice/error.png');
+}
+
+.flexiphp_div_notice {
+	color: #dd0000;
+	background-color: #FEEFB3;
+	font-weight: bold;
+}
+
+.flexiphp_div_label .required {
+	margin-left: 2px;
+	color: #ff0000;
+}
+
+.tableDataList {
+	border-spacing: 0;
+	border-right: 1px solid #888888;
+	border-bottom: 1px solid #888888;
+}
+
+.tableDataList th {
+	border-bottom: 1px solid #888888;
+	background: #2a2a2a;
+}
+
+.tableDataList th, .tableDataList td {
+	padding: 2px;
+	border-left: 1px solid #888888;
+	border-top: 1px solid #888888;
+}
+
+.flexi_field.hidden {
+	display: none;
+}
+
+.clear {
+	clear: both;
+}
+
+
+.mainContent {
+	width: 985px;
+	margin: 5px auto 5px auto;
+	padding: 0 15px 0 15px;
+	background: url("../images/contentbg.png") repeat-y left top;
+}
+
+.topheader {
+	width: 974px;
+}
+
+.contentBody {
+	width: 957px;
+}
+
+.contentFooter {
+	width: 964px;
+}
+
+.topheader .toplogo {
+	width: 100%;
+	height: 83px;
+	background: url("../images/toplogo.png") no-repeat left top;
+}
+
+.topheader .topbar {
+	height: 62px;
+	background: url("../images/topbg.png") repeat-x left top;
+	padding: 15px 15px 10px 15px;
+}
+
+.topheader .topleft {
+	float: left;
+	width: 300px;
+}
+
+.topheader .topright {
+	float: right;
+	width: 330px;
+	text-align: right;
+}
+
+.topheader .toppanel {
+	background: url("../images/toppanel.png") no-repeat left top;
+	height: 28px;
+	padding: 10px 15px 5px 15px;
+}
+
+.contentBody {
+	background: #383838;
+	padding: 10px 2px 5px 15px;
+}
+
+.contentFooter {
+	background: #313131;
+	height: 28px;
+	padding: 10px 5px 10px 5px;
+	text-align: center;
+}
+
+#columns #column1, #columns #column2, #columns #column3 {
+}
+
+#columns .column {
+	float:left;
+	height:auto !important;
+	min-height:400px;
+	width:33.3%;
+}
+
+
+#columns .widget {
+	-moz-border-radius:4px 4px 4px 4px;
+	margin:30px 20px 0;
+	padding:2px;
+}
+
+.color-green {
+	background:none repeat scroll 0 0 #8DC100;
+}
+
+#columns .widget .widget-head {
+	color:#000000;
+	height:30px;
+	line-height:30px;
+	overflow:hidden;
+	width:100%;
+}
+
+#columns .widget .widget-content {
+	-moz-border-radius-bottomleft:2px;
+	-moz-border-radius-bottomright:2px;
+	background:url("img/widget-content-bg.png") repeat-x scroll 0 0 #333333;
+	color:#DDDDDD;
+	line-height:1.2em;
+	overflow:hidden;
+	padding:0 5px;
+}
+
+.widgetBox {
+	-moz-border-radius:4px 4px 4px 4px;
+	margin: 5px 5px 0 0;
+	padding:2px;
+	width: 310px;
+}
+
+.side-widgetBox {
+  -moz-border-radius:4px 4px 4px 4px;
+	margin: 5px 5px 0 0;
+	padding:2px;
+	width: 295px;
+}
+
+#dashboardContent li.widgetBox {
+	float: left;
+}
+
+#dashboardContent, #dashboardContent2 {
+	float: left;
+	width: 320px;
+}
+
+.widget-head {
+	padding: 13px 10px 10px 10px;
+	background: url("../images/widget-top.png") no-repeat left top;
+	color: #000000;
+	font-size: 13px;
+	height: 16px;
+}
+
+.widget-content {
+	background: #ffffff;
+	color :#000000;
+}
+
+.widget-topinfo {
+	padding: 1px 5px 5px 102px;
+	background: #ffffff url("../images/widget-topintro.png") no-repeat left top;
+	height: 63px;
+	line-height: 14px;
+  vertical-align: middle;
+}
+
+.widget-toppanel {
+	background: #ffffff url("../images/widget-toppanel.png") no-repeat left top;
+	height: 22px;
+	padding-bottom: 5px;
+}
+
+.widget-content ul li 
+{
+	padding: 2px 5px 2px 30px;
+	line-height: 16px;
+	background: url("../images/widget-newsbullet.png") no-repeat left 2px;
+}
+
+.widgetBox a {
+	color: #5c5c5c;
+}
+
+.widget-footer {
+	background: url("../images/widget-bottom.png") no-repeat left top;
+	height: 14px;
+}
+
+.widget-toppanel .buttons {
+	padding: 5px 5px 0 0;
+}
+
+.side-widgetBox .widget-head {
+  background: url("../images/side-widget-top.png") no-repeat left top;
+}
+
+.side-widgetBox .widget-footer {
+  background: url("../images/side-widget-bottom.png") no-repeat left top;
+}
+
+.side-widgetBox .widget-clock {
+  float:left;
+  width: 105px;
+  margin: 10px 0 10px 30px;
+}
+
+.right {
+	float: right;
+}
+
+.left {
+	float: left;
+}
+
+.buttonmore {
+	padding: 2px 2px 0 18px;
+	background: url("../images/but-morenews.png") no-repeat -1px top;
+}
+
+.homelink {
+	width: 200px;
+	height: 70px;
+	display: block;
+}
+
+fieldset {
+	padding: 5px;
+	margin: 2px;
+	border: 1px dashed #efefef;
+}
+
+fieldset legend {
+	margin: 5px;
+	padding: 5px;
+	font-size: 13px;
+	border: 1px solid #efefef;
+}
+
+#divWidgetOilGas .widget-topinfo {
+	background: url("../images/widget-topintro-oilgas.png") no-repeat left top;
+}
+
+#divWidgetIndustryRes .widget-topinfo {
+	background: url("../images/widget-topintro-industrynews.png") no-repeat left top;
+}
+
+#divWidgetPartnerUpdate .widget-topinfo {
+	background: url("../images/widget-topintro-partnerupdate.png") no-repeat left top;
+}
+
+#divWidgetOpinion .widget-topinfo {
+	background: url("../images/widget-topintro-opinion.png") no-repeat left top;
+}
+
+#divWidgetMarketWatch .widget-topinfo {
+	background: url("../images/widget-topintro-marketwatch.png") no-repeat left top;
+}
+
+#divWidgetMarketSnapshot .widget-topinfo {
+	background: url("../images/widget-topintro-marketsnapshot.png") no-repeat left top;
+}
+
+
+.marketwatchHeader {
+	height: 21px;
+	margin: 0 5px 0 5px;
+	padding: 5px 2px 0 0;
+	border-bottom: #aaaaaa solid 1px;
+	width: 295px;
+}
+
+.marketWatchRows {
+	width: 297px;
+	padding: 5px 2px 0 0;
+	margin: 0 5px 0 5px;
+}
+
+/*
+.marketWatchRows {
+	border: 1px solid #ff0000;
+}
+*/
+
+.widget-content .marketWatchRows li {
+	background: none;
+	padding: 2px 5px 2px 5px;
+	border-bottom: 1px solid #aaaaaa;
+}
+
+.widget-content .marketWatchRows li div {
+	float: left;
+	height: 18px;
+}
+
+.marketwatchHeader div {
+	float: left;
+	height: 18px;
+}
+
+.widget-content .marketWatchRows li div.clear {
+	float: none;
+	height: auto;
+}
+
+.red {
+	color: #ff0000;
+}
+
+.green {
+	color: #00ff00;
+}
+
+ul#dashboardContent, ul#dashboardContent2 {
+  padding: 0 0 20px 0;
+}
+
+#divDashBoardSideAds {
+	float: left;
+	padding: 0 0 0 0;
+}
+
+.side-widgetBox #divCurrencyConverter {
+  padding: 10px;
+}

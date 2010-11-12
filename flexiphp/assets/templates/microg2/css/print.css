@@ -1,0 +1,95 @@
+/* Printer friendly style sheet */
+
+body {
+	background: white;
+	color: black;
+	font-size: 12pt;
+}
+
+#navbar, #profilebar, #side_menu, #help_box {
+	display: none;
+}
+#header {
+	background-color: #60c120;
+	height: 50px;
+	margin-bottom: 20px;
+	padding: 20px 0 0 4%;
+}
+#header:after {
+	font-size: 24px;
+	content: 'Eksport af liste fra e-Pension administration';
+}
+
+#logo {
+	display: block !important;
+	bottom: 0;
+	right: 0;
+	position: fixed;
+	width: auto;
+	height: 70px;
+	margin: 0 5%;
+	padding: 0;
+	/*border-top: 70px solid #5bbb1b;*/
+	border-bottom: 70px solid #63c424;
+	clear: both;
+}
+
+#intro {
+	display: none;
+}
+
+
+#table_caption .visalle, #table_caption .vaerktojer {
+	display: none;
+}
+
+#input_cpr-nr, #input_firmaer {
+	width: 170px;
+}
+
+.container_12 {	
+	width:auto;	
+}
+
+.container_12 .grid_9 {
+	/*width: auto;*/
+	margin: 0 5%;
+	padding: 0;
+	border: 0;
+	color: black;
+	background: transparent none;
+}
+
+#data_table table {
+	width: 698px;
+}
+
+#table_footer .grid_5 {
+	padding-top: 5px;
+}
+#table_footer img {
+	display: none;
+}
+#table_footer .grid_2 {
+	visibility: hidden;
+}
+
+
+
+a:link, a:visited {
+	color: blue;
+	background: transparent;
+	font-weight: bold;
+	/*text-decoration: underline;*/
+}
+
+/* Avoid page breaks straight after a heading. */
+h1, h2, h3, h4, h5, h6 {
+	page-break-after: avoid;
+	page-break-inside: avoid;
+}
+/* Avoid page breaks inside paragraphs, blockquotes, lists, and preformatted text. */
+p, blockquote, ul, ol, dl, pre, table {
+	page-break-inside: avoid;
+}
+

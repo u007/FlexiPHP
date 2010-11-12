@@ -1,0 +1,34 @@
+/* 
+    Document   : modx2.style
+    Created on : Sep 9, 2010, 12:48:33 PM
+    Author     : james
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.grid, .gridHeader {
+  background: #777777;
+}
+
+.grid, .gridHeader {
+  background: -moz-linear-gradient(center bottom , #666666 27%, #777777 50%, #666666 0pt) repeat scroll 0 0 transparent
+}
+
+.grid tr td {
+  padding: 4px;
+}
+
+.grid {
+  -moz-border-radius:3px 3px 3px 3px;
+  border:2px solid #666666;
+}
+.gridHeader {
+  color:#DDDDDD;
+  font-weight:bold;
+  text-shadow:0 -1px 0 #3F3F3F;
+  padding: 3px 0;
+}
+
+.grid tbody tr td {
+  background: #ffffff;
+}

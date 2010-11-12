@@ -1,0 +1,40 @@
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:disc outside none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outline:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+ul {
+margin: 0px 15px;
+padding: 0px;
+}
+
+td {
+  padding: 1px;
+}
+
+fieldset {
+  border: solid 1px #999 ;
+  padding: 2px;
+  margin: 2px;
+}
+
+legend {
+  display: block;
+  padding: 2px;
+  font-weight: bold;
+  font-size: 120%;
+  color: #000;
+}
+
+h1 {
+  padding: 5px 2px;
+}
+
+h2 {
+  padding: 4px 2px;
+}
+
+h3 {
+  padding: 3px 0;
+}
+
+h4 {
+  padding: 2px 0;
+}

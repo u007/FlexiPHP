@@ -1,0 +1,222 @@
+/* 
+    Document   : flexiphp.css
+    Created on : Jul 1, 2010, 2:35:32 PM
+    Author     : james
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+html, body {
+}
+
+.flexiphp_div_display {
+  float: left;
+  padding-right: 5px;
+}
+
+
+.flexiphp_div_label {
+	font-weight: bold;
+}
+
+.flexiphp_div_description {
+	font-style: italic;
+}
+
+.flexi_field {
+	margin-bottom: 5px;
+}
+
+.flexiphp_div_input input[type="checkbox"] {
+	float: left;
+	margin: 0 2px 5px 2px;
+}
+
+.flexiphp_div_description, .flexi_field {
+	clear: both;
+	display: block;
+}
+
+.flexiphp_div_title {
+	clear: both;
+	display: block;
+	margin-bottom: 2px;
+	border-bottom: 1px solid #888888;
+}
+
+.flexiNotice {
+	padding: 1px;
+}
+
+.flexiNotice .noticeInfo, .flexiNotice .noticeSuccess, .flexiNotice .noticeWarn, .flexiNotice .noticeError {
+	border: 1px solid;
+  margin: 2px 0px;
+  padding:10px 10px 10px 50px;
+  background-repeat: no-repeat;
+  background-position: 10px;
+}
+
+.noticeInfo {
+  color: #00529B;
+  background-color: #BDE5F8;
+}
+
+.noticeSuccess {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+}
+
+.noticeWarn {
+  color: #9F6000;
+  background-color: #FEEFB3;
+}
+
+.noticeError {
+  color: #D8000C;
+  background-color: #FFBABA;
+}
+
+.flexiNotice .noticeInfo {
+  background-image: url('../images/notice/info.png');
+}
+
+.flexiNotice .noticeSuccess {
+  background-image:url('../images/notice/success.png');
+}
+
+.flexiNotice .noticeWarn {
+  background-image: url('../images/notice/warning.png');
+}
+
+.flexiNotice .noticeError {
+  background-image: url('../images/notice/error.png');
+}
+
+.flexiphp_div_notice {
+	color: #dd0000;
+	background-color: #FEEFB3;
+	font-weight: bold;
+}
+
+.flexiphp_div_label .required {
+	margin-left: 2px;
+	color: #ff0000;
+}
+
+.tableDataList {
+	border-spacing: 0;
+	border-right: 1px solid #888888;
+	border-bottom: 1px solid #888888;
+}
+
+.tableDataList th {
+	border-bottom: 1px solid #888888;
+	background: #efefef;
+}
+
+.tableDataList th, .tableDataList td {
+	padding: 2px;
+	border-left: 1px solid #888888;
+	border-top: 1px solid #888888;
+}
+
+.flexi_field.hidden {
+	display: none;
+}
+
+.clear {
+	clear: both;
+}
+
+input, select, textarea {
+  padding: 1px;
+}
+
+.flexiphp_login_div {
+  padding: 2px;
+}
+
+.flexiphp_login_div form {
+  padding: 5px;
+}
+
+.flexi_divOnlyLogin {
+  height: 200px;
+  width: 250px;
+}
+
+.flexi_divOnlyLogin .flexiphp_login_div {
+  width: 300px;
+}
+
+.flexi_divOnlyLogin .flexiNotice {
+  
+}
+
+.left {
+  float: left;
+}
+
+.clearleft {
+  clear: left;
+}
+
+.clearright {
+  clear: right;
+}
+
+.right {
+  float: right;
+}
+
+.calendar  {
+  font-size:11px;
+  margin-left:3px;
+}
+.calendar .calendarHeader {
+  color:#444444;
+  font-weight:bold;
+}
+.calendar td {
+  padding:1px 1px 1px 0;
+  width:14.2%;
+}
+.calendar strong a {
+  color:#5D0098;
+}
+
+
+#divFields {
+  width: 500px;
+}
+
+span.required {
+  color: #ff0000;
+}
+
+
+ul.pageList {
+  margin-left: 0;
+  list-style: none;
+  list-style-image: none;
+  list-style-position: inside;
+  display: inline;
+}
+
+ul.pagelist li {
+  list-style: none;
+  display: inline;
+  float: left;
+}
+
+.register .error {
+  color: #ff0000;
+}
+
+.register .registerMessage {
+  background-color: #FEEFB3;
+}
