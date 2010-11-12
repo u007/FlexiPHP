@@ -1,0 +1,16 @@
+AddDefaultCharset utf-8
+
+Options +FollowSymlinks
+RewriteEngine On
+
+# Exclude /assets and /manager directories from rewrite rules
+RewriteRule \.(jpg|jpeg|png|gif|ico)$ - [L]
+RewriteRule ^(assets|(modules/(.*)/assets)|(base/(.*)/assets)|lib) - [L]
+RewriteRule ^(.php)$ - [L]
+
+
+#prevent all access
+RewriteRule ^[.]*$ dummy.php?q=$1 [L,QSA]
+
+#handle all .something files
+RewriteRule ^(.*)$ dummy.php?q=$1 [L,QSA]

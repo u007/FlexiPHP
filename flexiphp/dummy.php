@@ -1,0 +1,4 @@
+<?php
+
+?>
+Direct access prevented.
