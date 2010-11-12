@@ -87,7 +87,7 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
    * will not trigger event
    *  TODO:trigger event?
    */
-  public function forceLogin($iUserId, $sUserType="user") {
+  public function forceLogin($iUserId, $sUserType="user", $sContext="web") {
     global $modx;
     $modx->getObject("modUser", $iUserId);
     $bStatus = !is_null($oUser);
@@ -95,9 +95,9 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     if($bStatus){
       FlexiLogger::debug(__METHOD__, "Login Success: " . $asLoginId);
       //success
-      $_SESSION["webValidated"] = 1;
-      $_SESSION["webInternalKey"] = $oUser->id;
-      $_SESSION['webShortname'] = $oUser->username;
+      $_SESSION[$sContext . "Validated"] = 1;
+      $_SESSION[$sContext . "InternalKey"] = $oUser->id;
+      $_SESSION[$sContext . 'Shortname'] = $oUser->username;
       $_SESSION['userid'] = $oUser->id;
 
       //getting group names
@@ -112,6 +112,11 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     } //if login ok
   }
 
+  /**
+   * Called from modx plugin onlogin
+   * @global modx $modx
+   * @param modUser $oUser
+   */
   public function onLoggedIn($oUser) {
     global $modx;
     FlexiLogger::info(__METHOD__, "user: " . serialize($oUser->get("id")));
@@ -177,7 +182,7 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     if($bStatus){
       FlexiLogger::debug(__METHOD__, "Login Success: " . $asLoginId);
       
-      $loginContext = !empty($asConfig["login_context"]) ? $asConfig["login_context"] : "web";
+      $loginContext = !empty($asConfig["context"]) ? $asConfig["context"] : "web";
       /* set default POST vars if not in form */
       $scriptProperties = array(
         "username" => $asLoginId,
@@ -257,12 +262,12 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     return $oUser->sUserFullName;
   }
 
-	public function onLogout()
+	public function onLogout($context="web")
 	{
     FlexiLogger::debug(__METHOD__, "Logging-out");
-    unset($_SESSION["webValidated"]);
+    unset($_SESSION[$context . "Validated"]);
     //$_SESSION["webInternalKey"] = null;
-    $_SESSION['webShortname'] = null;
+    $_SESSION[$context . 'Shortname'] = null;
     //$_SESSION['userid'] = null;
 		return true;
 	}
@@ -388,25 +393,20 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     return $bResult;
 	}
 	
-	public function isLoggedIn()
+	public function isLoggedIn($context="web")
 	{
 		global $modx;
-    
-		$oUser = $modx->userLoggedIn();
-		
-		if ($oUser === false) { return false; }
-		else
-		{ return true; }
+    return $modx->user->isAuthenticated($context);
 	}
 	
 	/**
 	 * get currently logged in user language / guest
 	 * @return string
 	 */
-	public function getUserLanguage()
+	public function getUserLanguage($context="web")
 	{
 		global $modx;
-		$aData = $modx->getUser("web");
+		$aData = $modx->getUser($context);
     if (is_null($aData)) {
       return FlexiConfig::$sDefaultLanguage;
     }
@@ -434,43 +434,37 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     return $modx->isMemberOfWebGroup(array("Site Admins", "Administrator"));
 	}
 	
-	public function getLoggedInUserId()
+	public function getLoggedInUserId($context="web")
 	{
 		if (! $this->isLoggedIn())
 		{
 			return null;
 		}
 		global $modx;
-		return $modx->getLoginUserID();
+		return $modx->getLoginUserID($context);
 	}
 	/**
 	 * Get logged in user
 	 * @return FlexiLoginUserModel
 	 */
-	public function getLoggedInUser()
+	public function getLoggedInUser($context="web")
 	{
 		if (is_null($this->oUser))
 		{
 			$oUser = FlexiModelUtil::getModelInstance("FlexiLoginUserModel", "flexiphp/base/Flexi");
 			global $modx;
-
-
-			$oUser->iUserId 				=	$modx->getLoginUserID();
-      //var_dump("userid: " . $oUser->iUserId);
-			//TODO demo
-			//$oUser->iUserId					= 1;
+      $oModxUser        = $modx->getUser($context);
+      $oUser->iUserId   = $oModxUser->get("id");
+      
 			$oUserInfo 							= $modx->getWebUserInfo($oUser->iUserId);
-
-      //var_dump($oUserInfo);
 			//var_dump($oUserInfo);
 			$oUser->sUserFullName 	= $oUserInfo["fullname"];
 			$oUser->sUserName 			= $oUserInfo["username"];
 			$oUser->sPassword				= $oUserInfo["password"];
-			//var_dump($modx->getWebUserInfo(1));
 			$this->setUser($oUser);
       return $this->getUser();
 		}
 
-    return null;
+    return $this->getUser();
 	}
 }

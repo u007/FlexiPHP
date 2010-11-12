@@ -191,11 +191,11 @@ class FlexiModx2PlatformHandler extends FlexiPlatformHandler {
     }
 
     $link = $modx->getObject("modResourceGroupResource", 
-            array("document_group" => $group->getName(), "document" => $doc->get("id")));
+            array("document_group" => $group->get("id"), "document" => $doc->get("id")));
     if (is_null($link)) {
       //no such link, create it
       $link = $modx->newObject(modResourceGroupResource,
-              array("document_group" => $group->getName(), "document" => $doc->get("id")));
+              array("document_group" => $group->get("id"), "document" => $doc->get("id")));
       return $link->save();
     }
     return true;
@@ -224,17 +224,16 @@ class FlexiModx2PlatformHandler extends FlexiPlatformHandler {
     }
 
     if (! $bIsInGroup) {
-      echo "not in group: ";
       $oNewGroup = $modx->newObject("modUserGroupMember", array(
         "user_group" => $oGroup->get("id"),
         "role" => $iRoleLevel,
         "member" => $iUserId
       ));
-      var_dump($oNewGroup->toArray());
+      //var_dump($oNewGroup->toArray());
       $oUser->addOne($oNewGroup);
-      var_dump($oNewGroup->toArray());
+      //var_dump($oNewGroup->toArray());
       return $oNewGroup->save();
-    } else { echo "in group"; }
+    }
 
     return true;
   }

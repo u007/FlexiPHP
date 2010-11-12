@@ -38,7 +38,7 @@ abstract class FlexiLoginBaseHandler
   
   abstract public function checkLoginSession();
 
-  abstract public function forceLogin($iUserId, $sUserType="user");
+  abstract public function forceLogin($iUserId, $sUserType="user", $sContext="web");
   
   public function doLogin($asLoginId, $asLoginPass, $asConfig=array()) {
     
@@ -58,7 +58,7 @@ abstract class FlexiLoginBaseHandler
    *    otherwise, not
 	 * @return boolean
 	 */
-	abstract public function onLogout();
+	abstract public function onLogout($context="web");
 
   /**
    * will trigger onLogout,
@@ -77,7 +77,7 @@ abstract class FlexiLoginBaseHandler
 	 * get currently logged in user language / guest
 	 * @return string
 	 */
-	abstract public function getUserLanguage();
+	abstract public function getUserLanguage($context="web");
 	
 	/**
 	 * Has role?
@@ -98,18 +98,18 @@ abstract class FlexiLoginBaseHandler
 	 * if current user is logged in
 	 * @return boolean
 	 */
-	abstract public function isLoggedIn();
+	abstract public function isLoggedIn($sContext="web");
 	
 	/**
 	 * Get logged in userid
 	 * @return int
 	 */
-	abstract public function getLoggedInUserId();
+	abstract public function getLoggedInUserId($context="web");
 	/**
 	 * get logged in user
 	 * @return FlexiLoginUserModel
 	 */
-	abstract public function getLoggedInUser();
+	abstract public function getLoggedInUser($context="web");
 	
 	/**
 	 * get if user is super user / admin, modx: manager
