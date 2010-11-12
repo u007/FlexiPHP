@@ -16,7 +16,28 @@ class FlexiModx2PlatformHandler extends FlexiPlatformHandler {
   protected function checkMe() {
     
   }
-  
+
+  public function flushPermission() {
+    global $modx;
+    if ($modx->getOption('session_handler_class',null,'modSessionHandler') == 'modSessionHandler') {
+      $sessionTable = $modx->getTableName('modSession');
+      if ($modx->query("TRUNCATE {$sessionTable}") == false) {
+        FlexiLogger::error(__METHOD__, "Flush failed: " . $modx->lexicon('flush_sessions_err'));
+        return false;
+      }
+      //$modx->user->endSession();
+    } else {
+      FlexiLogger::error(__METHOD__, "Flush failed: " . $modx->lexicon('flush_sessions_not_supported'));
+      return false;
+    }
+    return true;
+  }
+
+  public function assignResourceGrouptoUserGroup($sResourceGroup, $sUserGroup) {
+    global $modx;
+    $link = $modx->getObject("", array());
+  }
+
   public function assignCustomForm($sNamespace, $sAction, $sName, $sContainer, $sRule, $sValue, $sDescription, $sUserGroup, $sRole="", $sPolicy="") {
     global $modx;
     
