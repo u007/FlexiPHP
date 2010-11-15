@@ -201,7 +201,7 @@ class FlexiModx2PlatformHandler extends FlexiPlatformHandler {
     return true;
   }
 
-  public function assignUserToGroup($iUserId, $sGroupName, $iRoleLevel = 9999) {
+  public function assignUserToGroup($iUserId, $sGroupName, $sRole) {
     global $modx;
     $oUser = $modx->getObject("modUser", $iUserId);
     if (is_null($oUser)) {
@@ -211,6 +211,13 @@ class FlexiModx2PlatformHandler extends FlexiPlatformHandler {
     $oGroup = $modx->getObject("modUserGroup", array("name"=> $sGroupName));
     if (is_null($oGroup)) {
       throw new FlexiException("No such user group: " . $sGroupName, ERROR_EOF);
+    }
+
+    $iRole = "";
+    if (!empty($sRole)) {
+      $role = $modx->getObject("modUserGroupRole", array("name" => $sRole));
+      if (is_null($role)) { throw new FlexiException("No such role: " . $sRole, ERROR_EOF); }
+      $iRole = $role->get("id");
     }
     
     $aGroup = $oUser->getMany("UserGroupMembers");
@@ -226,7 +233,7 @@ class FlexiModx2PlatformHandler extends FlexiPlatformHandler {
     if (! $bIsInGroup) {
       $oNewGroup = $modx->newObject("modUserGroupMember", array(
         "user_group" => $oGroup->get("id"),
-        "role" => $iRoleLevel,
+        "role" => $iRole,
         "member" => $iUserId
       ));
       //var_dump($oNewGroup->toArray());
