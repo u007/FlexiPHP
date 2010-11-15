@@ -27,5 +27,5 @@ if (isset($bIsAdminModule) && $bIsAdminModule) {
 }
 
 require_once("flexiphp/flexi.include.php");
-if (file_exists("file.event.php")) require_once("flexi.event.php");
+if (file_exists("flexi.event.php")) require_once("flexi.event.php");
 FlexiModelUtil::getInstance()->setRedBeanEvent(new FlexiRedBeanEvent());
