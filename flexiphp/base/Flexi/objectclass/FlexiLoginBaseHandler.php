@@ -121,12 +121,12 @@ abstract class FlexiLoginBaseHandler
    * Getting logged in user login name
    * @return String
    */
-  abstract public function getUserLoginId();
+  abstract public function getUserLoginId($context="web");
   /**
    * Getting logged in user full name
    * @return String
    */
-  abstract public function getUserName();
+  abstract public function getUserName($context="web");
 	
 	protected function setUser($oUser)
 	{

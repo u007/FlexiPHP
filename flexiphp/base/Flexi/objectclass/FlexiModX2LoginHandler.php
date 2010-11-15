@@ -124,7 +124,7 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     $aGroup = array();
     FlexiLogger::info(__METHOD__, "Group cnt: " . count($aGroupModel));
     foreach($aGroupModel as $oGroup) {
-
+    
       $aDocGroup = $modx->getCollection("modAccessResourceGroup", array(
           'principal_class' => 'modUserGroup',
           'principal' => $oGroup->get("user_group"),
@@ -196,7 +196,8 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
       /* send to login processor and handle response */
       $response = $modx->executeProcessor(array(
           'action' => 'login',
-          'location' => 'security'
+          'location' => 'security',
+          'login_context' => $loginContext
       ));
       //echo "url: " . $response['object']['url'];
       if (!empty($response) && is_array($response)) {
@@ -253,12 +254,12 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
    * Get Loggin
    * @return <type>
    */
-	public function getUserLoginId() {
+	public function getUserLoginId($context="web") {
     global $modx;
-    return $modx->getLoginUserName();
+    return $modx->getLoginUserName($context);
   }
-  public function getUserName() {
-    $oUser = $this->getLoggedInUser();
+  public function getUserName($context="web") {
+    $oUser = $this->getLoggedInUser($context);
     return $oUser->sUserFullName;
   }
 
@@ -406,7 +407,7 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
 	public function getUserLanguage($context="web")
 	{
 		global $modx;
-		$aData = $modx->getUser($context);
+		$aData = $modx->getAuthenticatedUser($context);
     if (is_null($aData)) {
       return FlexiConfig::$sDefaultLanguage;
     }
@@ -436,12 +437,14 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
 	
 	public function getLoggedInUserId($context="web")
 	{
-		if (! $this->isLoggedIn())
+		if (! $this->isLoggedIn($context))
 		{
 			return null;
 		}
 		global $modx;
-		return $modx->getLoginUserID($context);
+    $user = $modx->getAuthenticatedUser($context);
+    return $user->get("id");
+		//return $modx->getLoginUserID($context);
 	}
 	/**
 	 * Get logged in user
@@ -449,22 +452,18 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
 	 */
 	public function getLoggedInUser($context="web")
 	{
-		if (is_null($this->oUser))
-		{
-			$oUser = FlexiModelUtil::getModelInstance("FlexiLoginUserModel", "flexiphp/base/Flexi");
-			global $modx;
-      $oModxUser        = $modx->getUser($context);
-      $oUser->iUserId   = $oModxUser->get("id");
-      
-			$oUserInfo 							= $modx->getWebUserInfo($oUser->iUserId);
-			//var_dump($oUserInfo);
-			$oUser->sUserFullName 	= $oUserInfo["fullname"];
-			$oUser->sUserName 			= $oUserInfo["username"];
-			$oUser->sPassword				= $oUserInfo["password"];
-			$this->setUser($oUser);
-      return $this->getUser();
-		}
-
+    global $modx;
+    $oModxUser        = $modx->getAuthenticatedUser($context);
+    if (is_null($oModxUser)) {
+      return null;
+    }
+    $oUser->iUserId   = $oModxUser->get("id");
+    $oUserInfo 							= $modx->getWebUserInfo($oUser->iUserId);
+    //var_dump($oUserInfo);
+    $oUser->sUserFullName 	= $oUserInfo["fullname"];
+    $oUser->sUserName 			= $oUserInfo["username"];
+    $oUser->sPassword				= $oUserInfo["password"];
+    $this->setUser($oUser);
     return $this->getUser();
 	}
 }

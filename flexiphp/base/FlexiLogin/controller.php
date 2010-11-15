@@ -89,7 +89,7 @@ class FlexiLoginController extends FlexiBaseController
         return false;
       }
     }
-    FlexiLogger::info(__METHOD__, "Attemptng to login: " . $sUserId . ", pwd: " . $sPassword);
+    //FlexiLogger::info(__METHOD__, "Attemptng to login: " . $sUserId . ", pwd: " . $sPassword);
     $sRedirect = empty($sRedirect) ? "" : FlexiCryptUtil::b64Decrypt($sRedirect);
     if (FlexiConfig::$sFramework == "modx2") {
       $sRedirect = str_replace(array('?service=logout','&service=logout','&amp;service=logout'),'',$sRedirect);
