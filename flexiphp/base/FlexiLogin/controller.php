@@ -68,10 +68,12 @@ class FlexiLoginController extends FlexiBaseController
 
 
   public function methodLogin() {
-    $sUserId = $this->getPost("txtLogin");
-    $sPassword = $this->getPost("txtPassword");
-    $sRedirect = $this->getRequest("refurl");
-    $iStandalone = $this->getRequest("standalone", 0);
+    $sUserId      = $this->getPost("txtLogin");
+    $sPassword    = $this->getPost("txtPassword");
+    $sRedirect    = $this->getRequest("refurl");
+    $iStandalone  = $this->getRequest("standalone", 0);
+    $sRemember    = $this->getRequest("rememberme", false);
+    $sContext    = $this->getRequest("context","");
     
     if(FlexiConfig::$sFramework == "modx") {
       $sLoginMode = $this->getRequest("webloginmode");
@@ -97,7 +99,7 @@ class FlexiLoginController extends FlexiBaseController
     
     $aOption = array("url" => $sRedirect);
     $aOption["standalone"] = $iStandalone == 1 ? true: false;
-
+    $aOption["rememberme"] = empty($sRemember) ? false: true;
     //die("url: " . $sRedirect);
     $oLogin = FlexiConfig::getLoginHandler();
 
