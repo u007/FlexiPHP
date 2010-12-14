@@ -100,6 +100,7 @@ class FlexiLoginController extends FlexiBaseController
     $aOption = array("url" => $sRedirect);
     $aOption["standalone"] = $iStandalone == 1 ? true: false;
     $aOption["rememberme"] = empty($sRemember) ? false: true;
+    $aOption["context"] = empty($sContext) ? null: $sContext;
     //die("url: " . $sRedirect);
     $oLogin = FlexiConfig::getLoginHandler();
 
