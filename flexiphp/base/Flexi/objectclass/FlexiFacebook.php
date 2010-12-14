@@ -38,9 +38,9 @@ class FlexiFacebook {
 
   public function startSession() {
     if (is_null($this->session)) {
-      FlexiLogger::info(__METHOD__, "starting session");
+      FlexiLogger::debug(__METHOD__, "starting session");
       $this->session = $this->facebook->getSession();
-      FlexiLogger::info(__METHOD__, serialize($this->session));
+      FlexiLogger::debug(__METHOD__, serialize($this->session));
     }
     return $this->session;
   }

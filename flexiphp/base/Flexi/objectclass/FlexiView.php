@@ -147,7 +147,7 @@ class FlexiView extends FlexiBaseView
 		
 		if (!isset($aValue["#id"]))
 		{
-			$aValue["#id"] = "id-" . FlexiStringUtil::createRandomPassword(15);
+			$aValue["#id"] = "id_" . FlexiStringUtil::createRandomPassword(15);
 		}
 		
 		//TODO general markup filter for security

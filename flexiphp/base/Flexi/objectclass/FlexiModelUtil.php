@@ -140,14 +140,37 @@ class FlexiModelUtil
     return $query->exec($sql, $aValues);
   }
 
-  public function getRedBeanModel($sName, $id = null) {
+  
+  public function getRedBeanModel($sName, $mCond = null) {
     $redbean = $this->getRedBeanDB();
-
-    if ($id == null) {
+    $adapter = $this->getRedBeanQuery();
+    $dbtype = $adapter->getDatabase()->getDatabaseType();
+    
+    if (is_null($mCond)) {
       return $redbean->dispense($sName);
     } else {
-      return $redbean->load($sName, $id);
-    }
+      if (is_array($mCond)) {
+        $aCond = array();
+        foreach($mCond as $sKey => $sValue) {
+          switch($dbtype) {
+            case "mysql":
+              $aCond[] = "`" . $sKey . "`=:$sKey";
+              $aCondValue[":" . $sKey] = $sValue;
+              break;
+          }
+        }
+        $aRow = $this->getRedBeanFetchOne(
+          "select * from " . $sName . " where " . implode(" and ", $aCond)
+          , $aCondValue);
+        if (is_null($aRow)) { return null; }
+        
+        $aBeans = $redbean->convertToBeans($sName, array($aRow));
+        return $aBeans[0];
+      } else {
+        //load by primary field / id
+        return $redbean->load($sName, $mCond);
+      }
+    }//has condition
   }
 
   public function getRedBeanQuery() {

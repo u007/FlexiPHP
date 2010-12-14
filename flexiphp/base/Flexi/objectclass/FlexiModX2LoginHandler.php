@@ -180,9 +180,15 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     FlexiEvent::triggerEvent("postLogin", $aParams);
     
     if($bStatus){
-      FlexiLogger::debug(__METHOD__, "Login Success: " . $asLoginId);
+      FlexiLogger::info(__METHOD__, "Login Success: " . $asLoginId . ", op context: " . $asConfig["context"]);
       
+      $additionalContext = "";
       $loginContext = !empty($asConfig["context"]) ? $asConfig["context"] : "web";
+      if (strpos($loginContext,",") !==false) {
+        $contexts=explode(",", $loginContext);
+        $loginContext = array_shift($contexts);
+        $additionalContext = implode(",", $contexts);
+      }
       /* set default POST vars if not in form */
       $scriptProperties = array(
         "username" => $asLoginId,
@@ -191,6 +197,8 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
         "session_cookie_lifetime" => isset($asConfig["session_cookie_lifetime"]) ? $asConfig["session_cookie_lifetime"]: null,
         "login_context" => $loginContext
       );
+      if (!empty($additionalContext)) { $scriptProperties["add_contexts"] = $additionalContext; }
+      FlexiLogger::info(__METHOD__, "Login: " . print_r($scriptProperties,true));
       $_POST = array_merge($_POST, $scriptProperties);
       FlexiLogger::debug(__METHOD__, "Trying to login: " . $asLoginId . ", " . $asLoginPass . "(" . $sDBPass . ")");
       /* send to login processor and handle response */
