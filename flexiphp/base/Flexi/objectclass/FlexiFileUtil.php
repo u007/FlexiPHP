@@ -12,21 +12,27 @@ class FlexiFileUtil {
     //echo "oripath: " . $asPath;
     $sPath = FlexiConfig::$bIsAdminPath ? "../" . $asPath : $asPath;
     //echo "path: " . $sPath;
+    //FlexiLogger::info(__METHOD__, "isadmin: " . (FlexiConfig::$bIsAdminPath? "yes": "no") . ": " . $sPath);
     $oControl = FlexiController::getCurrentController();
     $sID = FlexiStringUtil::createRandomPassword(20);
     $sFilePath=FlexiCryptUtil::b64URLEncrypt("r=" . $sRole . "&path=" . $sPath . "&name=" . $sName);
     
-    $sURL = $oControl->url(array("p"=>$sFilePath), "GetFile", "media");
+    $sURL = $oControl->url(array("p"=>$sFilePath), "GetFile", "media", true);
     return $sURL;
   }
 
   public static function getRelativePathFromBase($asPath) {
     $sPath = realpath($asPath);
     $sBasePath = self::getBasePath();
+    //FlexiLogger::info(__METHOD__, "base: " . $sBasePath . "|" . $sPath);
+    //FlexiLogger::info(__METHOD__, "result: " . str_replace($sBasePath . "/", "", $sPath));
     return str_replace($sBasePath . "/", "", $sPath);
   }
 
   public static function getBasePath() {
+    if (FlexiConfig::$sFramework=="modx2" || FlexiConfig::$sFramework=="modx") {
+      return substr(MODX_BASE_PATH,0, strlen(MODX_BASE_PATH)-1); //REMOVE TRAILING /
+    }
     return realpath(FlexiConfig::$sRootDir . "/" . (FlexiConfig::$bIsAdminPath ? "/.." : ""));
   }
 
