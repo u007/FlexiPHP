@@ -286,10 +286,16 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     $sURL .= strpos($sURL, "?") !== false? "&" : "?";
     $sURL .= "username=" . $sUserId;
     $sURL .= !empty($aOptions["error"]) ? "&error=" . $aOptions["error"] : "";
-
+    
     $bStandAlone = isset($aOptions["standalone"]) ? $aOptions["standalone"] : false;
     if ($bStandAlone) { $sURL .="&standalone=1"; }
 
+    $sContext = isset($aOptions["context"]) ? $aOptions["context"]: "";
+    if (!empty($sContext)) { $sURL .="&context=" . $sContext; }
+
+    $sTpl = isset($aOptions["template"]) ? $aOptions["template"]: "";
+    if (!empty($sTpl)) { $sURL .="&template=" . $sTpl; }
+    
     if (!empty($aOptions["url"])) {
       $sURL .= "&refurl=" . FlexiCryptUtil::b64URLEncrypt($aOptions["url"]);
     }
