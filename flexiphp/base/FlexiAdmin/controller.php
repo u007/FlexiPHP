@@ -3,6 +3,11 @@
 class FlexiAdminController extends FlexiAdminBaseController
 {
 
+  function methodBlank() {
+    $this->setLayout("");
+    return false;
+  }
+
   function renderViews()
 	{
     if (FlexiConfig::$sFramework == "modx" || FlexiConfig::$sFramework == "modx2") {
