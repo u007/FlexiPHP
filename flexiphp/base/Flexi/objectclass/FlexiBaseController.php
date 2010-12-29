@@ -284,8 +284,10 @@ abstract class FlexiBaseController
 		$this->afterControl($asMethod, $bReturn);
     
     if (!empty($this->sRenderViewName)) {
-      Flexilogger::debug(__METHOD__, "Rendering View method: " . $this->sRenderViewName);
+      Flexilogger::info(__METHOD__, "Rendering View: " . $this->sRenderViewName . ":" . $this->sViewName . " method:" . $asMethod);
       $this->oView->addVar($this->sRenderViewName, $this->renderView());
+    } else {
+      Flexilogger::info(__METHOD__, "No view to render: " . $this->sRenderViewName);
     }
 		return $bReturn;
 	}
