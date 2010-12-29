@@ -176,7 +176,7 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
     $aParams = array("status" => & $bStatus,
       "user" => & $oUser, "loginid" => & $asLoginId, "password" => & $asLoginPass, "config" => & $asConfig,
       "return" => & $mReturn);
-
+    
     FlexiEvent::triggerEvent("postLogin", $aParams);
     
     if($bStatus){
@@ -198,15 +198,15 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
         "login_context" => $loginContext
       );
       if (!empty($additionalContext)) { $scriptProperties["add_contexts"] = $additionalContext; }
-      FlexiLogger::info(__METHOD__, "Login: " . print_r($scriptProperties,true));
-      $_POST = array_merge($_POST, $scriptProperties);
-      FlexiLogger::debug(__METHOD__, "Trying to login: " . $asLoginId . ", " . $asLoginPass . "(" . $sDBPass . ")");
+      FlexiLogger::debug(__METHOD__, "Login: " . print_r($scriptProperties,true));
+      //$_POST = array_merge($_POST, $scriptProperties);
+      FlexiLogger::info(__METHOD__, "Trying to login: " . $asLoginId);
       /* send to login processor and handle response */
-      $response = $modx->executeProcessor(array(
+      $response = $modx->executeProcessor(array_merge($scriptProperties, array(
           'action' => 'login',
           'location' => 'security',
           'login_context' => $loginContext
-      ));
+      )));
       //echo "url: " . $response['object']['url'];
       if (!empty($response) && is_array($response)) {
           if (!empty($response['success']) && isset($response['object'])) {
@@ -214,7 +214,7 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
 
               FlexiLogger::info(__METHOD__, "groups: " . implode(",", $modx->getUserDocGroups(true)));
           } else {
-              FlexiLogger::error(__METHOD__, "Modx2.Login Failed: " . $asLoginId );
+              FlexiLogger::error(__METHOD__, "Modx2.Login Failed: " . $asLoginId . ", " . print_r($response, true) );
           }
       }
       
