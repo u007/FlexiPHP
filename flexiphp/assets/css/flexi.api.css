@@ -6,10 +6,6 @@
         Purpose of the stylesheet follows.
 */
 
-/* 
-   TODO customize this sample style
-   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
-*/
 html, body {
 }
 
@@ -17,7 +13,6 @@ html, body {
   float: left;
   padding-right: 5px;
 }
-
 
 .flexiphp_div_label {
 	font-weight: bold;
@@ -219,4 +214,13 @@ ul.pagelist li {
 
 .register .registerMessage {
   background-color: #FEEFB3;
+}
+
+/*
+.x-grid3-row-expander {
+  background-image:url(../../lib/extjs/3/images/default/grid/row-expand-sprite.gif);
+}
+*/
+div.gridbox .dhx_sub_row table.hdr td {
+  padding: 0 0;
 }
