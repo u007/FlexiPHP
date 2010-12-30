@@ -125,6 +125,14 @@ class FlexiStandAlonePlatformHandler extends FlexiPlatformHandler {
     die();
   }
 
+  public function getPageEncoding() {
+    //TODO
+  }
+
+  public function verifyUser($iId, $sCode) {
+    //TOOD
+  }
+  
   public static function getInstance() {
     if (is_null(self::$oInstance )) {
       self::$oInstance = new FlexiStandAlonePlatformHandler();
