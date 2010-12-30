@@ -9,6 +9,14 @@ class FlexiStandAlonePlatformHandler extends FlexiPlatformHandler {
   private function __construct() {
 
   }
+
+  public function getAllAccessGroup() {
+    //TODO
+  }
+
+  public function getAllRoles() {
+    //TODO
+  }
   /**
    * dummy function to ensure function is not called directly
    */
