@@ -6,7 +6,8 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
     
   }
 
-  public function forceLogin($iUserId, $sUserType="user") {
+	
+  public function forceLogin($iUserId, $sUserType="user", $sContext="web") {
     //TODO
     return false;
   }
@@ -50,8 +51,7 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
     return false;
   }
 	
-	public function onLogout()
-	{
+	public function onLogout($context="web") {
 		return true;
 	}
 
@@ -59,8 +59,8 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
    * Getting logged in user login name
    * @return String
    */
-  public function getUserLoginId() {
-    $oUser = $this->getLoggedInUser();
+  public function getUserLoginId($context="web") {
+		$oUser = $this->getLoggedInUser();
     if ($oUser == null) { return null; }
     
     return $oUser->sUserName;
@@ -69,7 +69,7 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
    * Getting logged in user full name
    * @return String
    */
-  public function getUserName() {
+  public function getUserName($context="web") {
     $oUser = $this->getLoggedInUser();
     if ($oUser == null) { return null; }
 
@@ -105,8 +105,7 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
 		
 	}
 	
-	public function isLoggedIn()
-	{
+	public function isLoggedIn($sContext="web") {
     $oUser = $this->getLoggedInUser();
     if ($oUser == null) {
       return false;
@@ -115,8 +114,7 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
     return true;
 	}
 	
-	public function getLoggedInUser()
-	{
+	public function getLoggedInUser($context="web")	{
     $oUser = null;
     if ($this->isSuperUser()) {
       $oUser = new FlexiLoginUserModel();
@@ -130,8 +128,7 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
 		return $oUser;
 	}
 	
-	public function getUserLanguage()
-	{
+	public function getUserLanguage($context="web") {
 		//TODO
 		//$sLang = $aData["language"];
 //
@@ -158,8 +155,7 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
     return true;
   }
 
-	public function getLoggedInUserId()
-	{
+	public function getLoggedInUserId($context="web") {
     $oUser = $this->getLoggedInUser();
     if ($oUser == null) {
       return null;

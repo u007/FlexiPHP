@@ -38,7 +38,7 @@ class FlexiForm
 		$mValue = isset($aForm["#value"]) ? $aForm["#value"] : "";
 		$mValue = FlexiParser::parseHTMLInputValue($mValue);
 		
-		$sTheme = isset($a
+		//$sTheme = isset($a
 		
 		return 
 			(isset($aForm["#prefix"]) ? $aForm["#prefix"] : "") .
