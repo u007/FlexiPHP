@@ -202,7 +202,7 @@ class FlexiRepoListController extends FlexiAdminBaseController
   function getFilter() {
     static $sFilter = null;
     if (is_null($sFilter)) {
-      $sFilter = $this->getQuery("filter_listkey", null);
+      $sFilter = $this->getRequest("filter_listkey", null);
       if (is_null($sFilter)) {
         $sFilter = $this->getSession("repolist_filter", "");
       } else {

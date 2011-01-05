@@ -46,7 +46,13 @@ class FlexiView extends FlexiBaseView
     }
     throw new FlexiException("Markup element missing: " . $asName, ERROR_EOF);
   }
-
+  /**
+   * Render array of forms via FlexiView
+   * @param array $aValues fields
+   * @param String $asName field name
+   * @param String $asPath path to view, default to module full path
+   * @return String HTML
+   */
   public function renderMarkup($aValues, $asName="", $sPath = null)
 	{
 		if (! is_array($aValues))
@@ -136,7 +142,12 @@ class FlexiView extends FlexiBaseView
 		
 		return $sResult;
 	}
-	
+
+  /**
+   * Filtering hook to update markups setting
+   * @param array $aValue
+   * @return void
+   */
 	protected function renderFilterMarkup(& $aValue)
 	{
 		if (isset($aValue["#filterrendered"]))
@@ -154,7 +165,13 @@ class FlexiView extends FlexiBaseView
 		
 		$aValue["#filterrendered"] = true;
 	}
-	
+
+  /**
+   * Filtering hook to cleanup a single form field setting and value
+   *  before being displayed
+   * @param array $aValue
+   * @param String $asName field name
+   */
 	protected function renderFilterForm(& $aValue, $asName)
 	{
 		$this->renderFilterMarkup($aValue);

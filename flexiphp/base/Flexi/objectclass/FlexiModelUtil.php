@@ -162,10 +162,12 @@ class FlexiModelUtil
         $aRow = $this->getRedBeanFetchOne(
           "select * from " . $sName . " where " . implode(" and ", $aCond)
           , $aCondValue);
+        //FlexiLogger::info(__METHOD__, "sql: " . "select * from " . $sName . " where " . implode(" and ", $aCond) . ", cond: " . print_r($aCondValue,true));
         if (is_null($aRow)) { return null; }
-        
+        //FlexiLogger::info(__METHOD__, "Not null, suppose ok!");
         $aBeans = $redbean->convertToBeans($sName, array($aRow));
-        return $aBeans[0];
+        //FlexiLogger::info(__METHOD__, "Rows: " . print_r($aBeans,true));
+        return array_shift($aBeans);
       } else {
         //load by primary field / id
         return $redbean->load($sName, $mCond);
