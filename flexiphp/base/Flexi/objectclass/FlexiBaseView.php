@@ -126,7 +126,7 @@ class FlexiBaseView
 		$sBaseDir = FlexiConfig::$sBaseDir;
 		$sViewFile = strtolower($sView);
     $sRootDir = FlexiConfig::$sRootDir;
-		
+    //throw new Exception("aspath: " . $asPath);
 		if (is_null($asPath))
 		{
 			$sPath = $this->getVar("#modulepath");
@@ -167,17 +167,19 @@ class FlexiBaseView
 		}
 
     //from ../$sRootDir/[path]
-    $sViewPath = $sRootDir . "/../" . $sPath . "/views/" . $sViewFile . ".tpl.php";
-    //echo $sViewPath;
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
-    $sViewPath = $sRootDir . "/../" . $sPath . "/views/" . strtolower($sViewFile) . ".tpl.php";
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
+    if ($sPath != $this->getVar("#modulepath")) {
+      $sViewPath = $sRootDir . "/../" . $sPath . "/views/" . $sViewFile . ".tpl.php";
+      //echo $sViewPath;
+      if (is_file($sViewPath))
+      {
+        return $sViewPath;
+      }
+      $sViewPath = $sRootDir . "/../" . $sPath . "/views/" . strtolower($sViewFile) . ".tpl.php";
+      if (is_file($sViewPath))
+      {
+        return $sViewPath;
+      }
+    }
 
     //var_dump($this->sTemplate);
 		//$sViewPath = $sBaseDir . "/assets/templates/" . $this->sTemplate . "/" . $sViewFile . ".tpl.php";
