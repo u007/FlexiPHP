@@ -513,7 +513,7 @@ abstract class FlexiBaseController
 				$bRequired = isset($mValue["#required"]) ? $mValue["#required"] : false;
 				
 				//echo $sKey. "\r\n<br>";
-				if ($bRequired && (empty($mValue["#value"]) && strlen($mValue["#value"])==0))
+				if ($bRequired && (! isset($mValue["#value"]) || (isset($mValue["#value"]) && strlen($mValue["#value"])==0)))
 				{
 					//echo "is empty!";
           //var_dump($mValue["#value"]);
@@ -704,15 +704,25 @@ abstract class FlexiBaseController
 	 */
 	public function afterRender() { }
 	
-	
+	/**
+   * Render array of forms via FlexiView
+   *  template is based on #type,
+   *  or defined as #theme, example: #theme=>xx , resolve to xx.tpl.php
+   * @param array $aValues fields
+   * @param String $asName field name
+   * @param String $asPath path to view, default to module full path
+   * @return String HTML
+   */
 	public function renderMarkup($aValues, $asName="", $asPath=null)
 	{
+    //die("pass: " . $asPath . ", mpath: " . $this->sModulePath);
 		$sPath = is_null($asPath) ? $this->sModulePath : $asPath;
 		
 		return $this->oView->renderMarkup($aValues, $asName, $sPath);
 	}
 	/**
-	 * render a view
+	 * render a view from current modules/your_modulename/views/*.tpl.php
+   *  or from assets/flexitemplate/your_templatename/*.tpl.php
 	 * @param string view name (optional)
 	 * @param array variables (optional)
 	 * @param String path (optional)
