@@ -1,0 +1,95 @@
+/*!
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
+ */
+/*
+* eAll
+*/
+.x-form-select-one {
+    border: 1px solid;
+    height: 20px;
+    line-height: 18px;
+    vertical-align: middle;
+}
+.x-form-check-wrap {
+    height: auto;
+    line-height: 18px;
+}
+.ext-ie .x-form-check-wrap input {
+    height: 15px;
+    width: 15px;
+}
+.x-form-check-wrap input {
+    vertical-align: bottom;
+}
+.x-editor .x-form-check-wrap {
+    padding: 3px;
+}
+.x-editor .x-form-checkbox {
+    height: 13px;
+}
+.x-form-check-group-label {
+    border-bottom: 1px solid;
+    float: none !important;
+    margin-bottom: 5px;
+    padding-left: 3px !important;
+}
+.x-form-field-wrap .x-form-trigger {
+    background: none no-repeat scroll 0 0 transparent;
+    border-color: -moz-use-text-color;
+    border-style: none none solid;
+    border-width: 0 0 1px;
+    cursor: pointer;
+    height: 21px;
+    position: absolute;
+    top: 0;
+    width: 17px;
+}
+.x-form-field-wrap .x-form-date-trigger, .x-form-field-wrap .x-form-clear-trigger, .x-form-field-wrap .x-form-search-trigger {
+    cursor: pointer;
+}
+.x-form-field-wrap .x-form-twin-triggers .x-form-trigger {
+    position: static;
+    top: auto;
+    vertical-align: top;
+}
+.x-form-field-wrap {
+    left: 0;
+    position: relative;
+    text-align: left;
+    top: 0;
+    white-space: nowrap;
+}
+
+
+/*
+ * FileUploadField component styles
+ */
+
+
+.x-form-file-wrap {
+    position: relative;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file {
+	position: absolute;
+	right: 0;
+	-moz-opacity: 0;
+	filter:alpha(opacity: 0);
+	opacity: 0;
+	z-index: 2;
+    height: 22px;
+}
+.x-form-file-wrap .x-form-file-btn {
+	position: absolute;
+	right: 0;
+	z-index: 1;
+}
+.x-form-file-wrap .x-form-file-text {
+    position: absolute;
+    left: 0;
+    z-index: 3;
+    color: #777;
+}

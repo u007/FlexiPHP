@@ -25,7 +25,7 @@ $sLabel = isset($vars["#label"]) ? $vars["#label"] : "";
 		$sChecked = $sKey == $mValue ? " checked=\"checked\"" : false;
 		?>
 	<div style="clear:both;">
-		<input type="radio" name="<?=$vars["#name"]?>" <?=is_null($mValue) ? "" : " value=\"" . $sKey . "\""?>
+		<input type="radio" name="<?=$vars["#name"]?>" <?=!is_null($mValue) && $mValue==$sKey ? " selected " : ""?><?="value=\"" . $sKey . "\""?>
 			<?=empty($vars["#id"]) ? "" : " id=\"" . $vars["#id"] . "-" . $iCnt . "\""?><?=$bDisabled ? " disabled=\"disabled\"" : ""?>
 			<?=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?><?=$sChecked?>
 			<? if (isset($vars["#attributes"])) { echo FlexiStringUtil::attributesToString($vars["#attributes"]); } ?>>
