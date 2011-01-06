@@ -18,7 +18,12 @@ abstract class FlexiBaseController
   protected $sModule = "";
 
   protected $aRequestData = null;
-	
+
+  /**
+   * @param FlexiView $aoView
+   * @param String $asMethod
+   * @param String $asPath path to controller
+   */
 	public function __construct($aoView, $asMethod, $asPath)
 	{
 		$this->oView 				= $aoView;
@@ -32,6 +37,11 @@ abstract class FlexiBaseController
 		$this->onInit();
 	}
 
+  /**
+   * Set page title
+   * @global modX $modx
+   * @param String $sTitle
+   */
   public function setTitle($sTitle) {
     FlexiConfig::$sPageTitle = $sTitle;
 
@@ -41,11 +51,18 @@ abstract class FlexiBaseController
     }
   }
 
+  /**
+   * Set html header
+   * @param String $sName
+   * @param mixed $sValue
+   */
   public function setHeader($sName, $sValue) {
     FlexiController::getInstance()->setHeader($sName, $sValue);
   }
 	/**
 	 * to be run after running controller
+   * @param String $sMethod
+   * @param boolean $bReturn //success running controller method by returning true/false
 	 */
   function afterControl($sMethod, $bReturn = false)
 	{
@@ -67,10 +84,21 @@ abstract class FlexiBaseController
     
   }
 
+  /**
+   * Set the variable name holding the rendered view
+   *  the view template name is called using setViewName(...)
+   * @param String $sViewVarName
+   */
   public function setRenderViewName($sViewVarName) {
     $this->sRenderViewName = $sViewVarName;
   }
-
+  /**
+   * Get URL path to load without layout
+   * @param mixed $asURL, a url string, or array of hash of parameter to be joined as querystring
+   * @param String $asMethod method name
+   * @param String $asModule module name
+   * @return <type>
+   */
   public function ajaxURL($asURL, $asMethod=null, $asModule=null)
   {
     //getting class name without "Controller"
@@ -86,7 +114,15 @@ abstract class FlexiBaseController
 
 		return flexiURL($sURL, true);
   }
-	
+
+  /**
+   * Get URL path
+   * @param mixed $asURL, a url string, or array of hash of parameter to be joined as querystring
+   * @param String $asMethod method name
+   * @param String $asModule module name
+   * @param boolean $bAjax true to open a url without layout, otherwise
+   * @return String
+   */
 	public function url($asURL, $asMethod=null, $asModule=null, $bAjax = false)
 	{
 		//getting class name without "Controller"
@@ -113,7 +149,7 @@ abstract class FlexiBaseController
 		
 		return flexiURL($sURL, $bAjax);
 	}
-
+  
   public function runReferrerControl() {
 
     //WARNING, THIS COULD LEAD TO INFINITE LOOP
@@ -217,7 +253,7 @@ abstract class FlexiBaseController
 		return $aResult;
 	}
   /**
-   * Run control with custom view variable  name or no render view
+   * Run control with custom view variable name or no render view
    * @param String $asMethod
    * @param String $asModule
    * @param String $asRenderViewName
@@ -421,7 +457,13 @@ abstract class FlexiBaseController
 		
 		return $oModel;
 	}
-	
+
+  /**
+   * validate form array values by model object
+   * @param array $aForm
+   * @param object $oModel a redbean model
+   * @return boolean true for validate ok, false otherwise
+   */
 	public function validateFormByModel(& $aForm, & $oModel)
 	{
 		
@@ -500,7 +542,12 @@ abstract class FlexiBaseController
     FlexiLogger::debug(__METHOD__, "is valid");
 		return true;
 	}
-	
+
+  /**
+   * validate a form value populated by $_REQUEST
+   * @param array $aForm merged with request value
+   * @return boolean 
+   */
 	public function validateForm(& $aForm)
 	{
 		$bOK = true;
@@ -610,17 +657,27 @@ abstract class FlexiBaseController
 	{
 		return true;
 	}
-	
+
+  /**
+   * Get View object
+   * @return FlexiView
+   */
 	public function getView()
 	{
 		return $this->oView;
 	}
-	
+	/**
+   * Add a View variable
+   * @param String $asName
+   * @param mixed $amValue
+   */
 	public function setViewVar($asName, $amValue)
 	{
 		$this->aViewVars[$asName] = $amValue;
 	}
-
+  /**
+   * do not render any layout or view
+   */
   public function disableView() {
     $this->setLayout("");
     $this->setViewName("");
