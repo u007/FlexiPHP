@@ -16,7 +16,8 @@ $aFlexiSetting = array_merge($aFlexiSetting,
 				"framework" => "modx2",
 				"templatepath" => "assets/flexitemplate",
         "basedir" 	=> dirname(__FILE__),
-        "baseurl"   => $modx->config["site_url"],
+        //"baseurl"   => $modx->config["site_url"],
+        "baseurl" => MODX_SITE_URL,
         "support.email" => $modx->config["emailsender"]
 				)
 );

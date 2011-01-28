@@ -145,6 +145,7 @@ class FlexiConfig
 		$aURL = @parse_url(self::$sBaseURL);
 		$sURL = $aURL["scheme"] . "://" . $aURL["host"];
 		$sURL .= isset($aURL["port"]) ? ":" . $aURL["port"] : "";
+    $sURL .="/";
 		if (isset($aURL["user"]))
 		{
 			$sURL .= $aURL["user"] . (isset($aURL["pass"]) ? ":" . $aURL["pass"] : "");
@@ -159,7 +160,7 @@ class FlexiConfig
     } else if(self::$sFramework == "modx2") {
       global $modx;
       $aConfig = $modx->getConfig();
-      self::$sBaseURLDir = $aConfig["site_url"];
+      //self::$sBaseURLDir = $aConfig["site_url"];
     } else if(self::$sFramework == "iscript") {
       self::$sBaseURLDir = SITE_URL;
     }

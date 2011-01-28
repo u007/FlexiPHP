@@ -12,7 +12,6 @@ function flexiURL($sURL, $bAjax = false)
 	}
 	
 	//$sep = substr(FlexiConfig::$sBaseURL, -1) == "/" ? "" : "/";
-
   if ($bAjax) {
     $iPos = strpos(FlexiConfig::$sBaseURL, "?");
     $sQuery = "";
