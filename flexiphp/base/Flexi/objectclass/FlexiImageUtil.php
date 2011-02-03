@@ -18,12 +18,21 @@ class FlexiImageUtil {
    * @return <type>
    */
   public static function imageResize($aiWidth, $aiHeight, $sPath, $sNewPath = null) {
+    if (empty($aiWidth) && empty($aiHeight)) { return; }
     list($iOriWidth, $iOriHeight, $iType) = getimagesize($sPath);
-    if ($iOriWidth > $iOriHeight) {
+
+    if (!empty($aiWidth) && !empty($aiHeight)) {
+      if ($iOriWidth > $iOriHeight) {
+        $percentage = ($aiWidth / $iOriWidth);
+      } else {
+        $percentage = ($aiHeight / $iOriHeight);
+      }
+    } else if(!empty($aiWidth)) {
       $percentage = ($aiWidth / $iOriWidth);
-    } else {
+    } else if(!empty($aiHeight)) {
       $percentage = ($aiHeight / $iOriHeight);
     }
+    
     //gets the new value and applies the percentage, then rounds the value
     $width = round($iOriWidth * $percentage);
     $height = round($iOriHeight * $percentage);

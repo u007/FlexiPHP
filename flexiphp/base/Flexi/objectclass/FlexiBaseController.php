@@ -279,10 +279,10 @@ abstract class FlexiBaseController
 		}
 
 		$this->setViewName($asMethod);
-    //Flexilogger::debug(__METHOD__, "Setting Render view var name: " . $asRenderViewName);
+    Flexilogger::info(__METHOD__, "Setting Render view var name: " . $asRenderViewName);
     $this->setRenderViewName($asRenderViewName);
     
-    Flexilogger::debug(__METHOD__, "Checking permission: " . $asMethod);
+    Flexilogger::info(__METHOD__, "Checking permission: " . $asMethod);
 		$this->checkPermission($asMethod);
 		Flexilogger::debug(__METHOD__, "Permission (OK): " . $asMethod);
     //Flexilogger::debug(__METHOD__, "Setted view");
@@ -308,23 +308,25 @@ abstract class FlexiBaseController
     }
     
 
-    Flexilogger::debug(__METHOD__, "Calling beforeControl: " . $asMethod);
+    //Flexilogger::debug(__METHOD__, "Calling beforeControl: " . $asMethod);
 		if (! $this->beforeControl($asMethod)) { return false; }
-    Flexilogger::debug(__METHOD__, "Running method: " . $sMethod);
+    //Flexilogger::debug(__METHOD__, "Running method: " . $sMethod);
     //echo "b4: " . $this->sLayoutTemplate;
 		$bReturn = $this->$sMethod();
     //echo "after: " . $this->sLayoutTemplate;
     //die();
-		FlexiLogger::debug(__METHOD__, "Return: " . $sModuleName . "::" . $sMethod . ": " . serialize($bReturn));
+		//FlexiLogger::debug(__METHOD__, "Return: " . $sModuleName . "::" . $sMethod . ": " . serialize($bReturn));
 		if (is_null($bReturn)) { throw new FlexiException("No return after for: " . $sModuleName . "::" . $sMethod, ERROR_RETURNVALUE); }
 		$this->afterControl($asMethod, $bReturn);
     
     if (!empty($this->sRenderViewName)) {
-      Flexilogger::info(__METHOD__, "Rendering View: " . $this->sRenderViewName . ":" . $this->sViewName . " method:" . $asMethod);
+      //Flexilogger::info(__METHOD__, "Rendering View: " . $this->sRenderViewName . ":" . $this->sViewName . " method:" . $asMethod);
       $this->oView->addVar($this->sRenderViewName, $this->renderView());
     } else {
       Flexilogger::info(__METHOD__, "No view to render: " . $this->sRenderViewName);
     }
+
+    //FlexiLogger::info(__METHOD__, "rendered output: " . $this->oView->getVar($this->sRenderViewName));
 		return $bReturn;
 	}
 	
@@ -959,6 +961,10 @@ abstract class FlexiBaseController
     $this->setLayout(""); //no rendering layout on redirect
     return FlexiController::redirectURL($sURL);
 	}
+
+  public function getService($sName) {
+    return FlexiService::getService($sName, $sName . "Manager");
+  }
 	
 	public function onInit() {}
 	public function onEvent($sEventType, $oParam) {}

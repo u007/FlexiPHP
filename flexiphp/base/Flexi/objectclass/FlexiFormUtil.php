@@ -6,6 +6,60 @@
 
 class FlexiFormUtil {
 
+  public static function processUploadPhoto($sFieldName, $sSavePath, $sSaveName, $iMaxWidth=null, $iMaxHeight=null, $aiMaxUpload=null, $bReplace=true, $sOldPath=null) {
+    $aExtension = array("jpg","jpeg","pjpeg","pjpg","png");
+    $result = self::processUpload($sFieldName, $sSavePath, $aExtension, $sSaveName, $aiMaxUpload, $bReplace, $sOldPath);
+    if ($result===false) { return false; }
+
+    if ($result["status"]) {
+      //resize image based on max width, height
+      FlexiImageUtil::imageResize($iMaxWidth, $iMaxHeight, $result["path"]);
+      
+    } else {
+      $sNotice = flexiT("Save upload file failed",true);
+      throw new FlexiException($sNotice, ERROR_UNKNOWN);
+    }
+
+    return $result;
+  }
+  
+  public static function processUpload($sFieldName, $sSavePath, $aExtension, $sSaveName, $aiMaxUpload=null, $bReplace=true, $sOldPath=null) {
+    $iMaxUpload = empty($aiMaxUpload) ? 1024*1024*10: $aiMaxUpload;
+    if (empty($aiMaxUpload)) {
+      if (FlexiConfig::$sFramework=="modx") {
+        global $modx;
+        $iMaxUpload = $modx->config["upload_maxsize"];
+      } else if (FlexiConfig::$sFramework=="modx2") {
+        global $modx;
+        $iMaxUpload = $modx->context->getOption('upload_maxsize',false);
+      }
+    }
+
+    if (FlexiFileUtil::getIsUploaded($sFieldName)) {
+      $iSize = FlexiFileUtil::getUploadedFileSize($sFieldName);
+      if ($iSize > $iMaxUpload) {
+        $sNotice = flexiT("File Upload exceed permitted size", "first") . ": " . $iSize . " / " . $iMaxUpload;
+        throw new FlexiException($sNotice, ERROR_FILESIZE);
+      }
+      $sExtension = strtolower(trim(FlexiFileUtil::getUploadedFileExtension($sFieldName)));
+      if (!in_array($sExtension, $aExtension)) {
+        $sNotice = flexiT("File type not permitted", "first") . ", " 
+                  . flexiT("you have uploaded") . ": " . $sExtension;
+        throw new FlexiException($sNotice, ERROR_FILETYPE);
+      }
+      
+      //replace photo if already exists
+      if ($bReplace && !empty($sOldPath)) {
+        unlink(FlexiFileUtil::getBasePath() . "/" . $sOldPath);
+      }
+      $aStatus = FlexiFileUtil::doUploadFile($sFieldName, $sSavePath, $sSaveName . ".");
+      //
+      return $aStatus;
+    } //is upload
+    
+    return false;
+  }
+
   public static function tinyMCERemoveControl($aForm) {
     $sResult = "";
     //$sResult .= "//Removing controls: " . serialize($aForm) . "\r\n";

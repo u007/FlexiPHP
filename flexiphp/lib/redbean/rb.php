@@ -1701,6 +1701,21 @@ interface RedBean_Driver {
 
 
 }
+
+/**
+ * RedBean Exception Base
+ * @file 		RedBean/Exception.php
+ * @description		Represents the base class
+ * 					for RedBean Exceptions
+ * @author			Gabor de Mooij
+ * @license			BSD
+ *
+ *
+ * (c) G.J.G.T. (Gabor) de Mooij
+ * This source file is subject to the BSD/GPLv2 License that is bundled
+ * with this source code in the file license.txt.
+ */
+class RedBean_Exception extends Exception{}
 /**
  * Exception Failed Access
  * Part of the RedBean Exceptions Mechanism
@@ -1805,20 +1820,7 @@ class RedBean_Exception_SQL extends Exception {
  * with this source code in the file license.txt.
  */
 class RedBean_Exception_UnsupportedDatabase extends RedBean_Exception {}
-/**
- * RedBean Exception Base
- * @file 		RedBean/Exception.php
- * @description		Represents the base class
- * 					for RedBean Exceptions
- * @author			Gabor de Mooij
- * @license			BSD
- *
- *
- * (c) G.J.G.T. (Gabor) de Mooij
- * This source file is subject to the BSD/GPLv2 License that is bundled
- * with this source code in the file license.txt.
- */
-class RedBean_Exception extends Exception{}
+
 /**
  * RedBean Extended Association
  * @file			RedBean/ExtAssociationManager.php

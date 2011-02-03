@@ -12,8 +12,8 @@ class FlexiRedBeanEvent implements RedBean_Observer {
     self::$aValidator[$sTable] = & $oClass;
   }
   public function onEvent( $event, $oModel ) {
-    FlexiLogger::debug(__METHOD__, $sTable . ", Event: " . $event);
     $sTable = $oModel->getMeta("type");
+    FlexiLogger::debug(__METHOD__, $sTable . ", Event: " . $event);
     $sMethod = "on" . $event;
     FlexiLogger::debug(__METHOD__, $sTable . ", Method: " . $sMethod);
     if (isset(self::$aValidator[$sTable])) {

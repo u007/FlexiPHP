@@ -211,8 +211,7 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
       if (!empty($response) && is_array($response)) {
           if (!empty($response['success']) && isset($response['object'])) {
               FlexiLogger::info(__METHOD__, "Modx2.Login Success: " . $asLoginId );
-
-              FlexiLogger::info(__METHOD__, "groups: " . implode(",", $modx->getUserDocGroups(true)));
+              FlexiLogger::info(__METHOD__, "groups: " . implode(",", $modx->getAuthenticatedUser($loginContext)->getResourceGroups()));
           } else {
               FlexiLogger::error(__METHOD__, "Modx2.Login Failed: " . $asLoginId . ", " . print_r($response, true) );
           }
@@ -378,30 +377,34 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
 
   public function hasAccessToPolicy($sPolicy) {
     global $modx;
+    FlexiLogger::info(__METHOD__, "Checking context: " . $modx->context->get("key") . ", policy: " . $sPolicy);
     return $modx->hasPermission($sPolicy);
   }
 
-	public function hasPermission($sTitle)
+	public function hasPermission($sTitle, $asContext=null)
 	{
+    FlexiLogger::info(__METHOD__, "Checking permission: " . $sTitle);
     if ($this->isSuperUser()) { return true; }
-    
+    	
 		global $modx;
+		$sContext = empty($asContext) ? $modx->context->get("key"): $context;
 		$bResult = $modx->hasPermission($sTitle);
-    FlexiLogger::debug(__METHOD__, "Checking permission: " . $sTitle);
+    
     if (! $bResult) {
-      $aGroups = $modx->getUserDocGroups(true);
+      $aGroups = $modx->getAuthenticatedUser($sContext)->getResourceGroups();
       if ($aGroups != null) {
         foreach($aGroups as $sGroup) {
           //echo "Doc Group: " . $sGroup . " vs " . $sTitle . "\r\n<br/>";
-          FlexiLogger::debug(__method__, "Doc Group: " . $sGroup . " vs " . $sTitle);
+          FlexiLogger::info(__METHOD__, "Doc Group: " . $sGroup . " vs " . $sTitle);
           if (strtolower(trim($sGroup)) == strtolower(trim($sTitle)) ) {
+            FlexiLogger::info(__METHOD__, "Found match: " . $sGroup);
             $bResult = true;
             break;
           }
         }
       } else {
         //echo "doc group empty";
-        FlexiLogger::debug(__METHOD__, "Doc Group empty: " . serialize($aGroups));
+        FlexiLogger::info(__METHOD__, "Doc Group empty: " . serialize($aGroups));
       }
     }
 

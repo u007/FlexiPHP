@@ -108,12 +108,13 @@ class FlexiBaseView
       $sViewFile = $this->getViewFile($sView, $asPath);
       if (is_null($sViewFile))
       {
-        FlexiLogger::error(__method__, "View: " . $sView . " is missing...");
+        FlexiLogger::error(__METHOD__, "View: " . $sView . " is missing...");
         return null;
       }
     }
 		
 		ob_start();
+    FlexiLogger::info(__METHOD__, "found view: " . $sViewFile);
 		require($sViewFile);
 		$sResult = ob_get_contents();
 		@ob_end_clean();

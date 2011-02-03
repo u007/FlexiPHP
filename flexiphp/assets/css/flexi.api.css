@@ -221,6 +221,21 @@ ul.pagelist li {
   background-image:url(../../lib/extjs/3/images/default/grid/row-expand-sprite.gif);
 }
 */
-div.gridbox .dhx_sub_row table.hdr td {
+div.gridbox .dhx_sub_row table.hdr td.x-btn-mc {
   padding: 0 0;
+  border: none;
+}
+
+div.gridbox_dhx_skyblue table.hdr td.x-btn-ml, div.gridbox_dhx_skyblue table.hdr td.x-btn-tr, div.gridbox_dhx_skyblue table.hdr td.x-btn-tc, div.gridbox_dhx_skyblue table.hdr td.x-btn-tl,
+div.gridbox_dhx_skyblue table.hdr td.x-btn-bl, div.gridbox_dhx_skyblue table.hdr td.x-btn-bc, div.gridbox_dhx_skyblue table.hdr td.x-btn-br, div.gridbox_dhx_skyblue table.hdr td.x-btn-mr
+{
+  border: none;
+}
+
+div.gridbox_dhx_skyblue table.hdr td.x-toolbar-cell {
+  border: none;
+}
+
+div.gridbox table.hdr td.x-toolbar-left {
+  padding: 0;
 }

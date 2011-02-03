@@ -132,7 +132,7 @@ class FlexiFileUtil {
         FlexiLogger::info(__METHOD__, "Moved file from: " . $sTempFile . " to " . $sMovePath);
         $aReturn["status"] = true;
       } else {
-        FlexiLogger::error(__METHOD__, "Error moving file from: " . $sTempFile . " to " . $sMovePath);
+        throw new FlexiException("Error moving file from: " . $sTempFile . " to " . $sMovePath, ERROR_FILE_MOVE);
       }
     }
     return $aReturn;
