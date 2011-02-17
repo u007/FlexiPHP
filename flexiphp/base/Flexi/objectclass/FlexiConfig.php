@@ -145,13 +145,13 @@ class FlexiConfig
 		$aURL = @parse_url(self::$sBaseURL);
 		$sURL = $aURL["scheme"] . "://" . $aURL["host"];
 		$sURL .= isset($aURL["port"]) ? ":" . $aURL["port"] : "";
-    $sURL .="/";
+    	//$sURL .="/";
 		if (isset($aURL["user"]))
 		{
 			$sURL .= $aURL["user"] . (isset($aURL["pass"]) ? ":" . $aURL["pass"] : "");
 		}
     self::$sBaseURLDir = $sURL;
-		$sURL .= @$aURL["path"];
+		$sURL .= empty($aURL["path"]) ? "/" : $aURL["path"];
 		self::$sBaseURL = $sURL;
 		
     if (self::$sFramework == "modx") {
