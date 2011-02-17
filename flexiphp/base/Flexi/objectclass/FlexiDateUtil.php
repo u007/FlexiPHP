@@ -129,6 +129,25 @@ class FlexiDateUtil {
 
     return $aDuration["second"] . " second(s)";
   }
+  
+  /**
+   * Get Duration summary by timestamp,
+   *  duration in highest unit
+   * @param String $iStart iso date
+   * @param String $aIEnd iso date / null => now
+   * @return String: example: # year(s) ago
+   */
+  public static function getDurationSummaryByTime($iStart, $aIEnd = null) {
+    $aDuration = self::getDurationByTime($iStart, $aIEnd);
+
+    if ($aDuration["year"] > 0) { return $aDuration["year"] . " year(s)"; }
+    if ($aDuration["month"] > 0) { return $aDuration["month"] . " month(s)"; }
+    if ($aDuration["day"] > 0) { return $aDuration["day"] . " day(s)"; }
+    if ($aDuration["hour"] > 0) { return $aDuration["hour"] . " hour(s)"; }
+    if ($aDuration["minute"] > 0) { return $aDuration["minute"] . " minute(s)"; }
+
+    return $aDuration["second"] . " second(s)";
+  }
 
   /**
    * Get duration
@@ -150,6 +169,33 @@ class FlexiDateUtil {
     if (! empty($sStart)) {
       $iTime = strtotime($sStart);
       $iEndTime = empty($asEnd) ? time() : strtotime($asEnd);
+	  
+	  return $this->getDurationByTime($iTime, $iEndTime);
+    } //if time is valid
+    
+    return $aResult;
+  }
+  
+  /**
+   * Get duration
+   * @param int $iStart timestamp
+   * @param int $aiEnd timestamp
+   * @return array("year", "month", "day", "hour", "minute", "second)
+   */
+  public static function getDurationByTime($iStart, $aiEnd = null) {
+
+    $aResult = array(
+      "year" => 0,
+      "month" => 0,
+      "day" => 0,
+      "hour" => 0,
+      "minute" => 0,
+      "second" => 0
+    );
+
+    if (! empty($iStart)) {
+      $iTime = $iStart;
+      $iEndTime = $aiEnd;
 
       $iDiff = $iEndTime - $iTime;
 
@@ -222,6 +268,6 @@ class FlexiDateUtil {
 
     return $aResult;
   }
-
+  
 
 }
