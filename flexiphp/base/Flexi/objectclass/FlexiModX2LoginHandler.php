@@ -391,9 +391,23 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
 		$bResult = $modx->hasPermission($sTitle);
     
     if (! $bResult) {
-      $aGroups = $modx->getAuthenticatedUser($sContext)->getResourceGroups();
-      if ($aGroups != null) {
-        foreach($aGroups as $sGroup) {
+      $oUser = $modx->getAuthenticatedUser($sContext);
+      if (is_null($oUser)) {
+        return false;
+      }
+      //FlexiLogger::info(__METHOD__, "object: " . get_class($oUser));
+      $aGroups = $oUser->getResourceGroups();
+      $oQuery = $modx->newQuery("modResourceGroup");
+      $oQuery->where(array("id:in" => $aGroups));
+      $aListGroups = $modx->getCollection("modResourceGroup", $oQuery);
+      
+      $aGroupName = array();
+      foreach($aListGroups as $oGroup) {
+        $aGroupName[] = $oGroup->get("name");
+      }
+      
+      if ($aGroupName != null) {
+        foreach($aGroupName as $sGroup) {
           //echo "Doc Group: " . $sGroup . " vs " . $sTitle . "\r\n<br/>";
           FlexiLogger::info(__METHOD__, "Doc Group: " . $sGroup . " vs " . $sTitle);
           if (strtolower(trim($sGroup)) == strtolower(trim($sTitle)) ) {

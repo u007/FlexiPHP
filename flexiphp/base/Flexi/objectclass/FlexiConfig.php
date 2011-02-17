@@ -150,7 +150,7 @@ class FlexiConfig
 		{
 			$sURL .= $aURL["user"] . (isset($aURL["pass"]) ? ":" . $aURL["pass"] : "");
 		}
-    self::$sBaseURLDir = $sURL;
+    self::$sBaseURLDir = $sURL . "/";
 		$sURL .= empty($aURL["path"]) ? "/" : $aURL["path"];
 		self::$sBaseURL = $sURL;
 		

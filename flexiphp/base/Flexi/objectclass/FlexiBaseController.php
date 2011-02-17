@@ -279,10 +279,10 @@ abstract class FlexiBaseController
 		}
 
 		$this->setViewName($asMethod);
-    Flexilogger::info(__METHOD__, "Setting Render view var name: " . $asRenderViewName);
+    //Flexilogger::info(__METHOD__, "Setting Render view var name: " . $asRenderViewName);
     $this->setRenderViewName($asRenderViewName);
     
-    Flexilogger::info(__METHOD__, "Checking permission: " . $asMethod);
+    //Flexilogger::info(__METHOD__, "Checking permission: " . $asMethod);
 		$this->checkPermission($asMethod);
 		Flexilogger::debug(__METHOD__, "Permission (OK): " . $asMethod);
     //Flexilogger::debug(__METHOD__, "Setted view");

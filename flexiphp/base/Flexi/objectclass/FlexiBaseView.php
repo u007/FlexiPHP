@@ -114,7 +114,7 @@ class FlexiBaseView
     }
 		
 		ob_start();
-    FlexiLogger::info(__METHOD__, "found view: " . $sViewFile);
+    //FlexiLogger::info(__METHOD__, "found view: " . $sViewFile);
 		require($sViewFile);
 		$sResult = ob_get_contents();
 		@ob_end_clean();
