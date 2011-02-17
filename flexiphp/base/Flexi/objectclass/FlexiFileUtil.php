@@ -196,12 +196,32 @@ class FlexiFileUtil {
     }
     return $aResult;
   }
-
+	
+  public static function recursiveDeleteChild($path) {
+    if (is_dir($path)) {
+      $aList = self::getDirectoryList($path);
+      foreach($aList as $sPath) {
+        if ($sPath != "." && $sPath != "..") {
+          self::recursiveDelete($path . "/" . $sPath);
+        }
+      }
+    }
+    return true;
+  }
+  
   public static function recursiveDelete($path)
   {
-    return is_file($path) ?
-      @unlink($path):
-      array_map('rrmdir',glob($path.'/*'))==@rmdir($path);
+    if (is_file($path)) {
+      return @unlink($path);
+    }
+    
+    $aList = self::getDirectoryList($path);
+    foreach($aList as $sPath) {
+      if ($sPath != "." && $sPath != "..") {
+        self::recursiveDelete($path . "/" . $sPath);
+      }
+    }
+    return @rmdir($path);
   }
 
   public static function doLockFile($sPath) {
