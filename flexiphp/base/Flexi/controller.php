@@ -57,7 +57,8 @@ class FlexiController
 		if ($file != null) $this->env["file"] = &$file;
 		$this->env["basedir"] = $sBase;
 		$this->env["framework"] = $sFramework;
-		$this->env["session"] = & $session;
+    //fix to prevent console error on session
+		$this->env["session"] = is_null($session) ? array(): $session;
 		
 		FlexiConfig::$aMessage = $this->getSession("#messages", array());
 	}
