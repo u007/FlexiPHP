@@ -130,7 +130,7 @@ class FlexiLoginController extends FlexiBaseController
     $bResult = $oLogin->doLogin($sUserId, $sPassword, $aOption);
     
     if ($bResult) {
-      FlexiLogger::error(__METHOD__, "login ok");
+      FlexiLogger::debug(__METHOD__, "login ok");
       $this->oView->addVar("url", $sRedirect);
       return true;
     } else {
