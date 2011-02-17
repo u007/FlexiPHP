@@ -2,6 +2,8 @@
 
 class FlexiLoginHandler extends FlexiLoginBaseHandler
 {
+  public $sAdminId = 1;
+  
   public function  init() {
     
   }
@@ -21,9 +23,9 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
    */
 	public function onLogin(& $asLoginId, & $asLoginPass, & $asConfig=array())
 	{
-    //TODO DB LOGIN
-    //FlexiLogger::debug(__METHOD__, "FrameworkLogin: " . ($bResult ? "success" : "fail"));
-    return false;
+      //TODO DB LOGIN
+      //FlexiLogger::debug(__METHOD__, "FrameworkLogin: " . ($bResult ? "success" : "fail"));
+      return false;
 	}
 
   public function getUserByLoginId($asLoginId, $sUserType="user") {
@@ -47,7 +49,9 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
   }
 
   public function existsUser($asLoginId, $sUserType="user") {
-    //TODO
+	if (!empty(FlexiConfig::$sAdminUserId) && $asLoginId == FlexiConfig::$sAdminUserId) {
+	  return true;
+	}
     return false;
   }
 	
@@ -83,7 +87,7 @@ class FlexiLoginHandler extends FlexiLoginBaseHandler
 
     $sURL .= !empty($aOptions["querystring"]) ? "&" . $aOptions["querystring"] : "";
     $sURL .= !empty($aOptions["error"]) ? "&error=" . $aOptions["error"] : "";
-
+	
     return flexiURL($sURL);
   }
   
