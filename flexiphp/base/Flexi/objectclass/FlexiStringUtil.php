@@ -68,17 +68,22 @@ class FlexiStringUtil
 	public static function _createRandomPassword($charcount = 6)
 	{
 		$chars = "abcdefghijkmnopqrstuvwxyz023456789";
-		srand((double)microtime()*1000000);
+		return self::createRandomChars($charcount, $chars);
+	}
+
+  public static function createRandomChars($charcount, $chars) {
+    srand((double)microtime()*1000000);
 		$i = 0;
 		$pass = '' ;
+    if (strlen($chars) < 1) { return ""; }
 		while ($i < $charcount) {
-			$num = rand() % 33;
+      $num = rand(0, strlen($chars)-1);
 			$tmp = substr($chars, $num, 1);
 			$pass = $pass . $tmp;
 			$i++;
 		}
 		return $pass;
-	}
+  }
 	
 	public static function attributesToString($aAttributes, $asDelimiter="\"")
 	{
