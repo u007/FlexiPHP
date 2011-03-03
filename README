@@ -26,3 +26,5 @@ Third party modules:
 + XPDO http://www.xpdo.org/
 + ExtJS http://www.sencha.com/
 + HTML Boiler Plate http://html5boilerplate.com/
++ PHPMailer http://sourceforge.net/projects/phpmailer/
++ Redbean ORM http://redbeanphp.com/

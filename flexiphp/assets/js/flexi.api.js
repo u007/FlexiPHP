@@ -1,5 +1,20 @@
 var _targetPickElement = {fieldvalue:"",fieldlabel:""};
 
+
+function doAjaxRenderOptionList(sURL, sTarget, aData) {
+  doAjaxCall(sURL, aData, "GET", function(sResult) {
+    var aResult = eval("(" + sResult + ")");
+
+    if (aResult.status==1) {
+      var aData = aResult['return'];
+      jQuery(sTarget + " option").remove();
+      for(var c=0; c<aData.length; c++) {
+        jQuery(sTarget).append("<option value='" + aData[c].data + "'>" + aData[c].label + "</option>");
+      }
+    }
+  });
+}
+
 function doAjaxLoadHTML(sURL, aData, sMethod, sTarget) {
   doAjaxCall(sURL, aData, sMethod, function(sResult) {
     jQuery(sTarget).html(sResult);
