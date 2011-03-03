@@ -396,7 +396,11 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
         return false;
       }
       //FlexiLogger::info(__METHOD__, "object: " . get_class($oUser));
-      $aGroups = $oUser->getResourceGroups();
+      $aGroups = $oUser->getResourceGroups($sContext);
+      //FlexiLogger::info(__METHOD__, $oUser->username . ", Doc Groups: " . print_r($aGroups,true));
+      //if empty doc group, return no permission
+      if (count($aGroups) < 1) return false;
+      
       $oQuery = $modx->newQuery("modResourceGroup");
       $oQuery->where(array("id:in" => $aGroups));
       $aListGroups = $modx->getCollection("modResourceGroup", $oQuery);
@@ -405,7 +409,9 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
       foreach($aListGroups as $oGroup) {
         $aGroupName[] = $oGroup->get("name");
       }
-      
+
+      FlexiLogger::info(__METHOD__, $oUser->username . ", Result Doc names: " . print_r($aGroupName,true));
+
       if ($aGroupName != null) {
         foreach($aGroupName as $sGroup) {
           //echo "Doc Group: " . $sGroup . " vs " . $sTitle . "\r\n<br/>";
