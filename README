@@ -1,8 +1,8 @@
 --------------------
 Project: FlexiPHP
 --------------------
-Version: 1.5-pl
-Released: November 12, 2010
+Version: 1.6-pl
+Released: Mar 3, 2011
 Since: July 01, 2010
 Author: James Tan <james@mercstudio.com>
 
@@ -14,3 +14,15 @@ After installation, please copy all files in dist/[YOUR_DISTRIBUTION_TYPE]/* to 
 
 Official Documentation:
 [TODO]
+
+Copyright issues:
+Please take note that this project include third party libraries, which will be copyright
+and licensed according to the respective provider.
+
+Third party modules:
++ DHTMLX http://www.dhtmlx.com/
++ jQuery http://jquery.com/
++ Modernizr http://www.modernizr.com/
++ XPDO http://www.xpdo.org/
++ ExtJS http://www.sencha.com/
++ HTML Boiler Plate http://html5boilerplate.com/

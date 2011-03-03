@@ -210,7 +210,8 @@ function flexiGetClassPath($sClass) {
     "Crypt_Blowfish"  => $sBaseDir . "/lib/Blowfish/Blowfish.php",
     "FlexiLogger" => $sBaseDir . "/base/Flexi/objectclass/FlexiLogger.php",
     "PEAR" => $sBaseDir . "/lib/PEAR/PEAR.php",
-    "R" => $sBaseDir . "/lib/redbean/rb.php"
+    "R" => $sBaseDir . "/lib/redbean/rb.php",
+    "XPDO" => $sBaseDir . "/lib/xpdo2/xpdo.class.php"
 		);
 	}
 

@@ -37,6 +37,13 @@ abstract class FlexiBaseController
 		$this->onInit();
 	}
 
+  public function loadModelPackage($sName, $sPrefix="") {
+    if (FlexiConfig::$sFramework=="modx2") {
+      global $modx;
+      $modx->addPackage($sName,FlexiConfig::$sBaseDir . 'assets/',$sPrefix);
+    }
+  }
+
   /**
    * Set page title
    * @global modX $modx

@@ -224,6 +224,61 @@ class FlexiModelUtil
     R::setup($this->sDSN);
   }
 
+
+  public function newXPDOModel($sClass) {
+    $xpdo = $this->getXPDO();
+    return $xpdo->newObject($sClass);
+  }
+
+  public function getXPDOModel($sClass, $aCond=array()) {
+    $xpdo = $this->getXPDO();
+    return $xpdo->getObject($sClass, $aCond);
+  }
+
+  public function addXPDOModelPath($sName, $sPath, $sPrefix=null) {
+    $xpdo = $this->getXPDO();
+    return $xpdo->setPackage($sName, $sPath, $sPrefix);
+    //return $xpdo->addPackage($sName,$sPath,$sPrefix);
+  }
+
+  public function generateXPDOClass($sSchemaFile, $sModelDir) {
+    $xpdo = $this->getXPDO();
+    $manager= $xpdo->getManager();
+    $generator= $manager->getGenerator();
+    return $generator->parseSchema($sSchemaFile, $sModelDir);
+  }
+
+  public function generateXPDO($sTable, $sPath, $sPrefix) {
+    $xpdo = $this->getXPDO();
+    $manager= $xpdo->getManager();
+    $generator= $manager->getGenerator();
+    $sSchemaFile = $sPath . "/" . (empty($sPrefix)? "default": $sPrefix) . ".mysql.schema.xml";
+    $sModelDir   = $sPath . "/models/";
+    $generator->writeSchema($sSchemaFile, $sTable, 'xPDOObject', $sPrefix);
+    $generator->parseSchema($sSchemaFile, $sModelDir);
+
+    return array($sSchemaFile, $sModelDir);
+  }
+
+
+  public function getXPDO() {
+    
+    if (is_null($this->xpdo)) {
+      if(FlexiConfig::$sFramework == "modx2") {
+        global $modx;
+        $this->xpdo = & $modx;
+      } else {
+        $this->xpdo = new FlexiXPDO();
+      }
+    }
+    //$this->xpdo->setDebug(true);
+    //$this->xpdo->setLogLevel(xPDO :: LOG_LEVEL_DEBUG);
+    //$this->xpdo->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
+    //$this->xpdo->setLogTarget('ECHO');
+
+    return $this->xpdo;
+  }
+
 	public function getDB($bNew = false)
 	{
 		if($this->oDb == null)

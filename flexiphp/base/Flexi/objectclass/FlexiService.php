@@ -13,18 +13,32 @@ class FlexiService {
   }
 
   public static function getWhere($aCond) {
-    $sSQL = "";
+    $sSQL = ""; $aValue = array();
     foreach($aCond as $sKey => $sValue) {
       $aKey = explode(":", $sKey);
       $sSQL .= empty($sSQL) ? "": " and ";
       if (count($aKey) > 1) {
-        $sSQL .= $aKey[0] . " " . $aKey[1] . " :" . $aKey[0];
+
+        if ($aKey[1] =="is null" || $aKey[1]=="is not null") {
+          $sSQL .= self::cleanField($aKey[0]) . " " . $aKey[1];
+        } else {
+          $sSQL .= self::cleanField($aKey[0]) . " " . $aKey[1] . " :" . $aKey[0];
+          $aValue[":".$aKey[0]] = $sValue;
+        }
       } else {
         $sSQL .= $sKey . "=:".$sKey;
+        $aValue[":".$sKey] = $sValue;
       }
-      
-      
     }
+    return array("where" => $sSQL, "params" => $aValue);
   }
+
+  public static function cleanField($sName) {
+    if (FlexiConfig::$sDBType == "mysql") {
+      return "`" . mysql_real_escape_string($sName) . "`";
+    }
+    return $sName;
+  }
+
 
 }
