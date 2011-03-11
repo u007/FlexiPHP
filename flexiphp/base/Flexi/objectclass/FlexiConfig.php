@@ -12,6 +12,9 @@ class FlexiConfig
   //base url of the root dir
 	public static $sBaseURLDir = "";
 	
+  public static $sFlexiBaseURL = "";
+	public static $sAssetsURL = "";
+
 	public static $aQueryString = array();
 	
 	public static $aModuleURL = array();
@@ -82,10 +85,13 @@ class FlexiConfig
 	public static function configure($aConfig)
 	{
     //if ($aConfig["framework"] == "modx2") var_dump($aConfig["get"]);
-		self::$iStartTime		= $aConfig["starttime"];
-		self::$sPageTitle		= $aConfig["title"];
-		self::$sBaseDir 		= $aConfig["basedir"];
-    self::$sRootDir     = $aConfig["rootdir"];
+		self::$iStartTime     = $aConfig["starttime"];
+		self::$sPageTitle     = $aConfig["title"];
+		self::$sBaseDir       = $aConfig["basedir"];
+    self::$sRootDir       = $aConfig["rootdir"];
+    self::$sFlexiBaseURL  = @$aConfig["rooturl"];
+    self::$sAssetsURL     = @$aConfig["assetsurl"];
+
 		self::$sBaseURL			= $aConfig["baseurl"];
 		self::$aModuleURL		= $aConfig["moduleurl"];
 		
@@ -141,7 +147,7 @@ class FlexiConfig
 		self::$sModulePath = $aConfig["modulepath"];
     self::$sTemplatePath = $aConfig["templatepath"];
 
-    //echo "Baseurl: " . self::$sBaseURL;
+    //echo "URL: " . self::$sBaseURL;
 		$aURL = @parse_url(self::$sBaseURL);
 		$sURL = $aURL["scheme"] . "://" . $aURL["host"];
 		$sURL .= isset($aURL["port"]) ? ":" . $aURL["port"] : "";
@@ -150,8 +156,10 @@ class FlexiConfig
 		{
 			$sURL .= $aURL["user"] . (isset($aURL["pass"]) ? ":" . $aURL["pass"] : "");
 		}
-    self::$sBaseURLDir = $sURL . "/";
+    //self::$sBaseURLDir = $sURL;
 		$sURL .= empty($aURL["path"]) ? "/" : $aURL["path"];
+
+    self::$sBaseURLDir = substr($sURL,-1)=="/" ? $sURL : dirname($sURL)."/";
 		self::$sBaseURL = $sURL;
 		
     if (self::$sFramework == "modx") {
@@ -165,6 +173,12 @@ class FlexiConfig
       self::$sBaseURLDir = SITE_URL;
     }
     
+    self::$sFlexiBaseURL = empty(self::$sFlexiBaseURL) ?
+      self::$sBaseURLDir . "flexiphp/" : self::$sFlexiBaseURL;
+
+    self::$sAssetsURL = empty(self::$sAssetsURL) ?
+      self::$sBaseURLDir . "assets/" : self::$sAssetsURL;
+
 		if (isset($aURL["query"]))
 		{
 			parse_str($aURL["query"], self::$aQueryString);
@@ -232,8 +246,12 @@ class FlexiConfig
 			case "joomla":
 				//TODO
 				break;
+      case "":
+        self::setLoginHandler(new FlexiLoginHandler());
+        break;
 			default:
-				self::setLoginHandler(new FlexiLoginHandler());
+        $sClass = "Flexi" . ucfirst(self::$sFramework) . "LoginHandler";
+				self::setLoginHandler(new $sClass());
 		}
 		
 	}
