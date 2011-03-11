@@ -24,7 +24,7 @@
 /**
  * Include base class
  */
-require_once 'Crypt/Blowfish.php';
+require_once dirname(dirname(dirname(__FILE__))).'/Blowfish.php';
 
 /**
  * Common class for PHP-only implementations
