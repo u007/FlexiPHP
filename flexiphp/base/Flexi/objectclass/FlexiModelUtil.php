@@ -469,6 +469,78 @@ class FlexiModelUtil
 		
 		return null;
 	}
+
+  public static function parseSQLName($sName) {
+    if (FlexiConfig::$sDBType=="mysql") {
+      $sResult = "";
+      $aName = explode(".", $sName);
+      foreach($aName as $sOneName) {
+        $sResult .= empty($sResult) ? "":".";
+        $sResult .= "`" . mysql_real_escape_string($sOneName) . "`";
+      }
+      return $sResult;
+    }
+    return $sName;
+  }
+
+  public static function parseSQLKey($sKey, $sValue) {
+    $result = ""; $aParam = array();
+    $aCond = explode(":", $sKey);
+    if(count($aCond)==1) {
+      $sField = $sKey;
+      $sOperator = "-";
+      $sType = "and";
+      //not :s
+    } else if(count($aCond) == 2) {
+      if (strtolower($aCond[0])=="and" || strtolower($aCond[0])=="or") {
+        $sType = $aCond[0];
+        $sField = $aCond[1];
+        $sOperator = "=";
+      } else {
+        $sField = $aCond[0];
+        $sOperator = $aCond[1];
+      }
+      //2condition
+    } else if(count($aCond) >=3) {
+      if (strtolower($aCond[0])=="and" || strtolower($aCond[0])=="or") {
+        $sType = $aCond[0];
+        $sField = $aCond[1];
+        $sOperator = $aCond[2];
+      } else {
+        $sField = $aCond[0];
+        $sOperator = $aCond[1];
+        //wats up with aCond[2]? todo...
+      }
+    } //3condition or more
+
+    $aParam[":".$sField] = $sValue;
+    return array(
+      "type"  => $sType,
+      "sql"   => $sField . " " . $sOperator . " :" . $sField,
+      "param" => $aParam
+    );
+  }
+
+  public static function parseSQLCond($aValue) {
+
+    $result = ""; $aParam = array();
+    foreach($aValue as $sKey=> $mValue) {
+      if (is_array($mValue)) {
+        $aInnerCond = self::parseSQLCond($mValue);
+        $aCond = self::parseSQLKey($sKey, "");
+        $result .= empty($result) ? "": " " . $aCond["type"] . " ";
+        $result .= "(" . $aInnerCond["sql"] . ")";
+        $aParam = array_merge($aParam, $aInnerCond["param"]);
+      } else if(is_string($mValue)) {
+
+        $aCond = self::parseSQLKey($sKey, $mValue);
+        $result .= empty($result) ? "": " " . $aCond["type"] . " ";
+        $result .= $aCond["sql"];
+        $aParam = array_merge($aParam, $aCond["param"]);
+      } //is string
+    } //foreach
+    return array("sql" => $result, "param" => $aParam);
+  } //function
 	
 	public function getRecordCount(& $oRecord, $sSelect = "count(*) as cnt", $sCol = "cnt")
 	{
