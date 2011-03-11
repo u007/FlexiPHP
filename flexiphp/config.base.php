@@ -1,7 +1,8 @@
 <?php
 
 $bIsDev = !empty($_SERVER["HTTP_HOST"]) && $_SERVER["HTTP_HOST"] == 'localhost' ? true : false;
-
+global $aFlexiSetting;
+//dumpStack();
 $aFlexiSetting = array(
   "rootdir"   => getcwd(),
 	"basedir" 	=> dirname(__FILE__),
@@ -9,7 +10,7 @@ $aFlexiSetting = array(
 	//	this must be trimmed down to framework dependant.
 	//	for modx, it uses alias, so all query string will be discarded
 	//"baseurl"		=> "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"],
-  "baseurl"   => (isset($_SERVER["HTTPS"]) ? (! empty($_SERVER["HTTPS"]) ? "https" : "http") : "http") . "://" . $_SERVER["HTTP_HOST"] . "/",
+  "baseurl"   => (isset($_SERVER["HTTPS"]) ? (! empty($_SERVER["HTTPS"]) ? "https" : "http") : "http") . "://" . (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : "localhost") . "/",
 	"moduleurl" => array("path" => "mod=[mod]&method=[method]", "module"=> "mod", "method" => "method"),
 	"loglevel" 	=> 3,
 	"framework" => "",
