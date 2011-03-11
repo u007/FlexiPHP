@@ -351,6 +351,37 @@ function flexiDirList($sPath, $bCached = true)
   return array();
 }
 
+function flexiDirChildListSortByDateASC($sPath, $bCached = true) {
+  static $aList = array();
+  if (isset($aList[$sPath]) && $bCached) { return $aList[$sPath]; }
+  unset($aList[$sPath]); //reset cache
+
+  $aDirList = scandir(realpath($sPath));
+
+  $aFullList = array();
+  foreach($aDirList as $sFile) {
+    if ($sFile != "." && $sFile != "..") {
+      $aFullList[] = realpath($sPath)."/" . $sFile;
+    }
+  }
+  usort($aFullList, "sortByFileChangeTime");
+  $aDirList = array();
+  foreach($aFullList as $sFilePath) {
+    $aDirList[] = basename($sFilePath);
+  }
+
+  $aList[$sPath] = $aDirList;
+  return $aDirList;
+}
+
+function sortByFileChangeTime($sFile1, $sFile2) {
+  $iTime1 = filemtime($sFile1);
+  $iTime2 = filemtime($sFile2);
+
+  if ($iTime1 == $iTime2) return 0;
+  return $iTime1 < $iTime2? -1: 1;
+}
+
 function flexiDirListGetDirInfo($sPath, $bCached = true) {
   static $aList = array();
   if (isset($aList[$sPath]) && $bCached) { return $aList[$sPath]; }

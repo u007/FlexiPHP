@@ -1,4 +1,5 @@
 <?php
+global $aFlexiSetting;
 
 require_once($aFlexiSetting["basedir"] . "/lib/Doctrine/Doctrine.php");
 spl_autoload_register(array('Doctrine', 'autoload'));
@@ -14,7 +15,7 @@ FlexiController::$iLogLevel = FlexiConfig::$iLogLevel;
 FlexiConfig::finalize();
 //setting up DB Module
 $oFlexiModelUtil = FlexiModelUtil::getInstance();
-$oFlexiModelUtil->setDBSetting(FlexiConfig::$sDBType, FlexiConfig::$sDBHost, 
+$oFlexiModelUtil->setDBSetting(FlexiConfig::$sDBType, FlexiConfig::$sDBHost,
 	FlexiConfig::$iDBPort, FlexiConfig::$sDBUser, FlexiConfig::$sDBPass, FlexiConfig::$sDBName);
 
 //initialising main controller
