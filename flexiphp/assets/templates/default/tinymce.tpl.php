@@ -1,5 +1,5 @@
-<script language="javascript" type="text/javascript" src="<?=FlexiConfig::$sBaseURLDir ?>flexiphp/lib/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
-<script language="javascript" type="text/javascript" src="<?=FlexiConfig::$sBaseURLDir ?>flexiphp/lib/tinymce/js/xconfig.js"></script>
+<script language="javascript" type="text/javascript" src="<?=FlexiConfig::$sFlexiBaseURL ?>lib/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script language="javascript" type="text/javascript" src="<?=FlexiConfig::$sFlexiBaseURL ?>lib/tinymce/js/xconfig.js"></script>
 <script language="javascript" type="text/javascript">
   jQuery(document).ready(function() {
     tinyMCE.init({
@@ -17,13 +17,13 @@
       valid_elements                   : mce_valid_elements,
       extended_valid_elements          : mce_extended_valid_elements,
       invalid_elements                 : mce_invalid_elements,
-      popup_css_add                    : '<?=FlexiConfig::$sBaseURLDir?>flexiphp/lib/tinymce/style/popup_add.css',
+      popup_css_add                    : '<?=FlexiConfig::$sFlexiBaseURL?>lib/tinymce/style/popup_add.css',
       accessibility_warnings : false,
       theme_advanced_toolbar_location  : 'top',
       theme_advanced_statusbar_location: 'bottom',
       theme_advanced_toolbar_align     : 'ltr',
       theme_advanced_font_sizes        : '80%,90%,100%,120%,140%,160%,180%,220%,260%,320%,400%,500%,700%',
-      content_css                      : '<?=FlexiConfig::$sBaseURLDir?>flexiphp/lib/tinymce/style/content.css',
+      content_css                      : '<?=FlexiConfig::$sFlexiBaseURL?>lib/tinymce/style/content.css',
       formats : {
         alignleft   : {selector : 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes : 'justifyleft'},
         alignright  : {selector : 'p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img', classes : 'justifyright'},
@@ -38,7 +38,7 @@
       theme_advanced_buttons3          : '',
       theme_advanced_buttons4          : '',
       theme_advanced_resize_horizontal :  false,
-      external_link_list_url           : '<?=FlexiConfig::$sBaseURLDir?>flexiphp/lib/tinymce/inc/tinymce.linklist.php',
+      external_link_list_url           : '<?=FlexiConfig::$sFlexiBaseURL?>lib/tinymce/inc/tinymce.linklist.php',
       theme_advanced_blockformats      : 'p,h2,h3,h4,h5,h6,div,blockquote,code,pre',
       theme_advanced_styles            : '',
       theme_advanced_disable           : '',
@@ -60,7 +60,7 @@
 <script language="javascript" type="text/javascript">
 function modx_fb (field_name, url, type, win) {
     if (type == "media") {type = win.document.getElementById("media_type").value;}
-	var cmsURL = "/manager/media/browser/mcpuk/browser.php?Connector=/manager/media/browser/mcpuk/connectors/php/connector.php&ServerPath=/&editor=tinymce&editorpath=<?=FlexiConfig::$sBaseURLDir?>flexiphp/lib/tinymce/";
+	var cmsURL = "/manager/media/browser/mcpuk/browser.php?Connector=/manager/media/browser/mcpuk/connectors/php/connector.php&ServerPath=/&editor=tinymce&editorpath=<?=FlexiConfig::$sFlexiBaseURL?>lib/tinymce/";
 	switch (type) {
 		case "image":
 			type = "images";

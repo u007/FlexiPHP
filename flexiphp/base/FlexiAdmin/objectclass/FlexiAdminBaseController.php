@@ -12,15 +12,16 @@ class FlexiAdminBaseController extends FlexiBaseController {
     $this->oView->setTemplate(FlexiConfig::$sAdminTemplate);
     if (FlexiConfig::$sFramework == "modx2") {
       global $modx;
-      $modx->regClientCSS(FlexiConfig::$sBaseURLDir . "flexiphp/assets/css/colorbox.css");
-      $modx->regClientCSS(FlexiConfig::$sBaseURLDir . "flexiphp/assets/css/smoothness/jquery-ui-1.8.4.custom.css");
-      $modx->regClientCSS(FlexiConfig::$sBaseURLDir . "flexiphp/assets/css/modx2.style.css");
-      $modx->regClientCSS(FlexiConfig::$sBaseURLDir . "flexiphp/assets/css/flexi.api.css");
+      //die("flexiurl :" . FlexiConfig::$sFlexiBaseURL);
+      $modx->regClientCSS(FlexiConfig::$sFlexiBaseURL ."assets/css/colorbox.css");
+      $modx->regClientCSS(FlexiConfig::$sFlexiBaseURL ."assets/css/smoothness/jquery-ui-1.8.4.custom.css");
+      $modx->regClientCSS(FlexiConfig::$sFlexiBaseURL ."assets/css/modx2.style.css");
+      $modx->regClientCSS(FlexiConfig::$sFlexiBaseURL ."assets/css/flexi.api.css");
 
-      $modx->regClientStartupScript(FlexiConfig::$sBaseURLDir . "flexiphp/assets/js/jquery-1.4.2.min.js");
-      $modx->regClientStartupScript(FlexiConfig::$sBaseURLDir . "flexiphp/assets/js/jquery-ui-1.8.2.custom.min.js");
-      $modx->regClientStartupScript(FlexiConfig::$sBaseURLDir . "flexiphp/assets/js/jquery.colorbox-min.js");
-      $modx->regClientStartupScript(FlexiConfig::$sBaseURLDir . "flexiphp/assets/js/flexi.api.js");
+      $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL ."assets/js/jquery-1.4.2.min.js");
+      $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL ."assets/js/jquery-ui-1.8.2.custom.min.js");
+      $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL ."assets/js/jquery.colorbox-min.js");
+      $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL ."assets/js/flexi.api.js");
     }
 
     

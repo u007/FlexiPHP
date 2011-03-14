@@ -484,56 +484,108 @@ class FlexiModelUtil
   }
 
   public static function parseSQLKey($sKey, $sValue) {
+    $bDebug = false;
     $result = ""; $aParam = array();
     $aCond = explode(":", $sKey);
+
+    //default
+    $sType = "and";
+    $sOperator = "=";
     if(count($aCond)==1) {
       $sField = $sKey;
       $sOperator = "-";
       $sType = "and";
       //not :s
     } else if(count($aCond) == 2) {
+      if ($bDebug) echo __METHOD__ . ":Is 2 condition<br/>\n";
       if (strtolower($aCond[0])=="and" || strtolower($aCond[0])=="or") {
         $sType = $aCond[0];
         $sField = $aCond[1];
+        if ($bDebug) echo __METHOD__ . ":with type cond<br/>\n";
         $sOperator = "=";
       } else {
         $sField = $aCond[0];
         $sOperator = $aCond[1];
+        if ($bDebug) echo __METHOD__ . ":without type condition<br/>\n";
       }
       //2condition
     } else if(count($aCond) >=3) {
+      if ($bDebug) echo __METHOD__ . ":Is 3 condition<br/>\n";
       if (strtolower($aCond[0])=="and" || strtolower($aCond[0])=="or") {
         $sType = $aCond[0];
         $sField = $aCond[1];
         $sOperator = $aCond[2];
+        if ($bDebug) echo __METHOD__ . ":with typw<br/>\n";
       } else {
         $sField = $aCond[0];
         $sOperator = $aCond[1];
+        if ($bDebug) echo __METHOD__ . ":without type<br/>\n";
         //wats up with aCond[2]? todo...
       }
+      
     } //3condition or more
+    if ($bDebug) echo __METHOD__ . ":result type: " . $sType . "<br/>\n";
 
-    $aParam[":".$sField] = $sValue;
+    //$sParamName = ":" . $sField . FlexiStringUtil::createRandomPassword(4);
+    $sParamName = ":" . preg_replace("/[^a-zA-Z0-9_]/", "_", $sField) . FlexiStringUtil::createRandomPassword(4);
+    
+    $aParam[$sParamName] = $sValue;
     return array(
       "type"  => $sType,
-      "sql"   => $sField . " " . $sOperator . " :" . $sField,
+      "sql"   => $sField . " " . $sOperator . " ". $sParamName,
       "param" => $aParam
     );
   }
+  
+  public function getXPDOFetchOne($sSQL, $aParam) {
+    $bDebug = false;
+    $xpdo = $this->getXPDO();
+    if ($bDebug) echo __METHOD__ . ": " . $sSQL . "<br/>\n";
+    $sResultSQL = $xpdo->parseBindings($sSQL, $aParam);
+    //echo "sql: " . $sResultSQL;
+    $stmt = $xpdo->query($sResultSQL);
+    if ($stmt) {
+      $aResult = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $aResult;
+    } else {
+      $aError = $xpdo->errorInfo();
+      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+    }
+    return null;
+  }
+  
+  public function getXPDOFetchAll($sSQL, $aParam) {
+    $bDebug = false;
+    $xpdo = $this->getXPDO();
+    if ($bDebug) echo __METHOD__ . ": " . $sSQL . "<br/>\n";
+    $sResultSQL = $xpdo->parseBindings($sSQL, $aParam);
+    //echo "sql: " . $sResultSQL;
+    $stmt = $xpdo->query($sResultSQL);
+    if ($stmt) {
+      $aResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      return $aResult;
+    } else {
+      $aError = $xpdo->errorInfo();
+      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+    }
+    return null;
+  }
 
   public static function parseSQLCond($aValue) {
-
+    $bDebug = false;
     $result = ""; $aParam = array();
+    if ($bDebug) echo __METHOD__ . ":count: " . count($aValue) . "<br/>\n";
     foreach($aValue as $sKey=> $mValue) {
       if (is_array($mValue)) {
         $aInnerCond = self::parseSQLCond($mValue);
+        if ($bDebug) echo __METHOD__ . ":Is array: " . print_r($aInnerCond,true) . "<br/>\n";
         $aCond = self::parseSQLKey($sKey, "");
         $result .= empty($result) ? "": " " . $aCond["type"] . " ";
         $result .= "(" . $aInnerCond["sql"] . ")";
         $aParam = array_merge($aParam, $aInnerCond["param"]);
-      } else if(is_string($mValue)) {
-
+      } else {
         $aCond = self::parseSQLKey($sKey, $mValue);
+        if ($bDebug) echo __METHOD__ . ":Is string: " . print_r($aCond,true) . "<br/>\n";
         $result .= empty($result) ? "": " " . $aCond["type"] . " ";
         $result .= $aCond["sql"];
         $aParam = array_merge($aParam, $aCond["param"]);

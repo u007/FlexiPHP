@@ -146,8 +146,9 @@ class FlexiConfig
 		}
 		self::$sModulePath = $aConfig["modulepath"];
     self::$sTemplatePath = $aConfig["templatepath"];
-
-    //echo "URL: " . self::$sBaseURL;
+    
+    /*
+    echo "URL: " . self::$sBaseURL;
 		$aURL = @parse_url(self::$sBaseURL);
 		$sURL = $aURL["scheme"] . "://" . $aURL["host"];
 		$sURL .= isset($aURL["port"]) ? ":" . $aURL["port"] : "";
@@ -158,9 +159,9 @@ class FlexiConfig
 		}
     //self::$sBaseURLDir = $sURL;
 		$sURL .= empty($aURL["path"]) ? "/" : $aURL["path"];
-
-    self::$sBaseURLDir = substr($sURL,-1)=="/" ? $sURL : dirname($sURL)."/";
-		self::$sBaseURL = $sURL;
+    */
+    self::$sBaseURLDir = substr(self::$sBaseURL,-1)=="/" ? self::$sBaseURL : dirname(self::$sBaseURL)."/";
+		//self::$sBaseURL = $sURL;
 		
     if (self::$sFramework == "modx") {
       global $modx;

@@ -42,7 +42,7 @@ function flexiURL($sURL, $bAjax = false)
       $sBaseURL .= "flexi." . FlexiConfig::$sFramework . ".php";
     } else if(FlexiConfig::$sFramework == "modx2" && FlexiConfig::$bIsAdminPath) {
       global $iActionId;
-      $sBaseURL .= "manager/flexi." . FlexiConfig::$sFramework . ".php?a=" . $iActionId;
+      $sBaseURL .= "flexi." . FlexiConfig::$sFramework . ".php?a=" . $iActionId;
     }
 
     if (FlexiConfig::$sFramework != "modx2" && !empty($sQuery)) {

@@ -1,0 +1,9 @@
+# Custom Clients
+
+#W3C checker ("Jigsaw")..
+128.30.52.72
+
+
+# Andy Halford's totalvalidator.com ..
+# currently not supported - it uses a completely generic user agent. 
+87.194.148.98

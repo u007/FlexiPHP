@@ -1,26 +1,28 @@
 <?php
 
-require_once("config.base.php");
+require_once(dirname(__FILE__) . "/config.base.php");
 
 global $database_type, $database_server, $database_user, $database_password, $dbase;
 global $modx;
 
-$aFlexiSetting = array_merge($aFlexiSetting, 
-	array("dbtype" 		=> $database_type,
-				"dbhost" 		=> $database_server,
-				"dbport" 		=> 3306,
-				"dbuser" 		=> $database_user,
-				"dbpass" 		=> $database_password,
-				"dbname" 		=> str_replace("`","", $dbase),
-				"dbprefix" 	=> "modx_",
-				"framework" => "modx2",
-				"templatepath" => "assets/flexitemplate",
-        "basedir" 	=> dirname(__FILE__),
-        //"baseurl"   => $modx->config["site_url"],
-        "baseurl" => MODX_SITE_URL,
-        "support.email" => $modx->config["emailsender"]
-				)
+$aFlexiSetting = array_merge($aFlexiSetting, array(
+  "dbtype" 		=> $database_type,
+  "dbhost" 		=> $database_server,
+  "dbport" 		=> 3306,
+  "dbuser" 		=> $database_user,
+  "dbpass" 		=> $database_password,
+  "dbname" 		=> str_replace("`","", $dbase),
+  "dbprefix" 	=> "modx_",
+  "framework" => "modx2",
+  "templatepath" => "assets/flexitemplate",
+  //"baseurl"   => $modx->config["site_url"],
+  "baseurl" => MODX_SITE_URL,
+  "rooturl" => MODX_SITE_URL . "flexiphp/",
+  "assetsurl" => MODX_SITE_URL . "assets/",
+  "support.email" => $modx->config["emailsender"]
+  )
 );
+
 
 //$aFlexiSetting["baseurl"] .= substr($base_url,1) . "workspace.html";
 if (isset($bIsAdminModule) && $bIsAdminModule) {

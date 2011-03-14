@@ -1,0 +1,41 @@
+
+     #####    ###     ##  ### ########             ###     ##  ###    ###TM 
+   #######  #######   ####### ########           #######   #######  ####### 
+  ###      ###   ###  ###         ###           ###   ###  ###     ###   ## 
+  ###      ###   ###  ##       ###              ###   ###  ##      ###   ## 
+   #######  #######   ##      ########    ###    #######   ##        ###### 
+     #####    ###     ##      ########    ###      ###     ##           ### 
+                                                                     #####   
+
+	About the anti-hammer/ directory..
+
+	This folder is where Anti-Hammer stores the client session data.
+
+    It needs to be writable. 
+    
+    If you run php as a cgi/*suexec, you can probably get off with doing nothing
+    so long as the directory is owned by your user account.
+
+    For everyone else, the easiest method is probably via ftp, simply set all
+    the permissions to word-writable (777). Or in a shell..
+
+        chmod 777 /path/to/anti-hammer
+    
+    The "exemptions" folder does not need to be writable, though you may want to
+    look inside and edit its contents, particularly exemptions.ini.
+
+    If you rename the exemptions folder, or the ini, you will need to hack those
+    inside the php. These are effectively "fixed" for the average user (by which
+    I mean a user who wouldn't be reading this far)
+
+    A file named "Counter" will also be created in here. This is a simply tally,
+    used to decide when to run garbage collection (after so-many hits). You can
+    set this number in Anti-Hammer's preference section.
+
+    Have fun!
+
+	;o) Cor
+
+	(c) corz.org 2007 ->
+
+    -= nothing is foolproof to the sufficiently talented fool =- 
