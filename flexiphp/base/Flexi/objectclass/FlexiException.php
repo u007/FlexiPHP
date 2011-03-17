@@ -14,6 +14,8 @@ define("ERROR_FILE_MOVE", 901);
 
 define("ERROR_FILESIZE", 1001);
 define("ERROR_FILETYPE", 1002);
+define("ERROR_CREATEERROR", 1005);
+define("ERROR_WRITE", 1006);
 
 define("ERROR_INVALIDPARAMS", 1100);
 

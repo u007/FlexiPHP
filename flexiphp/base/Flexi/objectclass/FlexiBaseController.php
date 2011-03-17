@@ -4,7 +4,7 @@ abstract class FlexiBaseController
 {
 	protected $oView = null;
 	protected $sMethod = "";
-	
+	protected $sModelPath = "";
 	//sub template
 	protected $sViewName = "";
 	protected $sModulePath = "";
@@ -30,10 +30,12 @@ abstract class FlexiBaseController
 		$this->sMethod			= $asMethod;
 		$this->sViewName 		= $asMethod;
 		$this->sModulePath	=	$asPath;
+    $this->sModelPath   = $asPath . "/models/";
 		
 		$this->sModule = substr(get_class($this), 0, -10);
 		
 		$this->aViewVars["title"] = FlexiConfig::$sPageTitle;
+    //$this->checkSetup();
 		$this->onInit();
 	}
 
@@ -975,7 +977,16 @@ abstract class FlexiBaseController
 	
 	public function onInit() {}
 	public function onEvent($sEventType, $oParam) {}
-	
+
+
+  public function checkSetup() {
+    //check if
+    if (!is_dir($this->sModelPath)) {
+      if (!mkdir($this->sModelPath, 0777, true)) {
+        throw new FlexiException("unable to create model: " . $this->sModelPath, ERROR_CREATEERROR);
+      }
+    }
+  }
 	/**
 	 * Override to control permission
 	 * @param string method

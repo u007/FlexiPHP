@@ -15,6 +15,8 @@ class FlexiConfig
   public static $sFlexiBaseURL = "";
 	public static $sAssetsURL = "";
 
+  public static $sAssetsDir = "";
+
 	public static $aQueryString = array();
 	
 	public static $aModuleURL = array();
@@ -91,6 +93,7 @@ class FlexiConfig
     self::$sRootDir       = $aConfig["rootdir"];
     self::$sFlexiBaseURL  = @$aConfig["rooturl"];
     self::$sAssetsURL     = @$aConfig["assetsurl"];
+    self::$sAssetsDir     = @$aConfig["assetsdir"];
 
 		self::$sBaseURL			= $aConfig["baseurl"];
 		self::$aModuleURL		= $aConfig["moduleurl"];
@@ -179,6 +182,9 @@ class FlexiConfig
 
     self::$sAssetsURL = empty(self::$sAssetsURL) ?
       self::$sBaseURLDir . "assets/" : self::$sAssetsURL;
+
+    self::$sAssetsDir = empty(self::$sAssetsDir) ?
+      self::$sRootDir . "/assets/": self::$sAssetsDir;
 
 		if (isset($aURL["query"]))
 		{

@@ -5,7 +5,7 @@
  */
 
 class FlexiAdminBaseController extends FlexiBaseController {
-
+  
   function onInit()
 	{
 		//set not page layout
@@ -23,7 +23,6 @@ class FlexiAdminBaseController extends FlexiBaseController {
       $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL ."assets/js/jquery.colorbox-min.js");
       $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL ."assets/js/flexi.api.js");
     }
-
     
 	}
 

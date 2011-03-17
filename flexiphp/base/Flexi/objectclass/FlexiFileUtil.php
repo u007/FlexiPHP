@@ -263,4 +263,39 @@ class FlexiFileUtil {
     self::$aLocks = array();
   }
 
+  /**
+   * Get tail of a file
+   * @param String $sFile
+   * @param int $iLines
+   * @refer http://tekkie.flashbit.net/php/tail-functionality-in-php
+   * @return array of lines
+   */
+  public static function getTail($sFile, $iLines = 20) {
+    //global $fsize;
+    $handle = fopen($sFile, "r");
+    $linecounter = $iLines;
+    $pos = -2;
+    $beginning = false;
+    $text = array();
+    while ($linecounter > 0) {
+      $t = " ";
+      while ($t != "\n") {
+        if(fseek($handle, $pos, SEEK_END) == -1) {
+            $beginning = true;
+            break;
+        }
+        $t = fgetc($handle);
+        $pos --;
+      }
+      $linecounter --;
+      if ($beginning) {
+        rewind($handle);
+      }
+      $text[$lines-$linecounter-1] = fgets($handle);
+      if ($beginning) break;
+    }
+    fclose ($handle);
+    return array_reverse($text);
+  }
+
 }

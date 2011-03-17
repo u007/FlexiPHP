@@ -2,6 +2,23 @@
 
 class FlexiStringUtil
 {
+
+  public static function cleanName($sValue) {
+    return preg_replace('/[^a-zA-Z0-9_\s]/',"", $sValue);
+  }
+  
+  public static function isCleanName($sValue) {
+    return preg_match("/[^a-zA-Z0-9_\s]/", $sValue) > 0 ? false: true;
+  }
+
+  public static function cleanAlphaNumeric($sValue) {
+    return preg_replace('/[^a-zA-Z0-9]/',"", $sValue);
+  }
+
+  public static function isAlphaNumeric($sValue) {
+    return preg_match('/[^a-zA-Z0-9]/', $sValue) > 0 ? false: true;
+  }
+
 	public static function isValidEmail($sEmail) {
     return preg_match('/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/', $sEmail) > 0 ? true: false;
   }

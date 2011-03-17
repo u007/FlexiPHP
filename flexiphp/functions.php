@@ -351,6 +351,26 @@ function flexiDirList($sPath, $bCached = true)
   return array();
 }
 
+function flexiDirChildList($sPath, $bCached = true, $sPrefix="") {
+  static $aList = array();
+  if (isset($aList[$sPath]) && $bCached) { return $aList[$sPath]; }
+  unset($aList[$sPath]); //reset cache
+
+  $aDirList = scandir(realpath($sPath));
+
+  $aFullList = array();
+  foreach($aDirList as $sFile) {
+    if ($sFile != "." && $sFile != "..") {
+      if ( (!empty($sPrefix) && substr($sField,0,strlen($sPrefix)) == $sPrefix) 
+      	|| empty($sPrefix)) { 
+      	$aFullList[] = realpath($sPath)."/" . $sFile;
+      }
+    }
+  }
+  $aList[$sPath] = $aFullList;
+  return $aFullList;
+}
+
 function flexiDirChildListSortByDateASC($sPath, $bCached = true) {
   static $aList = array();
   if (isset($aList[$sPath]) && $bCached) { return $aList[$sPath]; }

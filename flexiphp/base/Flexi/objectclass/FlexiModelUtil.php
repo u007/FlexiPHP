@@ -536,8 +536,27 @@ class FlexiModelUtil
       "param" => $aParam
     );
   }
+  /**
+   * Execute sql
+   * @param String $sSQL
+   * @param array $aParam
+   * @return int # of records effected
+   */
+  public function getXPDOExecute($sSQL, $aParam=array()) {
+    $bDebug = false;
+    $xpdo = $this->getXPDO();
+    $sResultSQL = $xpdo->parseBindings($sSQL, $aParam);
+    if ($bDebug) echo __METHOD__ . ": " . $sResultSQL . "<br/>\n";
+    //echo "sql: " . $sResultSQL;
+    $mResult = $xpdo->exec($sResultSQL);
+    if ($mResult===false) {
+      $aError = $xpdo->errorInfo();
+      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+    }
+    return $mResult;
+  }
   
-  public function getXPDOFetchOne($sSQL, $aParam) {
+  public function getXPDOFetchOne($sSQL, $aParam=array()) {
     $bDebug = false;
     $xpdo = $this->getXPDO();
     if ($bDebug) echo __METHOD__ . ": " . $sSQL . "<br/>\n";
@@ -554,7 +573,7 @@ class FlexiModelUtil
     return null;
   }
   
-  public function getXPDOFetchAll($sSQL, $aParam) {
+  public function getXPDOFetchAll($sSQL, $aParam=array()) {
     $bDebug = false;
     $xpdo = $this->getXPDO();
     if ($bDebug) echo __METHOD__ . ": " . $sSQL . "<br/>\n";
@@ -632,6 +651,95 @@ class FlexiModelUtil
     }
 
     return $sResult;
+  }
+
+  public static function getSQLName($mName) {
+    switch(FlexiConfig::$sDBType) {
+      case "mysql":
+        if (is_array($mName)) {
+          foreach($mName as & $sName) {
+            $sName = "`" . mysql_real_escape_string($sName) . "`";
+          }
+          return implode(",", $mName);
+        } else {
+          return "`" . mysql_real_escape_string($mName) . "`";
+        }
+    }
+    return $sName;
+  }
+
+  public static function getSQLValue($sValue) {
+    switch(FlexiConfig::$sDBType) {
+      case "mysql":
+        return "'" . self::getSQLRaw($sValue) . "'";
+
+    }
+    return $sName;
+  }
+
+  public static function getSQLRaw($sValue) {
+    switch(FlexiConfig::$sDBType) {
+      case "mysql":
+        return mysql_real_escape_string($sValue);
+
+    }
+    return $sName;
+  }
+
+  public static function getDefaultSQL($mDefault, $bCanNull) {
+    $mDefault = is_null($mDefault)? "": $mDefault;
+    if ($bCanNull) {
+      if (strlen($mDefault) == 0) {
+        return "";
+      } else {
+        return "DEFAULT " . $mDefault;
+      }
+    } else {
+      //cannot null
+      if (strlen($mDefault) == 0) {
+        return "NOT NULL";//IGNORE DEFAULT
+      } else {
+        return "NOT NULL DEFAULT " . $mDefault;
+      }
+    }
+  }
+
+  public static function getSQLValueStatement($sValue) {
+    if (is_null($sValue)) return "NULL";
+    if (strlen($sValue) == 0) return "''";
+    if(substr(ltrim($sValue),0,1) == "'") return $sValue;//already got delimiter
+    return self::getSQLValue($sValue);
+  }
+  
+  public static function existsTable($sName) {
+    $sSQL = "select * from " . self::getSQLName($sName);
+    try {
+      self::getInstance()->getXPDOFetchOne($sSQL);
+      return true;
+    } catch (Exception $e) {
+      return false;
+    }
+  }
+
+  /**
+   * Get table schema
+   * @param String $sName
+   * @return array ["Field", "Type", "Null", "Key", "Default", "Extra"]
+   */
+  public static function getTableSchema($sName, $bCache=true) {
+    static $aCache = array();
+    if ($bCache && isset($aCache[$sName])) return $aCache[$sName];
+    switch(FlexiConfig::$sDBType) {
+      case "mysql":
+        $sSQL = "describe " . self::getSQLName($sName);
+        $aList = self::getInstance()->getXPDOFetchAll($sSQL);
+        break;
+      default:
+        throw new Exception(__METHOD__ . ": unhandled dbtype: " . FlexiConfig::$sDBType);
+    }
+    if ($bCache) $aCache[$sName] = $aList;
+
+    return $aList;
   }
 
   public static function getErrorStackLabel($sErrorType) {

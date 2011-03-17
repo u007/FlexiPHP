@@ -3,6 +3,11 @@
 if (ini_get("log_errors_max_len")!=0) {
   ini_set("log_errors_max_len", 10240);
 }
+
+if (ini_get("magic_quotes_gpc")=="1") {
+  ini_set("magic_quotes_gpc", 0);
+}
+
 $bIsDev = !empty($_SERVER["HTTP_HOST"]) && $_SERVER["HTTP_HOST"] == 'localhost' ? true : false;
 global $aFlexiSetting;
 //dumpStack();
