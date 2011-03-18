@@ -89,7 +89,13 @@ class FlexiBaseObjectManager {
   
   public function getList($sPrefix="", $bCached=true) {
     $aList = flexiDirChildList($this->sPath, $bCached, $sPrefix);
-    return $aList;
+    $aResult = array(); //cleanup list
+    foreach($aList as $sPath) {
+      if (strpos($sPath, "/.") ===false) {
+        $aResult[] = $sPath;
+      }
+    }
+    return $aResult;
   }
 
 

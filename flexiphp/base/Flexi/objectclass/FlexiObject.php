@@ -1,187 +1,116 @@
 <?php
 
 class FlexiObject {
-  //object name, also table name
+  //object name, and type
   public $sName 		= "";
-  public $sTableName = "";
-  //store field info
-  public $aFields 	= array();
-  //store field raw value
-  public $aFieldValue = array();
-
-  //todo foreign key and sub tables
-  public $aLinks = array();
+  public $sType 		= "";
   //object version
   public $iVersion = 1;
   public $iStatus = 1;
+  public $aChild = array();
   
-  public function __construct($sName, $sTable="") {
+  public function __construct($sName, $sType) {
     $this->sName = $sName;
-    $this->sTableName = empty($sTable) ? $sName: $sTable;
+    $this->sType = $sType;
   }
-  
+
   public function getName() {
     return $this->sName;
   }
   
-  public function getTableName() {
-    return $this->sTableName;
-  }
-  
-  public function getFieldValue($sName) {
-    $mRaw = $this->getFieldRawValue($sName);
-    $sType = $this->aFields[$sName]["type"];
-    if (is_null($mRaw)) return null;
-    
-    switch(strtolower($sType)) {
-      case "html":
-        return htmlentities($mRaw);
-      case "json":
-        return json_decode($mRaw);
-	  case "Text":
-	  case "int":
-    case "tinyint":
-    case "string":
-	  case "double":
-	  case "date":
-	    return substr(date(FlexiConfig::$sDisplayDateFormat, strtotime($mRaw)),0,10);
-	  case "datetime":
-	    return date(FlexiConfig::$sDisplayDateFormat, strtotime($mRaw));
-	  default:
-	    throw new Exception("Unknown field type: " . $sType);
-    }
-  }
-  
-  public function getFieldRawValue($sName) {
-    $oField = $this->getField($sName); //test existance of field
-    return isset($this->aFieldValue[$sName]) ? $this->aFieldValue[$sName]: null;
-  }
-  
-  public function existsField($sName) {
-    return isset($this->aFields[$sName]);
-  }
-  
-  public function getField($sName) {
-    if(!isset($this->aFields[$sName])) throw new Exception("No such field: " . $sName);
-    return $this->aFields[$sName];
-  }
-  
-  public function getFieldLabel($sName) {
-    $oField = $this->getField($sName);
-    return $oField["label"];
+  public function getType() {
+    return $this->sType;
   }
 
-  public function clearFields() {
-    $this->aFields = array();
+  public function isValid() {
+    try {
+      $this->checkValid();
+      return true;
+    } catch (Exception $e) {
+      return false;
+    }
   }
 
-  public function delField($sName) {
-    if ($this->existsField($sName)) {
-      $this->aFields[$sName]["status"] = 0;
-    } else {
-      $this->aFields[$sName] = array(
-          "name" => $sName, "status" => 0
-      );
+  public function checkValid() {
+    if (empty($this->sName)) {
+      throw new Exception("Name is required");
     }
-  }
-  
-  public function addField($sName, $sLabel, $sType, $sPrecision=null, $mDefault=null, $bCanNull=true, $bAutoNumber=false, $bPrimary=false, $bUnique=false, $sOldName="", $sOldType="", $iStatus=1) {
-    if(isset($this->aFields[$sName])) {
-      throw new Exception("Field already exists");
+    if (empty($this->sTableName)) {
+      throw new Exception("Table name is required");
     }
-    $sDBType = "varchar"; 
-    switch(strtolower($sType)) {
-      case "html":
-        $sDBType = empty($sPrecision) && $sPrecision <=1000 ? "varchar": "text";
-        if (empty($sPrecision)) $sPrecision = "255";
-        break;
-      case "string":
-        $sDBType = "varchar";
-        if (empty($sPrecision)) $sPrecision = "255";
-        break;
-      case "json":
-        $sDBType = "varchar";
-        if (empty($sPrecision)) $sPrecision = "500";
-	  case "Text":
-        $sDBType = "text";
-        //if (empty($sPrecision)) $sPrecision = "255";
-        break;
-	  case "int":
-	    $sDBType = "int";
-	    if (empty($sPrecision)) $sPrecision = "11";
-	    break;
-    case "tinyint":
-	    $sDBType = "tinyint";
-	    break;
-	  case "double":
-	    $sDBType = "double";
-      break;
-    case "decimal":
-      $sDBType = "decimal";
-      break;
-    case "money":
-      $sDBType = "decimal";
-	    if (empty($sPrecision)) $sPrecision = "10,2";
-	    break;
-	  case "date":
-	    $sDBType = "date";
-	    break;
-	  case "datetime":
-	    $sDBType = "datetime";
-	    break;
-	  default:
-	    throw new Exception("Unknown field type: " . $sType);
+    if (empty($this->iVersion)) {
+      throw new Exception("Version is required");
     }
-    $this->aFields[$sName.""] = array(
-      "name" 		=> $sName,
-      "label" 		=> $sLabel,
-      "type" 		=> $sType,
-      "dbtype" 		=> $sDBType,
-      "precision" 	=> $sPrecision,
-      "default"		=> $mDefault,
-      "cannull"		=> $bCanNull,
-      "autonumber" => $bAutoNumber,
-      "primary"   => $bPrimary ? 1: 0,
-      "unique"   => $bUnique ? 1: 0,
-      "oldname"   => $sOldName,
-      "oldtype"   => $sOldType,
-      "status"    => $iStatus
-    );
-    
-  }
+    if (count($this->getFieldsCount()) < 1) {
+      throw new Exception("Fields are required");
+    }
 
-  public function getSchemaSQL() {
-    $sSQL = "CREATE TABLE " . FlexiModelUtil::getSQLName($this->sTableName);
-    $sSQL .=" (";
-    $sFieldSQL = ""; $sPrimaryField = "";
-    foreach($this->aFields as $oField) {
-      $sFieldSQL .= empty($sFieldSQL) ? "": ",\n";
-      if ($oField["primary"]) { $sPrimaryField .= (empty($sPrimaryField) ? "": ",") . $oField["name"]; }
-      $sSQLDefault = FlexiModelUtil::getDefaultSQL($oField["default"], $oField["cannull"]);
-      $sFieldSQL .= FlexiModelUtil::getSQLName($oField["name"]) . " " . 
-        strtoupper($oField["dbtype"]) . " " . (empty($oField["precision"])? "": "(" . $oField["precision"] .") ") .
-        " " . $sSQLDefault . " " . 
-        ($oField["autonumber"]? " AUTO_INCREMENT": "");
+    if (!FlexiStringUtil::isCleanName($this->sName)) {
+      throw new Exception("Invalid value for name");
     }
-    $sSQL .= "\n" . $sFieldSQL . "\n";
-    if (!empty($sPrimaryField) ) {
-      $aPrimary = explode(",", $sPrimaryField);
-      $sPrimarySQL = FlexiModelUtil::getSQLName($aPrimary);
-      $sSQL .= "\n,PRIMARY KEY (" . $sPrimarySQL . ")\n";
-    }
-    $sSQL .= ") ENGINE=InnoDB CHARSET UTF8;";
-    return $sSQL;
-  }
 
-  public function __sleep()
-  {
-    //clean up deleted fields
-    foreach($this->aFields as $sKey => $aValue) {
-      if ($aValue["status"] == 0) {
-        unset($this->aFields[$sKey]);
+    if (!FlexiStringUtil::isCleanName($this->sTableName)) {
+      throw new Exception("Invalid value for table name");
+    }
+
+    $aFields = & $this->aChild["field"];
+    foreach($aFields as $sName => $aValue) {
+      //only check active, none deleted only
+      if ($aValue["status"]==1) {
+        if ($aValue["dbtype"] == "text") {
+          if (!empty($aValue["default"]) && strtolower($aValue["default"]) != "null") {
+            throw new Exception("DbType text cannot have default value");
+          }
+        }
       }
     }
-    return array_keys( get_object_vars( $this ) );
+  }
+
+  public function addChild(FlexiObject & $oObject, $sType) {
+    if (!isset($this->aChild[$sType])) {
+      $this->aChild[$sType] = array();
+    }
+    $sName = $oObject->getName();
+    if ($this->existsChild($sName, $sType)) throw new Exception("Child already exists: " . $sName);
+    $this->aChild[$sType][$oObject->getName()] = & $oObject;
+  }
+  
+  public function existsChild($sName, $sType) {
+    if (!isset($this->aChild[$sType])) {
+      return false;
+    }
+    return isset($this->aChild[$sType][$sName]);
+  }
+
+  public function getChild($sName, $sType) {
+    if (!$this->existsChild($sName, $sType)) throw new Exception("No such child: " . $sName . "(" . $sType.")");
+    return $this->aChild[$sType][$sName];
+  }
+
+  public function getChildCount($sType) {
+    if (!isset($this->aChild[$sType])) {
+      return 0;
+    }
+    return count($this->aChild[$sType]);
+  }
+
+  public function getAllChild($sType) {
+    if (!isset($this->aChild[$sType])) {
+      return array();
+    }
+    return $this->aChild[$sType];
+  }
+
+  public function clearChild($sType) {
+    if (isset($this->aChild[$sType])) {
+      unset($this->aChild[$sType]);
+    }
+    $this->aChild[$sType] = array();
+  }
+
+  public function delChild($sName, $sType) {
+    if (!$this->existsChild($sName, $sType)) throw new Exception("No such child: " . $sName . "(" . $sType.")");
+    unset($this->aChild[$sType][$sName]);
   }
   
 }

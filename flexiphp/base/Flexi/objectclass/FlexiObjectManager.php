@@ -7,40 +7,8 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
     $this->setLogPath(FlexiConfig::$sAssetsDir . "_logs");
   }
   
-  public function checkValid(FlexiObject $oObject) {
-    if (empty($oObject->sName)) {
-      throw new Exception("Name is required");
-    }
-    if (empty($oObject->sTableName)) {
-      throw new Exception("Table name is required");
-    }
-    if (empty($oObject->iVersion)) {
-      throw new Exception("Version is required");
-    }
-    if (count($oObject->aFields) < 1) {
-      throw new Exception("Fields are required");
-    }
-
-    if (!FlexiStringUtil::isCleanName($oObject->sName)) {
-      throw new Exception("Invalid value for name");
-    }
-
-    if (!FlexiStringUtil::isCleanName($oObject->sTableName)) {
-      throw new Exception("Invalid value for table name");
-    }
-
-    foreach($oObject->aFields as $sName => $aValue) {
-      //only check active, none deleted only
-      if ($aValue["status"]==1) {
-        if ($aValue["dbtype"] == "text") {
-          if (!empty($aValue["default"]) && strtolower($aValue["default"]) != "null") {
-            throw new Exception("DbType text cannot have default value");
-          }
-        }
-      }
-    }
-
-    return false;
+  public function checkValid(FlexiTableObject $oObject) {
+    return $oObject->checkValid();
   }
 
   public function sync($sName) {
@@ -81,21 +49,21 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
     $aFieldSQL = array();
     $aPrimary = array(); $sLastField = "";
     $aLastPrimary = array();
-    foreach($oObject->aFields as $oField) {
-
+    foreach($oObject->aChild["field"] as $oFieldObject) {
+      $oField = $oFieldObject->toArray();
       //finding field by old name and new name
       $bHasField = false;
       foreach($aList as $oTableField) {
-        $sFindName = empty($oField["oldname"]) ? $oField["name"]: $oField["oldname"];
+        $sFindName = empty($oField["oldname"]) ? $oField["sName"]: $oField["oldname"];
         if ($bDebug) echo "[" . $oTableField["Field"] . "]vs[" . $sFindName . "]";
         if ($oTableField["Field"]==$sFindName) {
           $bHasField = true; break;
         }
       }
       //if old name not found, use new name
-      if (!$bHasField && $oField["name"] != $oField["oldname"]) {
+      if (!$bHasField && $oField["sName"] != $oField["oldname"]) {
         foreach($aList as $oTableField) {
-          $sFindName = $oField["name"];
+          $sFindName = $oField["sName"];
           if ($bDebug) echo "[" . $oTableField["Field"] . "]vs[" . $sFindName . "]";
           if ($oTableField["Field"]==$sFindName) {
             $bHasField = true; break;
@@ -103,30 +71,30 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
         }
       }
 
-      if ($oField["status"]==1) {
+      if ($oField["iStatus"]==1) {
         //update or add
         $sSQLDefault = FlexiModelUtil::getDefaultSQL($oField["default"], $oField["cannull"]);
-        if ($oField["primary"]) { $aPrimary[] = $oField["name"]; }
+        if ($oField["primary"]) { $aPrimary[] = $oField["sName"]; }
         if (strpos($oTableField["Key"], "PRI")!==false) {
           $aLastPrimary[] = $oTableField["Field"];
         }
 
         if ($bHasField) {
           $sFieldSQL = "CHANGE COLUMN " . FlexiModelUtil::getSQLName($sFindName) .
-            " " . FlexiModelUtil::getSQLName($oField["name"]) . " " . strtoupper($oField["dbtype"]) . ""
+            " " . FlexiModelUtil::getSQLName($oField["sName"]) . " " . strtoupper($oField["dbtype"]) . ""
             . (empty($oField["precision"])? " ": "(" . $oField["precision"] . ") ") .
             " " . $sSQLDefault . " " .
             ($oField["autonumber"]? "AUTO_INCREMENT": "");
         } else {
           $sFieldSQL = "ADD COLUMN "
-            . FlexiModelUtil::getSQLName($oField["name"]) . " " . strtoupper($oField["dbtype"]) . ""
+            . FlexiModelUtil::getSQLName($oField["sName"]) . " " . strtoupper($oField["dbtype"]) . ""
             . (empty($oField["precision"])? " ": "(" . $oField["precision"] . ") ") .
             " " . $sSQLDefault . " " .
             ($oField["autonumber"]? " AUTO_INCREMENT": "");
         }
         $sFieldSQL .= empty($sLastField) ? " FIRST ": " AFTER " . FlexiModelUtil::getSQLName($sLastField);
         $aFieldSQL[] = $sFieldSQL;
-        $sLastField = $oField["name"];
+        $sLastField = $oField["sName"];
       } else {
         //do delete
         if ($bHasField) {
@@ -180,7 +148,6 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
   }
 
   public function store(FlexiObject $oObject) {
-
   	//todo, how to protect file from opened from outside?
     $this->checkValid($oObject);
     
