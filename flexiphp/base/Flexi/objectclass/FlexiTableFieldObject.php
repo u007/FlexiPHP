@@ -19,6 +19,11 @@ class FlexiTableFieldObject extends FlexiObject {
   protected $inputupdate = "edit";
 
   protected $canlist   = 1;
+  protected $allowhtml = 0;
+  //refer: FlexiBaseViewManager::getFieldSafeTags
+  protected $allowtag = ""; //basic / advanced / safe / all / noscript / noframe / noobject / ...
+
+
   protected $rawvalue = null;
   
   public function __construct($sName) {
@@ -102,12 +107,18 @@ class FlexiTableFieldObject extends FlexiObject {
             throw new Exception("Unknown field type: " . $sType);
         }
 
+
         if ($sPrecision != $this->precision) $this->precision = $sPrecision;
         if ($sDBType != $this->dbtype) $this->dbtype = $sDBType;
         $value = $sType;
         break;
         
+      case "allowhtml":
+        //overwrite for html type input
+        $value = $this->type == "html" ? 1: $value;
+        break;
     } //switch field name
+    
 
     $this->$name = $value;
   }
@@ -127,7 +138,7 @@ class FlexiTableFieldObject extends FlexiObject {
     return array(
       "sName", "type", "label", "dbtype", "precision", "default", "cannull", "autonumber",
       "unique", "oldname", "oldtype", "primary", "caninsert", "canupdate", "inputinsert", 
-      "inputupdate", "canlist");
+      "inputupdate", "canlist", "allowhtml", "allowtag");
   }
 }
 

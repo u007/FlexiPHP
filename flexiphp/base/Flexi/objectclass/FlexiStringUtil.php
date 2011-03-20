@@ -138,4 +138,31 @@ class FlexiStringUtil
 		return str_replace($keys,$values,$tpl);
   }
 
+  /**
+   * Strip tags with only wanted tags
+   *  and also avoid harmful attributes like mouseover
+   *  example: stripTagsAttributes($string,'<strong><em><a>','href,rel');
+   * @param String $string
+   * @param String $allowtags array / string
+   * @param Mixed $allowattributes array / string
+   * @return String
+   * @refer http://www.php.net/manual/en/function.strip-tags.php#91498
+   */
+  function stripTagsAttributes($string,$allowtags=NULL,$allowattributes=NULL){
+    $string = strip_tags($string,$allowtags);
+    if (!is_null($allowattributes)) {
+        if(!is_array($allowattributes))
+            $allowattributes = explode(",",$allowattributes);
+        if(is_array($allowattributes))
+            $allowattributes = implode(")(?<!",$allowattributes);
+        if (strlen($allowattributes) > 0)
+            $allowattributes = "(?<!".$allowattributes.")";
+        $string = preg_replace_callback("/<[^>]*>/i",create_function(
+            '$matches',
+            'return preg_replace("/ [^ =]*'.$allowattributes.'=(\"[^\"]*\"|\'[^\']*\')/i", "", $matches[0]);'
+        ),$string);
+    }
+    return $string;
+  }
+
 }

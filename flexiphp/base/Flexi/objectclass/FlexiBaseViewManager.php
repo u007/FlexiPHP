@@ -144,16 +144,131 @@ class FlexiBaseViewManager {
     return $sOutput;
   }
 
+  /**
+   * get value safe for html display
+   * @param FlexiTableFieldObject $oField
+   * @param <type> $oRow
+   * @return <type>
+   */
   public function getFieldDisplay(FlexiTableFieldObject $oField, $oRow) {
     $sName = $oField->getName();
     $mValue = $oRow[$sName];
-    
-    switch($oField->type) {
-      case "html":
-        return $mValue;
-      default:
+
+    if ($oField->allowhtml) {
+      if(!empty($oField->allowtag)) {
+        $aSafe = $this->getFieldSafeTag($oField);
+        $sTag = implode(",", $aSafe["tag"]); $aAttribute = $aSafe["attribute"];
+        $mValue = FlexiStringUtil::stripTagsAttributes($mValue, $sTag, $aAttribute);
+      }
+    } else {
+      $mValue = strip_tags($mValue);
     }
-    return strip_tags($mValue);
+    return $mValuel;
+  }
+
+  public function getFieldSafeTags(FlexiTableFieldObject $oField) {
+    $aResultTag = array();
+    $aAttribute = array();
+    $aTag = explode($oField->allowtag);
+
+    //banned: onmouse..., onclick, link, vlink
+    $aAttribute = array(
+      "abr", "accept-charset", "accept", "accesskey",
+      "action", "align", "href", "alt", "archive",
+      "axis", "background", "bgcolor", "cellpadding",
+      "cellspacing", "char", "charoff", "checked", "cite", "class",
+      "classid", "clear", "code", "codebase", "codetype",
+      "color", "cols", "colspan", "compact", "content",
+      "coords", "data", "datetime", "declare", "defer", "dir", "disabled",
+      "enctype", "face", "for", "frame", "frameborder", "headers",
+      "height", "href", "hreflang", "hspace", "http-equiv",
+      "hspace", "id", "ismap", "label", "lang", "language",
+      "longdesc", "longdesc", "marginheight", "marginwidth",
+      "media", "method", "multiple", "name", "noresize",
+      "noshade", "nowrap", "profile", "prompt", "readonly", "rel",
+      "rev", "rows", "rowspan", "rules", "scheme", "scope",
+      "scrolling", "selected", "shape", "size", "span",
+      "src", "standby", "start", "style", "summary", "tabindex",
+      "target", "text", "title", "type", "usemap", "valign",
+      "value", "valuetype", "version", "vspace", "width"
+    );
+    
+    $sOldTag = "<center><bdo><font><isindex><dfn><dir><s><samp><var>";
+    $sTableTag = "<table><tbody><td><thead><th><title><tr><tt>";
+
+    //old and basic
+    $sBasicTag = $sOldTag . "<strike><a><b><big><blockquote><br><caption>" .
+      "<cite><code><dd><del><div><dl><dt>" .
+      "<em><h1><h2><h3><h4><h5><h6><hr><i><p><pre><q><small>" .
+      "<span><strong><sub><sup><u><ul><li><ol>";
+    //basic and table
+    $sAdvancedTag = $sBasicTag . $sTableTag . "<area><map><img><ins><kbd><menu>" .
+      "<abbr><acronym><address>";
+    $sSafeTag = $sAdvancedTag . "<base><body><head><html><meta><basefont>";
+
+    $sFormTag = "<button><fieldset><input><select><form><label><textarea>";
+    $sFrameTag = "<iframe><frame><noframes>";
+
+    $sAllTag = $sSafeTag . $sFormTag . $sFrameTag . "<object><script><embed><applet><noscript>";
+
+    $bNoObject = false; $bNoScript = false; $bNoEmbed = false; $bNoApplet = false;
+    foreach($aTag as $sTag) {
+      switch($sTag) {
+        case "all":
+          $aResultTag[] = $sAllTag;
+          $aAttribute = array(); //allow all
+          break;
+        case "basic":
+          $aResultTag[] = $sBasicTag;
+          break;
+        case "safe":
+          $aResultTag[] = $sSafeTag;
+          break;
+        case "table":
+          $aResultTag[] = $sTableTag;
+          break;
+        case "form":
+          $aResultTag[] = $sFormTag;
+          break;
+        case "advanced":
+          $aResultTag[] = $sAdvancedTag;
+          break;
+        case "noobject":
+          $bNoObject = true;
+          break;
+        case "noscript":
+          $bNoScript = true;
+          break;
+        case "noembed":
+          $bNoEmbed = true;
+          break;
+        case "noapplet":
+          $bNoApplet = true;
+          break;
+        default:
+          $aResultTag[] = "<" . $sTag . ">";
+      } //switch
+    }//atag
+
+    $bNoObject = false; $bNoScript = false; $bNoEmbed = false; $bNoApplet = false;
+    if ($bNoObject || $bNoScript || $bNoEmbed || $bNoApplet) {
+      for($c=0; $c < $aTag; $c++) {
+        if ($bNoObject) {
+          $aTag[$c] = str_replace("<object>", "", $aTag[$c]);
+        }
+        if ($bNoScript) {
+          $aTag[$c] = str_replace("<script>", "", $aTag[$c]);
+        }
+        if ($bNoEmbed) {
+          $aTag[$c] = str_replace("<embed>", "", $aTag[$c]);
+        }
+        if ($bNoApplet) {
+          $aTag[$c] = str_replace("<applet>", "", $aTag[$c]);
+        }
+      }
+    }
+    
+    return array("tag" => $aResultTag, "attribute" => $aAttribute);
   }
   
   public function getFieldInput(FlexiTableFieldObject $oField, $oRow) {
