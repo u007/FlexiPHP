@@ -23,6 +23,7 @@ class FlexiTableFieldObject extends FlexiObject {
   //refer: FlexiBaseViewManager::getFieldSafeTags
   protected $allowtag = ""; //basic / advanced / safe / all / noscript / noframe / noobject / ...
 
+  protected $formsize = "25";
 
   protected $rawvalue = null;
   
@@ -138,7 +139,7 @@ class FlexiTableFieldObject extends FlexiObject {
     return array(
       "sName", "type", "label", "dbtype", "precision", "default", "cannull", "autonumber",
       "unique", "oldname", "oldtype", "primary", "caninsert", "canupdate", "inputinsert", 
-      "inputupdate", "canlist", "allowhtml", "allowtag");
+      "inputupdate", "canlist", "allowhtml", "allowtag", "formsize");
   }
 }
 

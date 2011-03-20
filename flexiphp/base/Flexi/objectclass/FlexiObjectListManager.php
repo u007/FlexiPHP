@@ -19,6 +19,24 @@ class FlexiObjectListManager extends FlexiLogManager {
     $this->oObject = $this->getManager()->load($sName);
   }
 
+  public function validateFieldData(&$oRow, &$sType) {
+    $oObject = $this->getObject();
+    return $this->_validateFieldData($oObject, $oRow, $sType);
+  }
+
+  public function _validateFieldData(&$oObject, &$oRow, &$sType) {
+    $this->onBeforeCheckValid($oRow, $sType);
+    $oObject->checkValid($oRow, $sType);
+    //will not pass here if checkvalid fail as it will throw exception
+    $bResult = true;
+    $this->onCheckValid($bResult, $oRow, $sType);
+
+    return $bResult;
+  }
+
+  public function onBeforeCheckValid(& $oRow, &$sType) {}
+  public function onCheckValid(&$bResult, & $oRow, & $sType) {}
+
   public function doTableQuery(& $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
     $sTable = $this->oObject->getTableName();
     return $this->doQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
@@ -37,6 +55,11 @@ class FlexiObjectListManager extends FlexiLogManager {
     $stmt = $this->_doQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect);
     $aResult = $stmt->fetch(PDO::FETCH_ASSOC);
     return $aResult;
+  }
+
+  public function getFieldsName() {
+    $oObject = $this->oObject;
+    return array_keys($oObject->aChild["field"]);
   }
   /**
    * Get active object schema
@@ -78,18 +101,23 @@ class FlexiObjectListManager extends FlexiLogManager {
     }
 
     $aWhere = FlexiModelUtil::parseSQLCond($aCond);
-    $sSQL .= !empty($aWhere["sql"]) ? " where " . $aWhere["sql"]: "";
-    $aParam = array_merge($aParam, $aWhere["param"]);
+
+    if (!empty($aWhere["sql"])) {
+      $sSQL .= " where " . $aWhere["sql"];
+      $aParam = array_merge($aParam, $aWhere["param"]);
+    }
+    
     //if ($bDebug) var_dump($aCond);
     //if ($bDebug) var_dump($aWhere);
     //if ($bDebug) var_dump($aParam);
     $sGroupSQL = "";
-    foreach($aGroupBy as $sGroup) {
-      $sGroupSQL .= empty($sGroupSQL) ? "": ",";
-      $sGroupSQL .= FlexiModelUtil::parseSQLName($sGroup);
+    if (!is_null($aGroupBy)) {
+      foreach($aGroupBy as $sGroup) {
+        $sGroupSQL .= empty($sGroupSQL) ? "": ",";
+        $sGroupSQL .= FlexiModelUtil::parseSQLName($sGroup);
+      }
+      $sSQL .= !empty($sGroupSQL)? " group by " . $sGroupSQL: "";
     }
-    $sSQL .= !empty($sGroupSQL)? " group by " . $sGroupSQL: "";
-    
     
     $sOrderbySQL = "";
     foreach($aOrderby as $sOrderBy) {
@@ -117,10 +145,10 @@ class FlexiObjectListManager extends FlexiLogManager {
   }
 
   public function _doQuery($sTable="", & $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
-    //echo "sql: " . $sResultSQL;
+    $xpdo = FlexiModelUtil::getInstance()->getXPDO();
     $sSQL = $this->getQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $this->onQuery($sSQL);
-
+    //echo "sql: " . $sResultSQL;
     $stmt = $xpdo->query($sSQL);
     if ($stmt) {
       return $stmt;

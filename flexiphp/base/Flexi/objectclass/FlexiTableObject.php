@@ -11,7 +11,7 @@ class FlexiTableObject extends FlexiObject {
     $this->aChild["field"] = array();
   }
 
-  public function isValid() {
+  public function isValid($oRow, $sType) {
     try {
       $this->checkValid();
       return true;
@@ -20,7 +20,19 @@ class FlexiTableObject extends FlexiObject {
     }
   }
 
-  public function checkValid() {
+  public function checkValidSchema() {
+    if (empty($this->sName)) {
+      throw new Exception("Name is required");
+    }
+    if (empty($this->sTableName)) {
+      throw new Exception("Table name is required");
+    }
+    if (count($this->aChild["field"]) < 1) {
+      throw new Exception("Fields are required");
+    }
+  }
+
+  public function checkValidData($oRow, $sType) {
     
   }
 

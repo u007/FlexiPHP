@@ -3,8 +3,13 @@
 class FlexiBaseViewManager {
   protected $oView = null;
   protected $oObjectListManager = null;
+  protected $sFieldPrefix = "field";
   public function  __construct($aParam) {
     //parent::__construct($aParam);
+  }
+
+  public function setFormFieldPrefix($sPrefix) {
+    $this->sFieldPrefix = $sPrefix;
   }
 
   public function setView(FlexiView &$oView) {
@@ -127,17 +132,17 @@ class FlexiBaseViewManager {
       case "edit":
         $oForm = $this->getFieldInput($oField, $oRow);
         $this->onRenderFieldInput($oForm, $oField, $oRow, $sType);
-        $sOutput = $this->oView->renderMarkup($oForm, $oField->sName);
+        $sOutput = $this->oView->renderMarkup($oForm, $oForm["#name"]);
         break;
       case "readonly":
-        $sOutput = $oRow->getFieldDisplay($oField, $oRow);
+        $sOutput = $this->getFieldDisplay($oField, $oRow);
         break;
       case "hidden":
         $oFieldConfig = clone($oField);
         $oFieldConfig->type = "hidden";
         $oForm = $this->getFieldInput($oFieldConfig, $oRow);
         $this->onRenderFieldInput($oForm, $oField, $oRow, $sType);
-        $sOutput = $this->oView->renderMarkup($oForm, $oField->sName);
+        $sOutput = $this->oView->renderMarkup($oForm, $oForm["#name"]);
         break;
     }
     
@@ -147,8 +152,8 @@ class FlexiBaseViewManager {
   /**
    * get value safe for html display
    * @param FlexiTableFieldObject $oField
-   * @param <type> $oRow
-   * @return <type>
+   * @param array $oRow
+   * @return String
    */
   public function getFieldDisplay(FlexiTableFieldObject $oField, $oRow) {
     $sName = $oField->getName();
@@ -166,6 +171,23 @@ class FlexiBaseViewManager {
     return $mValuel;
   }
 
+  
+  
+
+  /**
+   * check if value entered is safe
+   * @param FlexiTableFieldObject $oField
+   * @param <type> $oRow
+   * @return <type>
+   */
+  public function isSafeFieldValue(FlexiTableFieldObject $oField, $oRow) {
+    $sValue = $oRow[$oField->getName()];
+    //todo
+    $aSafe = $this->getFieldSafeTag($oField);
+    
+    return true;
+  }
+  
   public function getFieldSafeTags(FlexiTableFieldObject $oField) {
     $aResultTag = array();
     $aAttribute = array();
@@ -274,7 +296,7 @@ class FlexiBaseViewManager {
   public function getFieldInput(FlexiTableFieldObject $oField, $oRow) {
     $sName = $oField->getName();
     $aResult = array(
-      "#name"           => "field" . $sName,
+      "#name"           => $this->sFieldPrefix . $sName,
       "#title"          => $oField->label,
       "#required"       => $oField->cannull==1? false: true,
       "#default_value"  => $oField->getPHPDefaultValue(),
@@ -311,6 +333,20 @@ class FlexiBaseViewManager {
         break;
       default:
         throw new Exception("Unsupported type: " . $oField->type);
+    }
+
+    if (!empty($oField->formsize)) {
+      switch($oField->type){
+        case "html":
+        case "text":
+        case "json":
+          $aSize = explode(",",$oField->formsize);
+          $aResult["#rows"] = $aSize[0];
+          if (count($aSize)>=2) $aResult["#cols"] = $aSize[1];
+          break;
+        default:
+          $aResult["#size"] = $oField->formsize;
+      }
     }
 
     if (isset($oRow[$sName])) {

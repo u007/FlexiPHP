@@ -8,7 +8,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
   }
   
   public function checkValid(FlexiTableObject $oObject) {
-    return $oObject->checkValid();
+    return $oObject->checkValidSchema();
   }
 
   public function sync($sName) {
