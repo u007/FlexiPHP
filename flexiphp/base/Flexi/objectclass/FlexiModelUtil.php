@@ -742,6 +742,16 @@ class FlexiModelUtil
     return $aList;
   }
 
+
+  public static function getObjectManager() {
+    static $oManager = null;
+    if (is_null($oManager)) {
+      $oManager = new FlexiObjectManager();
+      $oManager->setPath(FlexiConfig::$sRepositoryDir);
+    }
+    return $oManager;
+  }
+
   public static function getErrorStackLabel($sErrorType) {
     switch($sErrorType)
     {

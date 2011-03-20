@@ -2,7 +2,7 @@
 
 class FlexiObjectManager extends FlexiBaseObjectManager {
 
-  public function __construct($aParam) {
+  public function __construct($aParam=array()) {
     parent::__construct($aParam);
     $this->setLogPath(FlexiConfig::$sAssetsDir . "_logs");
   }

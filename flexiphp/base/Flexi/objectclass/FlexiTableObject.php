@@ -23,6 +23,16 @@ class FlexiTableObject extends FlexiObject {
   public function checkValid() {
     
   }
+
+  public function getNewRow() {
+    $bDebug = false;
+    $oResult = array();
+    foreach($this->aChild["field"] as $sName => $oField) {
+      $oResult[$sName] = $oField->getPHPDefaultValue();
+    }
+    if ($bDebug) var_dump($oResult);
+    return $oResult;
+  }
   
   public function getTableName() {
     return $this->sTableName;
@@ -123,9 +133,9 @@ class FlexiTableObject extends FlexiObject {
     
     foreach($aFields as $oField) {
       $sFieldSQL .= empty($sFieldSQL) ? "": ",\n";
-      if ($oField["primary"]) { $sPrimaryField .= (empty($sPrimaryField) ? "": ",") . $oField["name"]; }
+      if ($oField["primary"]) { $sPrimaryField .= (empty($sPrimaryField) ? "": ",") . $oField["sName"]; }
       $sSQLDefault = FlexiModelUtil::getDefaultSQL($oField["default"], $oField["cannull"]);
-      $sFieldSQL .= FlexiModelUtil::getSQLName($oField["name"]) . " " . 
+      $sFieldSQL .= FlexiModelUtil::getSQLName($oField["sName"]) . " " .
         strtoupper($oField["dbtype"]) . " " . (empty($oField["precision"])? "": "(" . $oField["precision"] .") ") .
         " " . $sSQLDefault . " " . 
         ($oField["autonumber"]? " AUTO_INCREMENT": "");

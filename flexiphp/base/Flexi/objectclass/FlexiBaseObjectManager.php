@@ -4,11 +4,13 @@ class FlexiBaseObjectManager {
   public $sPath = "";
   public $sLogPath = "log";
   
-  public function __construct($aParam) {
+  public function __construct($aParam=array()) {
     
   }
 
   public function setPath($sPath) {
+    $bDebug = false;
+    if ($bDebug) echo __METHOD__ . ": path: " . $sPath . "<br/>\n";
     if (!is_dir($sPath)) {
       //try make dir
       if (!mkdir($sPath, 0777, true)) {

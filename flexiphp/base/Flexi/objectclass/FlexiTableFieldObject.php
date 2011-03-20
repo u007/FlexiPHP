@@ -18,6 +18,7 @@ class FlexiTableFieldObject extends FlexiObject {
   protected $inputinsert = "edit"; //edit/readonly/hidden
   protected $inputupdate = "edit";
 
+  protected $canlist   = 1;
   protected $rawvalue = null;
   
   public function __construct($sName) {
@@ -27,6 +28,18 @@ class FlexiTableFieldObject extends FlexiObject {
 
   public function  __isset($name) {
     return isset($this->$name);
+  }
+
+  public function getPHPDefaultValue() {
+    $bDebug = false;
+    if (!is_null($this->default) && strlen($this->default) != 0) {
+      $sScript = "return " . $this->default . ";";
+    } else {
+      $sScript = "return '';";
+    }
+
+    if ($bDebug) echo "script: " . $sScript . "<br/>\n";
+    return eval($sScript);
   }
 
   public function  __set($name, $value) {
@@ -56,7 +69,7 @@ class FlexiTableFieldObject extends FlexiObject {
           case "json":
             $sDBType = "varchar";
             if (empty($sPrecision)) $sPrecision = "500";
-          case "Text":
+          case "text":
               $sDBType = "text";
               //if (empty($sPrecision)) $sPrecision = "255";
               break;
@@ -82,6 +95,8 @@ class FlexiTableFieldObject extends FlexiObject {
             break;
           case "datetime":
             $sDBType = "datetime";
+            break;
+          case "hidden":
             break;
           default:
             throw new Exception("Unknown field type: " . $sType);
@@ -111,7 +126,8 @@ class FlexiTableFieldObject extends FlexiObject {
   public function __sleep() {
     return array(
       "sName", "type", "label", "dbtype", "precision", "default", "cannull", "autonumber",
-      "unique", "oldname", "oldtype", "primary", "caninsert", "canupdate", "inputinsert", "inputupdate");
+      "unique", "oldname", "oldtype", "primary", "caninsert", "canupdate", "inputinsert", 
+      "inputupdate", "canlist");
   }
 }
 
