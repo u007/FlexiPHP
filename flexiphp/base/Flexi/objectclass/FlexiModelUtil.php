@@ -470,13 +470,20 @@ class FlexiModelUtil
 		return null;
 	}
 
-  public static function parseSQLName($sName) {
+  public static function parseSQLName($mName) {
     if (FlexiConfig::$sDBType=="mysql") {
       $sResult = "";
-      $aName = explode(".", $sName);
-      foreach($aName as $sOneName) {
-        $sResult .= empty($sResult) ? "":".";
-        $sResult .= "`" . mysql_real_escape_string($sOneName) . "`";
+      $aName = is_array($mName) ? $mName: explode(",", $mName);
+      foreach($aName as $sName) {
+        $sResult .= empty($sResult) ? "":",";
+        $aSingleName = explode(".", $sName);
+        
+        $sAliasName = "";
+        foreach($aSingleName as $sOneName) {
+          $sAliasName = empty($sAliasName) ? "": ".";
+          $sAliasName .= "`" . mysql_real_escape_string($sOneName) . "`";
+        }
+        $sResult .= $sAliasName;
       }
       return $sResult;
     }
@@ -493,7 +500,7 @@ class FlexiModelUtil
     $sOperator = "=";
     if(count($aCond)==1) {
       $sField = $sKey;
-      $sOperator = "-";
+      $sOperator = "=";
       $sType = "and";
       //not :s
     } else if(count($aCond) == 2) {
@@ -515,7 +522,7 @@ class FlexiModelUtil
         $sType = $aCond[0];
         $sField = $aCond[1];
         $sOperator = $aCond[2];
-        if ($bDebug) echo __METHOD__ . ":with typw<br/>\n";
+        if ($bDebug) echo __METHOD__ . ":with type<br/>\n";
       } else {
         $sField = $aCond[0];
         $sOperator = $aCond[1];
@@ -535,6 +542,84 @@ class FlexiModelUtil
       "sql"   => $sField . " " . $sOperator . " ". $sParamName,
       "param" => $aParam
     );
+  }
+
+  
+  public function insertOrUpdateXPDO($sTable, $oRow, $mPrimary=array()) {
+    $bUpdate = false; $sWhere = "";
+
+    $aPrimary = !is_array($mPrimary) ? explode(",", $mPrimary."") : $mPrimary;
+    if (count($aPrimary) > 0) {
+      $bHasID = true;
+      //check if all id fields exists value
+      foreach($aPrimary as $sIdField) {
+        if (!isset($oRow[$sIdField])) {
+         $bHasID = false; break; 
+        }
+        if (strlen($oRow[$sIdField]."") ==0) {
+          $bHasID = false; break;
+        }
+      }
+      
+      if ($bHasID) {
+        $aWhere = self::parseSQLCondKeyValue($aPrimary, $oRow);
+        $sSQL = "SELECT " . self::getSQLName($aPrimarySQL) . " FROM " . $sTable . " WHERE ";
+        $sSQL .= $aWhere["sql"];
+        $row = $this->getXPDOFetchOne($sSQL, $aWhere["param"]);
+        if (!is_null($row)) {
+          $bUpdate = true;
+        }
+      }
+    }
+
+    return $bUpdate ? $this->updateXPDO($oRow, $sTable, $aPrimary):
+             $this->insertXPDO($oRow, $sTable, $aPrimary);
+  }
+
+  public function updateXPDO($sTable, $oRow, $mPrimary="id") {
+    $bDebug =  false;
+    
+    $aPrimary = !is_array($mPrimary) ? explode(",", $mPrimary."") : $mPrimary;
+
+    if ($bDebug) echo __METHOD__ . ": primary:" . print_r($aPrimary,true) . "\n<br/>";
+    $aWhere = self::parseSQLCondKeyValue($aPrimary, $oRow);
+    $sFields = "";
+    foreach($oRow as $sField => $sValue) {
+      $sFields .= empty($sFields) ? "" : ",";
+      $sFields .= self::parseSQLName($sField) . "=";
+
+      if (is_null($sValue)) { $sFields .="null"; } else {
+        $sFields .=self::getSQLValue($sValue);
+      }
+    }
+    $sSQL = "UPDATE " . self::parseSQLName($sTable) . " SET " . $sFields . " WHERE " . $aWhere["sql"];
+    if ($bDebug) echo __METHOD__ . ": sql:" . $sSQL . "\n<br/>";
+    if ($bDebug) echo __METHOD__ . ": param:" . print_r($aWhere["param"],true) . "\n<br/>";
+
+    return $this->getXPDOExecute($sSQL, $aWhere["param"]);
+  }
+
+  public function insertXPDO($sTable, $oRow, $aPrimary=array()) {
+    $bDebug = false;
+    //fields
+    $aCols = array_keys($oRow);
+    $sFields = "";
+
+    if ($bDebug) echo __METHOD__ . ": " . print_r($oRow,true);
+    foreach($aCols as $sField) {
+      $sFields .= empty($sFields) ? "" : ",";
+      $sFields .= self::parseSQLName($sField);
+    }
+    //values
+    $aCols = array_values($oRow);
+    $sFieldValues = "";
+    foreach($aCols as $sField) {
+      $sFieldValues .= empty($sFieldValues) ? "" : ",";
+      $sFieldValues .= self::getSQLValue($sField);
+    }
+    $sSQL = "INSERT INTO " . self::parseSQLName($sTable) . " (" . $sFields . ") VALUES (" . $sFieldValues . ")";
+    if ($bDebug) echo __METHOD__ . ": " . $sSQL;
+    return $this->getXPDOExecute($sSQL);
   }
   /**
    * Execute sql
@@ -588,6 +673,14 @@ class FlexiModelUtil
       throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
     }
     return null;
+  }
+
+  public static function parseSQLCondKeyValue($aKey, $oRow) {
+    $aResult = array();
+    foreach($aKey as $sField) {
+      $aResult[$sField] = $oRow[$sField];
+    }
+    return self::parseSQLCond($aResult);
   }
 
   public static function parseSQLCond($aValue) {

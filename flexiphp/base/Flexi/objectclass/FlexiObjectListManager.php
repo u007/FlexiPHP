@@ -5,12 +5,13 @@ class FlexiObjectListManager extends FlexiLogManager {
   protected $sRepoPath = "";
   protected $oObject = null;
   
+  
   public function __construct($aParam) {
     parent::__construct($aParam);
     $this->setPath(FlexiConfig::$sRepositoryDir);
     $this->setLogPath(FlexiConfig::$sAssetsDir . "_logs");
   }
-
+  
   public function setPath($sPath) {
     $this->sRepoPath = $sPath;
   }
@@ -19,23 +20,96 @@ class FlexiObjectListManager extends FlexiLogManager {
     $this->oObject = $this->getManager()->load($sName);
   }
 
+  public function storeObjectRow(&$oRow, &$sType) {
+    $bDebug = false;
+    if (! $this->validateFieldData($oRow, $sType)) {
+      throw new Exception("Validation failed");
+    }
+    if ($bDebug) echo __METHOD__ . ": data: " . print_r($oRow,true) . "\n<br/>";
+
+    $oObject = $this->getObject();
+    $oStore = array();
+    if (! $this->onBeforeStore($oObject, $oRow, $sType)) return false;
+    
+    foreach($oObject->aChild["field"] as $sField => $oField) {
+      if ($bDebug) echo __METHOD__ . ": field: " . $sField . "\n<br/>";
+      if (isset($oRow[$sField])) {
+        //if (! $this->onBeforeStoreField($oField, $oRow, $sType)) continue;
+        $oStore[$sField] = $this->getFieldDataFromForm($oField, $oRow);
+      }
+    }
+    if( !$this->onStore($oStore, $oObject, $oRow, $sType)) {
+      return false;
+    }
+    return $this->_storeObjectRow($oStore, $sType);
+  }
+
+
+  public function _storeObjectRow($oRow, $sType) {
+    $oObject = $this->getObject();
+    $sTable = $oObject->getTableName();
+    
+    $aPrimary = $oObject->getPrimaryFields();
+    switch($sType) {
+      case "insert":
+        return FlexiModelUtil::getInstance()->insertXPDO($sTable, $oRow, $aPrimary);
+        break;
+      case "update":
+        return FlexiModelUtil::getInstance()->updateXPDO($sTable, $oRow, $aPrimary);
+        break;
+      default:
+        throw new Exception("Unknown store type: " . $sType);
+    }
+    return true;
+  }
+  
+
+  /**
+   * get value safe for database storage
+   * @param FlexiTableFieldObject $oField
+   * @param array $oRow
+   * @return String
+   */
+  public function getFieldDataFromForm(FlexiTableFieldObject $oField, $oRow) {
+    $bDebug = false;
+    if ($bDebug) echo __METHOD__ . ": " . print_r($oRow, true) . "\n<br/>";
+    $sName = $oField->getName();
+    $mValue = $oRow[$sName];
+    
+    if ($oField->allowhtml) {
+    } else {
+      $mValue = strip_tags($mValue);
+    }
+    return $mValue;
+  }
+  /**
+   * event for insert or update
+   *  return true to continue
+   * @param array $oStore - to save
+   * @param FlexiTableObject $oObject
+   * @param array $oRow - from form
+   * @param String $sType
+   * @return boolean
+   */
+  public function onStore(&$oStore, FlexiTableObject &$oObject, &$oRow, $sType) { return true; }
+
+  public function onBeforeStore(FlexiTableObject &$oObject, &$oRow, $sType) { return true; }
+
   public function validateFieldData(&$oRow, &$sType) {
     $oObject = $this->getObject();
     return $this->_validateFieldData($oObject, $oRow, $sType);
   }
 
   public function _validateFieldData(&$oObject, &$oRow, &$sType) {
-    $this->onBeforeCheckValid($oRow, $sType);
-    $oObject->checkValid($oRow, $sType);
+    if (!$this->onBeforeCheckValidData($oRow, $sType)) { return false; }
+    $oObject->checkValidData($oRow, $sType);
     //will not pass here if checkvalid fail as it will throw exception
-    $bResult = true;
-    $this->onCheckValid($bResult, $oRow, $sType);
-
-    return $bResult;
+    $this->onCheckValidData($bResult, $oRow, $sType);
+    return true;
   }
 
-  public function onBeforeCheckValid(& $oRow, &$sType) {}
-  public function onCheckValid(&$bResult, & $oRow, & $sType) {}
+  public function onBeforeCheckValidData(& $oRow, &$sType) { return true; }
+  public function onCheckValidData(&$bResult, & $oRow, & $sType) {}
 
   public function doTableQuery(& $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
     $sTable = $this->oObject->getTableName();
@@ -56,10 +130,39 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aResult = $stmt->fetch(PDO::FETCH_ASSOC);
     return $aResult;
   }
-
+  /**
+   * Get all fields name
+   * @return array
+   */
   public function getFieldsName() {
     $oObject = $this->oObject;
     return array_keys($oObject->aChild["field"]);
+  }
+
+  public function getPrimaryValue($oRow) {
+    $aPrimary = $this->getPrimaryFields();
+    $aResult = array();
+    foreach($aPrimary as $sPrimary) {
+      $aResult[$sPrimary] = $oRow[$sPrimary];
+    }
+    return $aResult;
+  }
+  /**
+   * get all primary fields name
+   * @return array
+   */
+  public function getPrimaryFields() {
+    $oObject = $this->oObject;
+    return $oObject->getPrimaryFields();
+  }
+
+  /**
+   * get all fields can list
+   * @return array
+   */
+  public function getListFields() {
+    $oObject = $this->oObject;
+    return $oObject->getListFields();
   }
   /**
    * Get active object schema
@@ -99,7 +202,7 @@ class FlexiObjectListManager extends FlexiLogManager {
         $sSQL .= " from " . FlexiModelUtil::getSQLName($sTable);
       }
     }
-
+    $aParam = array();
     $aWhere = FlexiModelUtil::parseSQLCond($aCond);
 
     if (!empty($aWhere["sql"])) {
@@ -118,14 +221,16 @@ class FlexiObjectListManager extends FlexiLogManager {
       }
       $sSQL .= !empty($sGroupSQL)? " group by " . $sGroupSQL: "";
     }
-    
-    $sOrderbySQL = "";
-    foreach($aOrderby as $sOrderBy) {
-      $sOrderbySQL .= empty($sOrderbySQL) ? "": ",";
-      $aOrder = explode(" " , $sOrderBy);
-      $sOrderbySQL .= FlexiModelUtil::parseSQLName($aOrder[0]) . " " . $sOrderType;
+
+    if (!is_null($aOrderby)) {
+      $sOrderbySQL = "";
+      foreach($aOrderby as $sOrderBy) {
+        $sOrderbySQL .= empty($sOrderbySQL) ? "": ",";
+        $aOrder = explode(" " , $sOrderBy);
+        $sOrderbySQL .= FlexiModelUtil::parseSQLName($aOrder[0]) . " " . $sOrderType;
+      }
+      $sSQL .= !empty($sOrderbySQL) ? " order by " . $sOrderbySQL : "";
     }
-    $sSQL .= !empty($sOrderbySQL) ? " order by " . $sOrderbySQL : "";
     
     if ($iLimit > 0 ) {
       $sSQL .= " limit " . $iLimit . " offset " . $iOffset;

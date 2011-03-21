@@ -148,7 +148,7 @@ class FlexiStringUtil
    * @return String
    * @refer http://www.php.net/manual/en/function.strip-tags.php#91498
    */
-  function stripTagsAttributes($string,$allowtags=NULL,$allowattributes=NULL){
+  public static function stripTagsAttributes($string,$allowtags=NULL,$allowattributes=NULL){
     $string = strip_tags($string,$allowtags);
     if (!is_null($allowattributes)) {
         if(!is_array($allowattributes))
@@ -164,5 +164,6 @@ class FlexiStringUtil
     }
     return $string;
   }
+
 
 }

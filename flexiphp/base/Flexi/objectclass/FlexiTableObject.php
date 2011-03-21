@@ -11,29 +11,44 @@ class FlexiTableObject extends FlexiObject {
     $this->aChild["field"] = array();
   }
 
-  public function isValid($oRow, $sType) {
+  public function isValidData($oRow, $sType) {
     try {
-      $this->checkValid();
+      $this->checkValidData($oRow, $sType);
       return true;
     } catch(Exception $e) {
       return false;
     }
   }
 
-  public function checkValidSchema() {
-    if (empty($this->sName)) {
-      throw new Exception("Name is required");
-    }
+  public function checkValid() {
+    parent::checkValid();
+    
     if (empty($this->sTableName)) {
       throw new Exception("Table name is required");
     }
-    if (count($this->aChild["field"]) < 1) {
+
+    if (count($this->getFieldsCount()) < 1) {
       throw new Exception("Fields are required");
+    }
+    if (!FlexiStringUtil::isCleanName($this->sTableName)) {
+      throw new Exception("Invalid value for table name");
+    }
+
+    $aFields = & $this->aChild["field"];
+    foreach($aFields as $sName => $oField) {
+      //only check active, none deleted only
+      if ($oField->status==1) {
+        if ($oField->dbtype == "text") {
+          if (!empty($oField->default) && strtolower($oField->default) != "null") {
+            throw new Exception("DbType text cannot have default value");
+          }
+        }
+      }
     }
   }
 
   public function checkValidData($oRow, $sType) {
-    
+    //TODO
   }
 
   public function getNewRow() {
@@ -48,6 +63,22 @@ class FlexiTableObject extends FlexiObject {
   
   public function getTableName() {
     return $this->sTableName;
+  }
+
+  public function getListFields() {
+    $aResult = array();
+    foreach($this->aChild["field"] as $sName => $oField) {
+      if ($oField->canlist) $aResult[] = $sName;
+    }
+    return $aResult;
+  }
+
+  public function getPrimaryFields() {
+    $aResult = array();
+    foreach($this->aChild["field"] as $sName => $oField) {
+      if ($oField->primary) $aResult[] = $sName;
+    }
+    return $aResult;
   }
 
   public function existsField($sName) {

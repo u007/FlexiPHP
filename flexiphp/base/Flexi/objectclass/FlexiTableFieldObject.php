@@ -24,6 +24,7 @@ class FlexiTableFieldObject extends FlexiObject {
   protected $allowtag = ""; //basic / advanced / safe / all / noscript / noframe / noobject / ...
 
   protected $formsize = "25";
+  protected $linkname = "";
 
   protected $rawvalue = null;
   
@@ -132,6 +133,9 @@ class FlexiTableFieldObject extends FlexiObject {
   }
 
   public function  __get($name) {
+    if ($name == "linkname" && empty($this->linkname)) {
+      return $this->getName();
+    }
     return $this->$name;
   }
 
@@ -139,7 +143,7 @@ class FlexiTableFieldObject extends FlexiObject {
     return array(
       "sName", "type", "label", "dbtype", "precision", "default", "cannull", "autonumber",
       "unique", "oldname", "oldtype", "primary", "caninsert", "canupdate", "inputinsert", 
-      "inputupdate", "canlist", "allowhtml", "allowtag", "formsize");
+      "inputupdate", "canlist", "allowhtml", "allowtag", "formsize", "linkname");
   }
 }
 

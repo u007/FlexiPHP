@@ -35,34 +35,12 @@ class FlexiObject {
     if (empty($this->sName)) {
       throw new Exception("Name is required");
     }
-    if (empty($this->sTableName)) {
-      throw new Exception("Table name is required");
-    }
     if (empty($this->iVersion)) {
       throw new Exception("Version is required");
     }
-    if (count($this->getFieldsCount()) < 1) {
-      throw new Exception("Fields are required");
-    }
-
+    
     if (!FlexiStringUtil::isCleanName($this->sName)) {
       throw new Exception("Invalid value for name");
-    }
-
-    if (!FlexiStringUtil::isCleanName($this->sTableName)) {
-      throw new Exception("Invalid value for table name");
-    }
-
-    $aFields = & $this->aChild["field"];
-    foreach($aFields as $sName => $aValue) {
-      //only check active, none deleted only
-      if ($aValue["status"]==1) {
-        if ($aValue["dbtype"] == "text") {
-          if (!empty($aValue["default"]) && strtolower($aValue["default"]) != "null") {
-            throw new Exception("DbType text cannot have default value");
-          }
-        }
-      }
     }
   }
 

@@ -4,12 +4,22 @@ class FlexiBaseViewManager {
   protected $oView = null;
   protected $oObjectListManager = null;
   protected $sFieldPrefix = "field";
+  protected $sListLinkCol = "id";
+  
   public function  __construct($aParam) {
     //parent::__construct($aParam);
   }
 
+  public function getListLinkCol($sName) {
+    $this->sListLinkCol = $sName;
+  }
+
   public function setFormFieldPrefix($sPrefix) {
     $this->sFieldPrefix = $sPrefix;
+  }
+
+  public function getFormFieldPrefix() {
+    return $this->sFieldPrefix;
   }
 
   public function setView(FlexiView &$oView) {
@@ -19,6 +29,77 @@ class FlexiBaseViewManager {
   public function setObjectListManager(FlexiObjectListManager $oManager) {
     $this->oObjectListManager = $oManager;
   }
+  /**
+   * Prepare data for listing
+   *  work closely with method prepareListHeader
+   * @param array $aCond
+   * @param array $aGroupBy
+   * @param array $aOrder
+   * @param String $sSelect
+   * @param int $iLimit
+   * @param int $iOffset
+   */
+  public function getQueryDisplayList($aCond, $aGroupBy, $aOrder, $sSelect, $iLimit, $iOffset) {
+    $aList = $this->oObjectListManager->doTableQuery($aCond, $aGroupBy, $aOrder, $sSelect, $iLimit, $iOffset);
+    //may add additional fields
+    $aResult = array();
+    for($c = 0; $c < count($aList); $c++) {
+      $oRow = $aList[$c];
+      $aPrimary = $this->getPrimaryLink($oRow);
+      //$sLink = $this->oView->getVar("sLoadURL") . "&" . http_build_query($aLink);
+      $oResultRow = $this->getDisplayRow($oRow);
+      $oResultRow["_link"] = $aPrimary["link"];
+      $oResultRow["_primary"] = $aPrimary["primary"];
+      $oResultRow[$this->sListLinkCol] = "<a href='javascript:' onClick='" . $aPrimary["link"].  "'>" . $oResultRow[$this->sListLinkCol] . "</a>";
+      $aResult[] = $oResultRow;
+    }
+    return $aResult;
+  }
+
+  public function getPrimaryLink($oRow) {
+    $oTable = $this->oObjectListManager->getObject();
+    $aPrimary = $this->oObjectListManager->getPrimaryValue($oRow);
+    $aAlias = array();
+    foreach($aPrimary as $sField => $sValue) {
+      $aAlias[$oTable->aChild["field"][$sField]->linkname] = $sValue;
+    }
+    $this->onGetPrimaryLink($aAlias);
+    $aLink = $this->jsCleanArray($aAlias);
+    $sLink = "doLoadObject(" . json_encode($aLink) . ")";
+    
+    return array("primary" => $aAlias, "link" => $sLink);
+  }
+  /**
+   * passed in value is alias name of primary
+   * @param array $aPrimary
+   */
+  public function onGetPrimaryLink(&$aPrimary) {}
+
+  public function getInputRow($oRow, $sType) {
+    $aResult = array();
+    $oTable = $this->oObjectListManager->getObject();
+    foreach($oRow as $sField => $sValue) {
+      $aResult[$sField] = $this->getFieldDisplay($oTable->aChild["field"][$sField], $oRow);
+    }
+    return $aResult;
+  }
+
+  public function getDisplayRow($oRow) {
+    $aResult = array();
+    $oTable = $this->oObjectListManager->getObject();
+    foreach($oRow as $sField => $sValue) {
+      $aResult[$sField] = $this->getFieldDisplay($oTable->aChild["field"][$sField], $oRow);
+    }
+    return $aResult;
+  }
+  
+  public function jsCleanArray($aValue, $sep="\"") {
+    $aResult = array();
+    foreach($aValue as $sKey => $sValue) {
+      $aResult[$sKey] = str_replace($sep, "\\" . $sep, $sValue);
+    }
+    return $aResult;
+  }
 
   public function prepareListHeader() {
     if (is_null($this->oView)) throw new Exception("View not set");
@@ -26,11 +107,16 @@ class FlexiBaseViewManager {
     
     $oObject = $this->oObjectListManager->getObject();
     $this->oView->addVar("aFieldHeader", $this->renderFieldsListHeader($oObject));
+
+    $aListField = $oObject->getListFields();
+    $this->oView->addVar("aListFieldName", $aListField);
   }
 
   public function prepareForm($oRow, $sType) {
     $oObject = $this->oObjectListManager->getObject();
-    $this->oView->addVar("aFieldsInput", $this->renderFieldsInput($oObject, $oRow, $sType));
+    $aFieldsInput = $this->renderFieldsInput($oObject, $oRow, $sType);
+    $this->oView->addVar("aFieldsInput", $aFieldsInput);
+    return $aFieldsInput;
   }
 
   public function renderFieldsListHeader(FlexiTableObject $oTable) {
@@ -128,6 +214,8 @@ class FlexiBaseViewManager {
   public function renderFieldInputForm(FlexiTableFieldObject $oField, $oRow, $sType) {
     $sInputName = "input" . $sType;
     $sFormInput = $oField->$sInputName;
+
+    $sOutput = "";
     switch ($sFormInput) {
       case "edit":
         $oForm = $this->getFieldInput($oField, $oRow);
@@ -135,14 +223,14 @@ class FlexiBaseViewManager {
         $sOutput = $this->oView->renderMarkup($oForm, $oForm["#name"]);
         break;
       case "readonly":
-        $sOutput = $this->getFieldDisplay($oField, $oRow);
-        break;
+        $sOutput = $this->getFieldDisplay($oField, $oRow) . "\n";
+        //continue to output hidden field
       case "hidden":
         $oFieldConfig = clone($oField);
         $oFieldConfig->type = "hidden";
         $oForm = $this->getFieldInput($oFieldConfig, $oRow);
         $this->onRenderFieldInput($oForm, $oField, $oRow, $sType);
-        $sOutput = $this->oView->renderMarkup($oForm, $oForm["#name"]);
+        $sOutput .= $this->oView->renderMarkup($oForm, $oForm["#name"]);
         break;
     }
     
@@ -161,14 +249,14 @@ class FlexiBaseViewManager {
 
     if ($oField->allowhtml) {
       if(!empty($oField->allowtag)) {
-        $aSafe = $this->getFieldSafeTag($oField);
+        $aSafe = $this->getFieldSafeTags($oField);
         $sTag = implode(",", $aSafe["tag"]); $aAttribute = $aSafe["attribute"];
         $mValue = FlexiStringUtil::stripTagsAttributes($mValue, $sTag, $aAttribute);
       }
     } else {
       $mValue = strip_tags($mValue);
     }
-    return $mValuel;
+    return $mValue;
   }
 
   
@@ -183,7 +271,7 @@ class FlexiBaseViewManager {
   public function isSafeFieldValue(FlexiTableFieldObject $oField, $oRow) {
     $sValue = $oRow[$oField->getName()];
     //todo
-    $aSafe = $this->getFieldSafeTag($oField);
+    $aSafe = $this->getFieldSafeTags($oField);
     
     return true;
   }
@@ -191,8 +279,8 @@ class FlexiBaseViewManager {
   public function getFieldSafeTags(FlexiTableFieldObject $oField) {
     $aResultTag = array();
     $aAttribute = array();
-    $aTag = explode($oField->allowtag);
-
+    $aTag = explode(",", $oField->allowtag);
+    
     //banned: onmouse..., onclick, link, vlink
     $aAttribute = array(
       "abr", "accept-charset", "accept", "accesskey",
