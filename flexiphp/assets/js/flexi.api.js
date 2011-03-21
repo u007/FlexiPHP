@@ -1,5 +1,14 @@
 var _targetPickElement = {fieldvalue:"",fieldlabel:""};
 
+function cloneObject(target) {
+  var newObj = (target instanceof Array) ? [] : {};
+  for (i in target) {
+    if (target[i] && typeof target[i] == "object") {
+      newObj[i] = cloneObject(target[i]);
+    } else newObj[i] = target[i];
+  }
+  return newObj;
+}
 
 function doAjaxRenderOptionList(sURL, sTarget, aData) {
   doAjaxCall(sURL, aData, "GET", function(sResult) {

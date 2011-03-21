@@ -22,6 +22,11 @@ class FlexiConfig
 	public static $aQueryString = array();
 	
 	public static $aModuleURL = array();
+  public static $sTinyMCEExternalLink = "";
+  public static $sTinyMCEExternalMedia = "";
+  public static $sTinyMCEExternalImage = "";
+
+  public static $sTinyMCEContentCSS = "";
 	
 	public static $iLogLevel = 3;
 	public static $sLogFile = "";
@@ -120,6 +125,18 @@ class FlexiConfig
 		self::$sDBPass 			= $aConfig["dbpass"];
 		self::$sDBName 			= $aConfig["dbname"];
 		self::$sDBPrefix 		= $aConfig["dbprefix"];
+
+    self::$sTinyMCEExternalLink = empty($aConfg["tinymce.externallink"]) ?
+      "": $aConfg["tinymce.externallink"];
+
+    self::$sTinyMCEExternalImage = empty($aConfg["tinymce.externalimage"]) ?
+      "": $aConfg["tinymce.externalimage"];
+    
+    self::$sTinyMCEExternalMedia = empty($aConfg["tinymce.externalmedia"]) ?
+      "": $aConfg["tinymce.externalmedia"];
+
+    self::$sTinyMCEContentCSS = empty($aConfig["tinymce.contentcss"]) ?
+      "": $aConfg["tinymce.contentcss"];
 
     self::$sMailer = isset($aConfig["mailer"]) ? $aConfig["mailer"] : self::$sMailer;
     self::$sMailerUserId = isset($aConfig["mailer.userid"]) ? $aConfig["mailer.userid"] : self::$sMailerUserId;

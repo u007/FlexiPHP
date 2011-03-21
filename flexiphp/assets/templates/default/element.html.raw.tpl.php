@@ -6,20 +6,22 @@ $mValue = isset($vars["#value"]) ?
 $bDisabled = isset($vars["#disabled"]) ? $vars["#disabled"] : false;
 $sRequired = isset($vars["#required"]) ?
 	($vars["#required"] ? "<span class=\"required\">*</span>": "") : "";
-	
+
+$sMCEType = isset($vars["#mcetype"]) ? $vars["#mcetype"]: "mceEditor";
+
 if(! isset($vars["#attributes"]))
 {
-	$vars["#attributes"] = array("class" => "mceEditor");
+	$vars["#attributes"] = array("class" => $sMCEType);
 }
 else
 {
 	if (!isset($vars["#attributes"]["class"]))
 	{
-		$vars["#attributes"]["class"] = "mceEditor";
+		$vars["#attributes"]["class"] = $sMCEType;
 	}
 	else
 	{
-		$vars["#attributes"]["class"] .= empty($vars["#attributes"]["class"]) ? "mceEditor" : " mceEditor";
+		$vars["#attributes"]["class"] .= empty($vars["#attributes"]["class"]) ? $sMCEType : " " .  $sMCEType;
 	}
 }
 
