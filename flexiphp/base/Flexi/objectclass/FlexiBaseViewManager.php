@@ -170,7 +170,9 @@ class FlexiBaseViewManager {
       if (!$this->onBeforeRenderFieldInput($oField, $sType)) continue;
       
       $sCheck = "can" . $sType;
+      //echo "check: " . $sCheck . ":" . $sName . "\n";
       if ($oField->$sCheck) {
+        //echo "ok check\n";
         $sOutput = $this->renderFieldInputForm($oField, $oRow, $sType);
         $sLabel  = $this->renderFieldInputLabel($oField, $sType);
         
@@ -246,6 +248,23 @@ class FlexiBaseViewManager {
   public function getFieldDisplay(FlexiTableFieldObject $oField, $oRow) {
     $sName = $oField->getName();
     $mValue = $oRow[$sName];
+
+    switch($oField->type) {
+      case "select-text":
+      case "select-tinyint":
+      case "select-int":
+        if (!empty($oField->options)) {
+          $aOptions = explode("\n", $oField->options);
+          $aResultOptions = array();
+          foreach($aOptions as $sOption) {
+            $aOption = explode("=", $sOption);
+            $sKey = $aOption[0];
+            $sLabel = count($aOption) > 1? $aOption[1]: $sKey;
+            if ($mValue == $sKey) $mValue = $sLabel;
+          }
+        }
+        break;
+    }
 
     if ($oField->allowhtml) {
       if(!empty($oField->allowtag)) {
@@ -407,6 +426,11 @@ class FlexiBaseViewManager {
       case "text":
         $aResult["#type"] = "textarea.raw";
         break;
+      case "select-text":
+      case "select-int":
+      case "select-tinyint":
+        $aResult["#type"] = "select.raw";
+        break;
       case "json":
         $aResult["#type"] = "textarea.raw";
         break;
@@ -431,6 +455,23 @@ class FlexiBaseViewManager {
           $aSize = explode(",",$oField->formsize);
           $aResult["#rows"] = $aSize[0];
           if (count($aSize)>=2) $aResult["#cols"] = $aSize[1];
+          break;
+
+        case "select-text":
+        case "select-int":
+        case "select-tinyint":
+          if (!empty($oField->options)) {
+            $aOptions = explode("\n", $oField->options);
+            $aResultOptions = array();
+            foreach($aOptions as $sOption) {
+              $aOption = explode("=", $sOption);
+              $sKey = $aOption[0];
+              $sValue = count($aOption) > 1? $aOption[1]: $sKey;
+              $aResultOptions[$sKey] = $sValue;
+            }
+            $aResult["#options"] = $aResultOptions;
+          }
+          
           break;
         default:
           $aResult["#size"] = $oField->formsize;

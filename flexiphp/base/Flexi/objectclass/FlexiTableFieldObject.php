@@ -25,6 +25,7 @@ class FlexiTableFieldObject extends FlexiObject {
 
   protected $formsize = "25";
   protected $linkname = "";
+  protected $options  = "";
 
   protected $rawvalue = null;
   
@@ -50,7 +51,7 @@ class FlexiTableFieldObject extends FlexiObject {
   }
 
   public function  __set($name, $value) {
-
+    //echo __METHOD__ . ": " . $name . "=" . $value . "\n";
     switch($name) {
       case "dbtype":
         throw new Exception("Cannot directly set dbtype");
@@ -65,6 +66,15 @@ class FlexiTableFieldObject extends FlexiObject {
         $sPrecision = $this->precision;
         $sDBType = empty($this->dbtype) ? "varchar": $this->dbtype;
         switch(strtolower($sType)) {
+          case "select-tinyint":
+            $sDBType = "tinyint";
+            break;
+          case "select-int":
+            $sDBType = "int";
+            break;
+          case "select-text":
+            $sDBType = "varchar";
+            if (empty($sPrecision)) $sPrecision = "100";
           case "html":
             $sDBType = empty($sPrecision) && $sPrecision <=1000 ? "varchar": "text";
             if (empty($sPrecision)) $sPrecision = "255";
@@ -143,7 +153,7 @@ class FlexiTableFieldObject extends FlexiObject {
     return array(
       "sName", "type", "label", "dbtype", "precision", "default", "cannull", "autonumber",
       "unique", "oldname", "oldtype", "primary", "caninsert", "canupdate", "inputinsert", 
-      "inputupdate", "canlist", "allowhtml", "allowtag", "formsize", "linkname");
+      "inputupdate", "canlist", "allowhtml", "allowtag", "formsize", "linkname", "options");
   }
 }
 

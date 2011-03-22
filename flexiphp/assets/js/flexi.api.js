@@ -1,5 +1,24 @@
 var _targetPickElement = {fieldvalue:"",fieldlabel:""};
 
+
+function doFillCombo(target, data) {
+  var sLastValue = jQuery(target).val();
+  jQuery(target + " option").remove();
+
+  for(var i in data) {
+    if (isInt(i) && data[i].data) {
+      jQuery(target).append(
+        "<option value='" + data[i].data + "'>" + data[i].label + "</option>\n"
+      );
+    } else {
+      jQuery(target).append(
+        "<option value='" + i + "'>" + data[i] + "</option>\n"
+      );
+    }
+  }
+  jQuery(target).val(sLastValue);
+}
+
 function cloneObject(target) {
   var newObj = (target instanceof Array) ? [] : {};
   for (i in target) {
@@ -16,10 +35,11 @@ function doAjaxRenderOptionList(sURL, sTarget, aData) {
 
     if (aResult.status==1) {
       var aData = aResult['return'];
-      jQuery(sTarget + " option").remove();
-      for(var c=0; c<aData.length; c++) {
-        jQuery(sTarget).append("<option value='" + aData[c].data + "'>" + aData[c].label + "</option>");
-      }
+      doFillCombo(aData);
+      //jQuery(sTarget + " option").remove();
+      //for(var c=0; c<aData.length; c++) {
+      //  jQuery(sTarget).append("<option value='" + aData[c].data + "'>" + aData[c].label + "</option>");
+      //}
     }
   });
 }
