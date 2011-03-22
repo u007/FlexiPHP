@@ -48,7 +48,40 @@ class FlexiTableObject extends FlexiObject {
   }
 
   public function checkValidData($oRow, $sType) {
-    //TODO
+    foreach($this->aChild["field"] as $sName => $oField) {
+      //only check active, none deleted only
+      if ($oField->status==1) {
+        //check nulls
+        $sDBType = $oField->dbtype;
+        $sValue = $orow[$sField];
+        $sLabel = $oField->label;
+        
+        if ($oField->cannull) {
+          $sField = $oField->getName();
+          if (!isset($oRow[$sField])) {
+            throw new Exception("Field " . $oField->label . " is required");
+          }
+          if (strlen($oRow[$sField]) < 1) {
+            throw new Exception("Field " . $oField->label . " is required");
+          }
+        }
+
+        if (strlen($sValue."") > 0) {
+          switch($sDBType) {
+            case "tinyint":
+            case "int":
+              if (!is_int($sValue)) { throw new Exception("Field " . $sLabel . " is not a number"); }
+            case "tinyint":
+              if ($sValue < -127 || $sValue > 127) { throw new Exception("Field " . $sLabel . " is invalid"); }
+            case "double":
+            case "decimal":
+              if (!is_numeric($sValue)) { throw new Exception("Field " . $sLabel . " is not a number"); }
+            
+          }
+        } //end if
+      }//status
+    }//foreach fields
+    
   }
 
   public function getNewRow() {

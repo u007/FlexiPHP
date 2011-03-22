@@ -5,9 +5,90 @@ class FlexiBaseViewManager {
   protected $oObjectListManager = null;
   protected $sFieldPrefix = "field";
   protected $sListLinkCol = "id";
+  protected $aView = array();
   
   public function  __construct($aParam) {
     //parent::__construct($aParam);
+  }
+
+  /**
+   * Render a view template of a child/other view
+   *  and assign to main view as a variable
+   * @param String $sName Child view name
+   * @param String $sView view template
+   * @param String $sVarName var name for main view
+   */
+  public function renderChildView($sName, $sView, $sVarName) {
+    $sHTML = $this->renderView($sView, $sName);
+    $this->oView->addVar($sVarName, $sHTML);
+  }
+  /**
+   * Render a view template,
+   *  empty for main view, if sTargetView specified, will be child / other view
+   * @param String $sView view template
+   * @param String $sTargetView target view object
+   * @return String
+   */
+  public function renderView($sView, $sTargetView="") {
+    if (empty($sTargetView)) {
+      return $this->oView->render($sView);
+    }
+
+    return $this->getView($sTargetView)->render($sView);
+  }
+
+  public function onSetView($sName) {}
+  /**
+   * Set DB Form Prefix, will be used in template
+   * @param String $sPrefix
+   */
+  public function setViewDBFormPrefix($sPrefix) {
+    $this->oView->addVar("sViewDBFormPrefix", $sPrefix);
+  }
+
+  public function setView(FlexiView &$oView, $sName="") {
+    if (empty($sName)) {
+      $this->oView = &$oView;
+    }
+    if (isset($this->aView[$sName])) {
+      throw new Exception("View instance already exists: " . $sName);
+    }
+    $this->aView[$sName] = &$oView;
+
+    $this->onSetView($sName);
+  }
+
+  /**
+   * Get view instances
+   * @param <type> $sName
+   * @return <type>
+   */
+  public function getView($sName="") {
+    if (empty($sName)) return $this->oView;
+    if (!isset($this->aView[$sName])) {
+      throw new Exception("View instance does not exists: " . $sName);
+    }
+    return $this->aView[$sName];
+  }
+
+  /**
+   * create new view instances
+   *  will copy existing view to populate controller path and module
+   * @param String $sName
+   */
+  public function getNewView($sName) {
+    if (is_null($oView)) {
+      throw new Exception("Main view not set");
+    }
+    $oMainView = $this->oView;
+    $oView = new FlexiView();
+    $oView->addVar("#module", $oMainView->getVar("#module"));
+    $oView->addVar("#method", $oMainView->getVar("#method"));
+    $oView->addVar("#modulepath", $oMainView->getVar("#modulepath"));
+    $oView->addVar("#moduleurl", $oMainView->getVar("#moduleurl"));
+    $oView->addVar("#modulepath", $oMainView->getVar("#modulepath"));
+    
+    $this->setView($oView, $sName);
   }
 
   public function getListLinkCol($sName) {
@@ -22,10 +103,7 @@ class FlexiBaseViewManager {
     return $this->sFieldPrefix;
   }
 
-  public function setView(FlexiView &$oView) {
-    $this->oView = $oView;
-  }
-
+  
   public function setObjectListManager(FlexiObjectListManager $oManager) {
     $this->oObjectListManager = $oManager;
   }
@@ -65,7 +143,7 @@ class FlexiBaseViewManager {
     }
     $this->onGetPrimaryLink($aAlias);
     $aLink = $this->jsCleanArray($aAlias);
-    $sLink = "doLoadObject(" . json_encode($aLink) . ")";
+    $sLink = $this->oView->getVar("sViewDBFormPrefix") . "doLoadObject(" . json_encode($aLink) . ")";
     
     return array("primary" => $aAlias, "link" => $sLink);
   }

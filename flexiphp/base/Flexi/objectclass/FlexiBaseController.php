@@ -261,6 +261,7 @@ abstract class FlexiBaseController
 
 		return $aResult;
 	}
+
   /**
    * Run control with custom view variable name or no render view
    * @param String $asMethod

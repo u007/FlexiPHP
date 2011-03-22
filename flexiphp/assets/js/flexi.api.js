@@ -1,6 +1,15 @@
 var _targetPickElement = {fieldvalue:"",fieldlabel:""};
 
 
+function toogleCheckAll(check, target, sPrefix) {
+  //toggle all checkbox based on target.checked, but must start with sprefix input name
+  if (check.checked) {
+    jQuery(target + " input[name*=check]").attr("checked", "checked");
+  } else {
+    jQuery(target + " input[name*=check]").removeAttr("checked");
+  }
+}
+
 function doFillCombo(target, data) {
   var sLastValue = jQuery(target).val();
   jQuery(target + " option").remove();
