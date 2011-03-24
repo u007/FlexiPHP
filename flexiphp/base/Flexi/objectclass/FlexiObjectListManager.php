@@ -20,6 +20,31 @@ class FlexiObjectListManager extends FlexiLogManager {
     $this->oObject = $this->getManager()->load($sName);
   }
 
+
+  public function deleteRows($oCond) {
+    $sTable = $this->oObject->sTableName;
+
+    $aCond = is_array($oCond)? $oCond: get_object_vars($oCond);
+    $aCond = $this->loadConditionByAlias($aCond);
+    $aWhere = FlexiModelUtil::parseSQLCond($aCond);
+    if (empty($aWhere["sql"])) throw new Exception("No condition specified");
+    //var_dump($aCond);
+    $sSQL = "delete from " . FlexiModelUtil::getSQLName($sTable) . " where ".
+      $aWhere["sql"];
+    //echo "SQL: " . $sSQL;
+    return FlexiModelUtil::getInstance()->getXPDOExecute($sSQL, $aWhere["param"]);
+  }
+
+  public function loadConditionByAlias($aCond) {
+    $oTable = $this->getObject();
+    $aResult = array();
+    foreach($aCond as $sField => $sValue) {
+      $oField = $oTable->getFieldByAlias($sField);
+      $aResult[$oField->getName()] = $sValue;
+    }
+    return $aResult;
+  }
+
   public function storeObjectRow(&$oRow, &$sType) {
     $bDebug = false;
     if (! $this->validateFieldData($oRow, $sType)) {

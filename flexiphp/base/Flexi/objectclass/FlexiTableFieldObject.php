@@ -65,6 +65,7 @@ class FlexiTableFieldObject extends FlexiObject {
       case "allowhtml":
       case "canlist":
         if ($value != 1 && !empty($value)) throw new Exception("Invalid " . $name . ": ". $value);
+        break;
       case "type":
         $sType = $value;
         $sPrecision = $this->precision;

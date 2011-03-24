@@ -28,6 +28,31 @@ function doFillCombo(target, data) {
   jQuery(target).val(sLastValue);
 }
 
+function jsonEncodeObject(target, delimiter) {
+  var delimiter = !delimiter ? "\"": delimiter;
+  if (typeof(target) == "object") {
+    var aResult = [];
+    for (i in target) {
+      if (target[i] && typeof target[i] == "object") {
+        aResult[aResult.length] = delimiter+i+delimiter + ": " + jsonEncodeObject(target[i], delimiter) + "";
+      } else aResult[aResult.length] = delimiter+i+delimiter + ": " + delimiter + target[i] + delimiter;
+    }
+    var result = "{" + aResult.join(",") + "}";
+    //console.log(result);
+    return result;
+  } else {
+    return delimiter + target + delimiter;
+  }
+}
+
+function objectToURL(object) {
+  var aResult = [];
+  for(i in object) {
+    aResult[aResult.length] = i + "=" + escape(object[i]);
+  }
+  return aResult.join("&");
+}
+
 function cloneObject(target) {
   var newObj = (target instanceof Array) ? [] : {};
   for (i in target) {

@@ -84,6 +84,15 @@ class FlexiTableObject extends FlexiObject {
     
   }
 
+  public function getFieldByAlias($sName) {
+    foreach($this->aChild["field"] as $sField => &$oField) {
+      if ($oField->linkname==$sName) {
+        return $oField;
+      }
+    }
+    throw new Exception("No such field by alias: " . $sName);
+  }
+
   public function getNewRow() {
     $bDebug = false;
     $oResult = array();
@@ -173,7 +182,7 @@ class FlexiTableObject extends FlexiObject {
 	  case "datetime":
 	    return date(FlexiConfig::$sDisplayDateFormat, strtotime($mRaw));
 	  default:
-	    throw new Exception("Unknown field type: " . $sType);
+	    throw new Exception(__METHOD__ . ":Unknown field type: " . $sType);
     }
   }
   

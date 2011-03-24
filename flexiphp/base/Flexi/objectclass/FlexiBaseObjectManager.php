@@ -54,7 +54,14 @@ class FlexiBaseObjectManager {
   public function store($sFile, $data, $sPrefix="") {
     $sPath = $this->sPath;
     $sWriteFile = $sPath . "/" . $sPrefix . $sFile;
-    if (!file_put_contents($sWriteFile, serialize($data))) {
+
+    $sWriteData = serialize($data);
+    $sWriteData = str_replace("\"", "\\\"", $sWriteData);
+    $sWriteData = "<" . "?\n" . 
+      "$" . "_tmp=\"" . $sWriteData . "\";\n" . 
+      "";
+      
+    if (!file_put_contents($sWriteFile, $sWriteData)) {
       throw new FlexiException("Unable to write: " . $sWriteFile, ERROR_WRITE);
     }
     return $sWriteFile;
@@ -72,11 +79,27 @@ class FlexiBaseObjectManager {
     return $this->loadFile($sReadFile);
   }
 
+  /**
+   * Load a saved file
+   *  old version is directly a file, but new version is a php code,
+   *  which content $_tmp='[serialized content]';
+   * @param <type> $sFile
+   * @return <type>
+   */
   public function loadFile($sFile) {
     if (!file_exists($sFile)) {
       throw new Exception("No such file: " . $sFile);
     }
-    return unserialize(file_get_contents($sFile));
+    $sContent = file_get_contents($sFile);
+    
+    if (substr($sContent,0,2)=="<" . "?") {
+      //is new version
+      require($sFile);
+      return unserialize($_tmp);
+    } else {
+      //old version is plain file
+      return unserialize($sContent);
+    }
   }
   
   
