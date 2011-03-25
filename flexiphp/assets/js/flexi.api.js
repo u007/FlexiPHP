@@ -1,6 +1,12 @@
 var _targetPickElement = {fieldvalue:"",fieldlabel:""};
 
 
+function strReplace(sFind, sReplace, sTarget) {
+  if (!sTarget) return sTarget;
+
+  return sTarget.replace(eval("/" + sFind + "/g"), sReplace)
+}
+
 function toogleCheckAll(check, target, sPrefix) {
   //toggle all checkbox based on target.checked, but must start with sprefix input name
   if (check.checked) {

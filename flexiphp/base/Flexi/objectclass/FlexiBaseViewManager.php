@@ -46,6 +46,10 @@ class FlexiBaseViewManager {
     $this->oView->addVar("sViewDBFormPrefix", $sPrefix);
   }
 
+  public function getViewDBFormPrefix() {
+    return $this->oView->getVar("sViewDBFormPrefix");
+  }
+
   public function setView(FlexiView &$oView, $sName="") {
     if (empty($sName)) {
       $this->oView = &$oView;
@@ -168,8 +172,11 @@ class FlexiBaseViewManager {
     foreach($oRow as $sField => $sValue) {
       $aResult[$sField] = $this->getFieldDisplay($oTable->aChild["field"][$sField], $oRow);
     }
+    $this->onGetDisplayRow($aResult, $oRow);
     return $aResult;
   }
+
+  public function onGetDisplayRow(&$oResult, $oRow){}
   
   public function jsCleanArray($aValue, $sep="\"") {
     $aResult = array();
@@ -184,11 +191,15 @@ class FlexiBaseViewManager {
     if (is_null($this->oObjectListManager)) throw new Exception("ObjectListManager not set");
     
     $oObject = $this->oObjectListManager->getObject();
-    $this->oView->addVar("aFieldHeader", $this->renderFieldsListHeader($oObject));
-
+    $aHeaderFields = $this->renderFieldsListHeader($oObject);
+    $this->oView->addVar("aFieldHeader", $aHeaderFields);
+    
     $aListField = $oObject->getListFields();
+    $this->onGetFieldList($aListField);
     $this->oView->addVar("aListFieldName", $aListField);
   }
+
+  public function onGetFieldList(&$aListField) {}
 
   public function prepareForm($oRow, $sType) {
     $oObject = $this->oObjectListManager->getObject();
@@ -209,8 +220,11 @@ class FlexiBaseViewManager {
         $aResult[$oField->sName] = $sOutput;
       }
     }
+    $this->onRenderFieldListHeader($aResult);
     return $aResult;
   }
+
+  public function onRenderFieldListHeader(&$aHeaderFields) {}
 
   public function renderFieldHeader(FlexiTableFieldObject $oField) {
     return $oField->label;

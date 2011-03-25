@@ -152,9 +152,12 @@ class FlexiObjectListManager extends FlexiLogManager {
   public function loadObjectRow($aCond, & $sSelect=null, & $aGroupBy=null, & $aOrderby=null) {
     $sTable = $this->oObject->getTableName();
     $stmt = $this->_doQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect);
-    $aResult = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $aResult;
+    $oRow = $stmt->fetch(PDO::FETCH_ASSOC);
+    $this->onLoadRow($oRow, $aCond, $sSelect, $aGroupBy, $aOrderby);
+    return $oRow;
   }
+  
+  public function onLoadRow(&$oRow, $aCond, $sSelect, $aGroupBy, $aOrderby) {}
   /**
    * Get all fields name
    * @return array
@@ -197,9 +200,13 @@ class FlexiObjectListManager extends FlexiLogManager {
     return $this->oObject;
   }
   
-  public function getNewObjectRow() {
-    return $this->oObject->getNewRow();
+  public function getNewObjectRow($aParam=array()) {
+    $oRow = & $this->oObject->getNewRow();
+    $this->onNewRow($oRow, $aParam);
+    return $oRow;
   }
+
+  public function onNewRow(& $oRow, $aParam) {}
   /**
    * Pass in parameter to get query SQL
    * @param String $sTable
@@ -268,11 +275,14 @@ class FlexiObjectListManager extends FlexiLogManager {
 
   public function doQuery($sTable="", & $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
     //echo "sql: " . $sResultSQL;
+    $this->onDoQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $stmt = $this->_doQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     
     $aResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $aResult;
   }
+
+  public function onDoQuery(&$sTable, &$aCond, &$aGroupBy, &$aOrderby, &$sSelect, &$iLimit, &$iOffset) {}
 
   public function _doQuery($sTable="", & $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
     $xpdo = FlexiModelUtil::getInstance()->getXPDO();

@@ -19,6 +19,9 @@ abstract class FlexiBaseController
 
   protected $aRequestData = null;
 
+  protected $oViewManager = null;
+  protected $oObjectManager = null;
+
   /**
    * @param FlexiView $aoView
    * @param String $asMethod
@@ -38,6 +41,20 @@ abstract class FlexiBaseController
     //$this->checkSetup();
 		$this->onInit();
 	}
+
+  public function setViewManager($sName) {
+    $this->oViewManager = $this->getService($sName);
+    $this->oViewManager->setView($this->oView);
+    $this->oViewManager->setObjectListManager($this->oObjectManager);
+    
+    return $this->oViewManager;
+  }
+
+  public function setObjectManager($sName) {
+    $this->oObjectManager = $this->getService($sName);
+    $this->oView->addVar("service", $this->oObjectManager);
+    return $this->oObjectManager;
+  }
 
   public function loadModelPackage($sName, $sPrefix="") {
     if (FlexiConfig::$sFramework=="modx2") {

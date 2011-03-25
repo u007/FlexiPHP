@@ -61,11 +61,18 @@ $sContentCSS = !empty($vars["tinymce_contentcss"]) ? $vars["tinymce_contentcss"]
 		initializeTinyMCE();
 	});
 
-  function initializeTinyMCE() {
+  function initializeTinyMCE(target) {
+
+    if (target){
+      jQuery(target + ' textarea.mceEditor').tinymce(oTinyMCESetting);
+      jQuery(target + ' textarea.basicMCEEditor').tinymce(oTinyMCEBasicSetting);
+      jQuery(target + ' textarea.advanceMCEEditor').tinymce(oTinyMCEAdvanceSetting);
+    } else {
+      jQuery('textarea.mceEditor').tinymce(oTinyMCESetting);
+      jQuery('textarea.basicMCEEditor').tinymce(oTinyMCEBasicSetting);
+      jQuery('textarea.advanceMCEEditor').tinymce(oTinyMCEAdvanceSetting);
+    }
     //full
-    jQuery('textarea.mceEditor').tinymce(oTinyMCESetting);
     
-    jQuery('textarea.basicMCEEditor').tinymce(oTinyMCEBasicSetting);
-    jQuery('textarea.advanceMCEEditor').tinymce(oTinyMCEAdvanceSetting);
   }
 </script>
