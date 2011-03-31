@@ -82,15 +82,17 @@ class FlexiBaseView
 		}
 		else
 		{
+      //var_dump($this->aVariables);
 			$vars = FlexiArrayUtil::cloneArray($this->aVariables);
 		}
-		
+
 		$vars["#viewpath"] 	= $asPath;
 		$vars["#css"] 			= $this->aHeader["css"];
 		$vars["#js"]				= $this->aHeader["js"];
     $vars["#template"]  = $this->sTemplate;
 
     $sFViewFile = "";
+
     //try framework.viewname, example: modx2.index
     if (! empty(FlexiConfig::$sFramework)) {
       if (substr($sView, 0, strlen(FlexiConfig::$sFramework)+1) != FlexiConfig::$sFramework.".") {
@@ -103,6 +105,7 @@ class FlexiBaseView
         }
       }
     }
+
     //if framework template not found...
     if (empty($sFViewFile)) {
       $sViewFile = $this->getViewFile($sView, $asPath);
@@ -112,7 +115,8 @@ class FlexiBaseView
         return null;
       }
     }
-		
+
+    //echo "rendering view: " . $sViewFile;
 		ob_start();
     //FlexiLogger::info(__METHOD__, "found view: " . $sViewFile);
 		require($sViewFile);
@@ -187,6 +191,7 @@ class FlexiBaseView
     $sViewPath = FlexiConfig::$sTemplatePath . "/" . $this->sTemplate . "/" . $sViewFile . ".tpl.php";
     //if (FlexiConfig::$sFramework == "modx2") echo "trying: " . $sViewFile . " @ " . $sViewPath . "\r\n<br/>";
     //echo $sViewPath;
+    //echo "trying: " . $sViewPath;
     //FlexiLogger::debug(__METHOD__, "Trying: " . $sViewPath);
 		if (is_file($sViewPath))
 		{

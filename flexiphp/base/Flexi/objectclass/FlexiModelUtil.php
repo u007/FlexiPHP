@@ -835,6 +835,30 @@ class FlexiModelUtil
     return $aList;
   }
 
+  public static function getTableList() {
+    static $aCache = array();
+    if ($bCache && isset($aCache[$sName])) return $aCache[$sName];
+    switch(FlexiConfig::$sDBType) {
+      case "mysql":
+        $sSQL = "show tables";
+        $aList = self::getInstance()->getXPDOFetchAll($sSQL);
+        break;
+      default:
+        throw new Exception(__METHOD__ . ": unhandled dbtype: " . FlexiConfig::$sDBType);
+    }
+
+    $aResult = array();
+    foreach($aList as $oTable) {
+      foreach($oTable as $sKey=>$sValue) {
+        $aResult[] = array("name" => $sValue);
+      }
+    }
+
+    if ($bCache) $aCache[$sName] = $aResult;
+
+    return $aResult;
+  }
+
 
   public static function getObjectManager() {
     static $oManager = null;

@@ -22,6 +22,9 @@ abstract class FlexiBaseController
   protected $oViewManager = null;
   protected $oObjectManager = null;
 
+  protected $aCSS = array();
+  protected $aJS  = array();
+
   /**
    * @param FlexiView $aoView
    * @param String $asMethod
@@ -41,6 +44,14 @@ abstract class FlexiBaseController
     //$this->checkSetup();
 		$this->onInit();
 	}
+
+  public function regClientCSS($sPath, $sMedia="all") {
+    $this->oView->addCSS($sPath, $sMedia);
+  }
+
+  public function regClientStartupScript($sPath, $sType="text/javascript") {
+    $this->oView->addJS($sPath, $sType);
+  }
 
   public function setViewManager($sName) {
     $this->oViewManager = $this->getService($sName);
@@ -334,7 +345,6 @@ abstract class FlexiBaseController
       $this->oView->addVar("#moduleurl", substr($sModulePath, strlen($sRootDir)+1));
     }
     
-
     //Flexilogger::debug(__METHOD__, "Calling beforeControl: " . $asMethod);
 		if (! $this->beforeControl($asMethod)) { return false; }
     //Flexilogger::debug(__METHOD__, "Running method: " . $sMethod);
@@ -819,7 +829,6 @@ abstract class FlexiBaseController
 		
 		if (empty($sView)) { return ""; }
 		$sPath = is_null($asPath) ? $this->sModulePath : $asPath;
-		
 		return $this->oView->render($sView, $aVars, $sPath);
 	}
 

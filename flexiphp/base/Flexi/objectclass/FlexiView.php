@@ -24,9 +24,9 @@ class FlexiView extends FlexiBaseView
 	 * Add JS file to header
 	 * @param string path
 	 */
-	public function addJS($sPath)
+	public function addJS($sPath, $sType="text/javascript")
 	{
-		$this->aHeader["js"][] = array("path" => $sPath);
+		$this->aHeader["js"][] = array("path" => $sPath, "type" => $sType);
 	}
 	
 	public function processMarkup(& $aValues, $asName="", $sPath = "")

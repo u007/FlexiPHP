@@ -30,7 +30,7 @@ function flexiURL($sURL, $bAjax = false)
       }
     }
 
-
+    
     if (!FlexiConfig::$bIsAdminPath && $sBaseURL[strlen($sBaseURL)-1] == "/") {
       $sBaseURL .= "flexi." . FlexiConfig::$sFramework . ".php";
     } else if(! FlexiConfig::$bIsAdminPath) {
@@ -42,7 +42,7 @@ function flexiURL($sURL, $bAjax = false)
       $sBaseURL .= "flexi." . FlexiConfig::$sFramework . ".php";
     } else if(FlexiConfig::$sFramework == "modx2" && FlexiConfig::$bIsAdminPath) {
       global $iActionId;
-      $sBaseURL .= "flexi." . FlexiConfig::$sFramework . ".php?a=" . $iActionId;
+      $sBaseURL = dirname($sBaseURL) . "/flexi." . FlexiConfig::$sFramework . ".php?a=" . $iActionId;
     }
 
     if (FlexiConfig::$sFramework != "modx2" && !empty($sQuery)) {
