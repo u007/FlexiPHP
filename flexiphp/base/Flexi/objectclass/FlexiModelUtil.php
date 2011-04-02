@@ -480,14 +480,14 @@ class FlexiModelUtil
         
         $sAliasName = "";
         foreach($aSingleName as $sOneName) {
-          $sAliasName = empty($sAliasName) ? "": ".";
+          $sAliasName .= empty($sAliasName) ? "": ".";
           $sAliasName .= "`" . mysql_real_escape_string($sOneName) . "`";
         }
         $sResult .= $sAliasName;
       }
       return $sResult;
     }
-    return $sName;
+    return $mName;
   }
 
   public static function parseSQLKey($sKey, $sValue) {
@@ -532,14 +532,27 @@ class FlexiModelUtil
       
     } //3condition or more
     if ($bDebug) echo __METHOD__ . ":result type: " . $sType . "<br/>\n";
-
+    
     //$sParamName = ":" . $sField . FlexiStringUtil::createRandomPassword(4);
     $sParamName = ":" . preg_replace("/[^a-zA-Z0-9_]/", "_", $sField) . FlexiStringUtil::createRandomPassword(4);
+
+    switch(strtolower(trim($sOperator))) {
+      case "isnull":
+      case "is null":
+        $sSQL = $sField . " IS NULL";
+        break;
+      case "isnotnull":
+      case "is not null":
+        $sSQL = $sField . " IS NOT NULL";
+        break;
+      default:
+        $sSQL = $sField . " " . $sOperator . " " . $sParamName;
+    }
     
     $aParam[$sParamName] = $sValue;
     return array(
       "type"  => $sType,
-      "sql"   => $sField . " " . $sOperator . " ". $sParamName,
+      "sql"   => $sSQL,
       "param" => $aParam
     );
   }
