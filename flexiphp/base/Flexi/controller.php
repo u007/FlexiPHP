@@ -236,9 +236,12 @@ class FlexiController
 		$oView = new FlexiView();
 		$aResult = $this->_run($asModule, $asMethod, $oView);
     //FlexiLogger::debug(__METHOD__, "after _run");
-    if ($abRenderLayout) { 
+
+    if ($abRenderLayout) {
+      //echo "render layout!";
       $aResult["control"]->renderLayout(); 
     } else {
+      //echo "no layout";
       FlexiController::appendOutput($oView->getVar("body"));
     }
     return $aResult["return"];

@@ -728,6 +728,7 @@ abstract class FlexiBaseController
 	 */
 	public function setLayout($asLayoutTemplate)
 	{
+    //if (empty($asLayoutTemplate)) throw new Exception("someone make empty layout");
 		$this->sLayoutTemplate = $asLayoutTemplate;
 	}
 	
@@ -767,12 +768,13 @@ abstract class FlexiBaseController
         //FlexiController::appendOutput("is render layout: " . $this->sLayoutTemplate);
         FlexiController::appendOutput($this->oView->render($this->sLayoutTemplate, null, $this->sModulePath));
       } else {
+        //echo "ouput: " . $this->sLayoutTemplate . " from: " . $this->sModulePath;
         echo $this->oView->render($this->sLayoutTemplate, null, $this->sModulePath);
       }
 		}
 		else
 		{
-      //echo "no layout";
+      echo __METHOD__.": no layout";
       if (FlexiConfig::$sFramework == "modx2") {
         //FlexiController::appendOutput("is render non-layout");
         FlexiController::appendOutput($this->oView->getVar($this->sRenderViewName));

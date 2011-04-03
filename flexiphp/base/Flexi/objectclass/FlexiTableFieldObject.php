@@ -27,11 +27,13 @@ class FlexiTableFieldObject extends FlexiObject {
   protected $linkname = "";
   protected $options  = "";
 
+  protected $unsigned = false;
+
   protected $rawvalue = null;
   
   public function __construct($sName) {
     parent::__construct($sName, "FlexiTableField");
-
+    $this->label = $sName;
   }
 
   public function  __isset($name) {
@@ -74,16 +76,35 @@ class FlexiTableFieldObject extends FlexiObject {
           case "select-tinyint":
             $sDBType = "tinyint";
             break;
+          case "select-smallint":
+            $sDBType = "smallint";
+            break;
           case "select-int":
             $sDBType = "int";
+            break;
+          case "select-bigint":
+            $sDBType = "bigint";
             break;
           case "select-text":
             $sDBType = "varchar";
             if (empty($sPrecision)) $sPrecision = "100";
+          case "select-enum":
+            $sDBType = "enum";
+            break;
           case "html":
             $sDBType = empty($sPrecision) && $sPrecision <=1000 ? "varchar": "text";
             if (empty($sPrecision)) $sPrecision = "255";
             break;
+          case "html-tiny":
+            $sDBType = "tinytext";
+            break;
+          case "html-medium":
+            $sDBType = "mediumtext";
+            break;
+          case "html-long":
+            $sDBType = "longtext";
+            break;
+          
           case "string":
             $sDBType = "varchar";
             if (empty($sPrecision)) $sPrecision = "255";
@@ -91,10 +112,25 @@ class FlexiTableFieldObject extends FlexiObject {
           case "json":
             $sDBType = "varchar";
             if (empty($sPrecision)) $sPrecision = "500";
+          case "json-tiny":
+            $sDBType = "tinytext";
+          case "json-medium":
+            $sDBType = "mediumtext";
+          case "json-long":
+            $sDBType = "longtext";
           case "text":
               $sDBType = "text";
               //if (empty($sPrecision)) $sPrecision = "255";
               break;
+          case "text-tiny":
+            $sDBType = "tinytext";
+            break;
+          case "text-medium":
+            $sDBType = "mediumtext";
+            break;
+          case "text-long":
+            $sDBType = "longtext";
+            break;
           case "int":
             $sDBType = "int";
             if (empty($sPrecision)) $sPrecision = "11";
@@ -102,11 +138,23 @@ class FlexiTableFieldObject extends FlexiObject {
           case "tinyint":
             $sDBType = "tinyint";
             break;
+          case "smallint":
+            $sDBType = "smallint";
+            break;
+          case "mediumint":
+            $sDBType = "mediumint";
+            break;
+          case "bigint":
+            $sDBType = "bigint";
+            break;
           case "double":
             $sDBType = "double";
             break;
           case "decimal":
             $sDBType = "decimal";
+            break;
+          case "float":
+            $sDBType = "float";
             break;
           case "money":
             $sDBType = "decimal";
@@ -158,7 +206,8 @@ class FlexiTableFieldObject extends FlexiObject {
     return array(
       "sName", "type", "label", "dbtype", "precision", "default", "cannull", "autonumber",
       "unique", "oldname", "oldtype", "primary", "caninsert", "canupdate", "inputinsert", 
-      "inputupdate", "canlist", "allowhtml", "allowtag", "formsize", "linkname", "options");
+      "inputupdate", "canlist", "allowhtml", "allowtag", "formsize", "linkname", "options",
+      "unsigned");
   }
 }
 

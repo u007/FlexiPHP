@@ -11,6 +11,11 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
     return $oObject->checkValid();
   }
 
+  public function import($sName) {
+    $oObject = $this->getImport($sName, $sName);
+    return $this->store($oObject);
+  }
+
   public function sync($sName) {
     $oObject = $this->load($sName);
     return $this->syncObject($oObject);
@@ -35,6 +40,204 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
       $this->logSQL($sSQL);
       return FlexiModelUtil::getInstance()->getXPDOExecute($sSQL);
     }
+  }
+
+  /**
+   * import a table as flexiobject
+   * @param String $sName table
+   * @return FlexiObject
+   */
+  public function getImport($sName, $sTable) {
+    $bExists = $this->exists($sTable);
+    $aField = FlexiModelUtil::getTableSchema($sTable);
+    $oObject = $bExists? $this->load($sName): new FlexiTableObject($sName, $sTable);
+
+    $this->doLog("Importing: " . $sName);
+    foreach($aField as $oField) {
+      $sFieldName = $oField["Field"];
+      $oFieldObject = $oObject->existsField($sFieldName)? $oObject->aChild["field"][$sFieldName] :
+              new FlexiTableFieldObject($sFieldName);
+      $aType = FlexiModelUtil::parseFieldType($oField["Type"]);
+
+      $sType      = $oFieldObject->type;
+      $sPrecision = $aType["precision"];
+      $sDBType    = $aType["type"];
+      $aOptions   = $aType["option"];
+      $bUnsigned  = $aType["unsigned"];
+      //$this->doLog("Field: " . $sFieldName . ", type:" . $sDBType);
+      if (!empty($sType)) {
+        $sDefaultType = $this->getFieldInputTypeByDBType($sDBType);
+        //check on existing type
+        // only special type cannot change to default type
+        switch($sType) {
+          case "select-tinyint":
+          case "select-smallint":
+          case "select-int":
+          case "select-text":
+          case "select-enum":
+          case "select-bigint":
+            switch($sDBType) {
+              case "int":
+              case "smallint":
+              case "tinyint":
+              case "text":
+              case "enum":
+              case "bigint":
+                $sType = "select-" . $sDBType;
+                break;
+              case "varchar":
+                $sType = "select-text";
+                break;
+              default:
+                $sType = $sDefaultType;
+                $this->doLog("Field: " . $sFieldName . ",unsupported select for type: " . $sDBType . ", using: " . $sType);
+                //throw new Exception ("Unsupported select for type: " . $sDBType);
+            }
+            break;
+          
+          case "html":
+          case "html-tiny":
+          case "html-medium":
+          case "html-long":
+            switch($sDBType) {
+              case "tinytext":
+                $sType = "html-tiny";
+                break;
+              case "mediumtext":
+                $sType = "html-medium";
+                break;
+              case "longtext":
+                $sType = "html-long";
+                break;
+              case "text":
+              case "varchar":
+                $sType = "html";
+                break;
+              default:
+                $sType = $sDefaultType;
+                $this->doLog("Field: " . $sFieldName . ",unsupported html for type: " . $sDBType . ", using: " . $sType);
+                //throw new Exception ("Unsupported html for type: " . $sDBType);
+            }
+            break;
+
+          case "json":
+          case "json-tiny":
+          case "json-medium":
+          case "json-long":
+            switch($sDBType) {
+              case "tinytext":
+                $sType = "json-tiny";
+                break;
+              case "mediumtext":
+                $sType = "json-medium";
+                break;
+              case "longtext":
+                $sType = "json-long";
+                break;
+              case "text":
+              case "varchar":
+                $sType = "json";
+                break;
+              default:
+                $sType = $sDefaultType;
+                $this->doLog("Field: " . $sFieldName . ",unsupported JSON for type: " . $sDBType . ", using: " . $sType);
+                //throw new Exception ("Unsupported json for type: " . $sDBType);
+            }
+            break;
+
+           case "money":
+            switch($sDBType) {
+              case "decimal":
+              case "float":
+              case "double":
+                $sType = "money";
+                break;
+              default:
+                $sType = $sDefaultType;
+                $this->doLog("Field: " . $sFieldName . ",unsupported money for type: " . $sDBType . ", using: " . $sType);
+                //throw new Exception ("Unsupported money for type: " . $sDBType);
+            }
+            break;
+
+          //default to direct field form input = dbtype
+          default:
+            $sType = $sDefaultType;
+        }//existing type
+        
+      } else {
+        $sType = $this->getFieldInputTypeByDBType($sDBType);
+      }
+      $this->doLog("type: " . $sType);
+      //set precision 1st
+      $oFieldObject->precision  = $sPrecision;
+      $oFieldObject->type       = $sType;
+      $oFieldObject->unsigned   = $bUnsigned;
+      if (!count($aOptions) > 0) {
+        $oFieldObject->options    = $aOptions;
+      }
+
+      $oFieldObject->cannull    = $oField["Null"]=="YES";
+      $oFieldObject->primary    = $oField["Key"] == "PRI";
+      $oFieldObject->default    = is_null($oField["Default"])? null: "'".$oField["Default"]."'";
+      $oFieldObject->autonumber = strpos($oField["Extra"],"auto_increment")!==false;
+      
+      $oObject->aChild["field"][$sFieldName] = $oFieldObject;
+    }
+    
+    return $oObject;
+  }
+
+  public function getFieldInputTypeByDBType($sDBType) {
+    switch($sDBType) {
+      case "varchar":
+        $sType = "String";
+        break;
+      case "integer":
+        $sType = "int";
+        break;
+      case "tinytext":
+        $sType = "text-tiny";
+        break;
+      case "mediumtext":
+        $sType = "text-tiny";
+        break;
+      case "longtext":
+        $sType = "text-tiny";
+        break;
+      case "tinytext":
+        $sType = "text-tiny";
+        break;
+      case "tinyblob":
+        $sType = "blob-tiny";
+        break;
+      case "mediumblob":
+        $sType = "blob-medium";
+        break;
+      case "longblob":
+        $sType = "blob-long";
+        break;
+      case "enum":
+        $sType = "select-enum";
+        break;
+      case "text":
+      case "float":
+      case "int":
+      case "tinyint":
+      case "smallint":
+      case "mediumint":
+      case "bigint":
+      case "decimal":
+      case "double":
+      case "date":
+      case "datetime":
+      case "timestamp":
+      case "blob":
+        $sType = $sDBType;
+        break;
+      default:
+        throw new Exception("Unknown dbtype: " . $sDBType);
+    }//dbtype
+    return $sType;
   }
 
   public function createTable(FlexiObject $oObject) {
@@ -148,7 +351,6 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
   }
 
   public function store(FlexiObject $oObject) {
-  	//todo, how to protect file from opened from outside?
     $this->checkValid($oObject);
     
     $sFile = $oObject->getName() . ".object.php";
