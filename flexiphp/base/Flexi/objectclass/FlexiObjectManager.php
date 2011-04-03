@@ -36,7 +36,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
 
   public function deleteTable(FlexiObject $oObject) {
     if (FlexiModelUtil::existsTable($oObject->sTableName)) {
-      $sSQL = "DROP TABLE " . FlexiModelUtil::getSQLName($oObject->sTableName) . ";";
+      $sSQL = "DROP TABLE " . FlexiModelUtil::getSQLName($oObject->sTableName) . "";
       $this->logSQL($sSQL);
       return FlexiModelUtil::getInstance()->getXPDOExecute($sSQL);
     }
@@ -64,7 +64,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
       $sDBType    = $aType["type"];
       $aOptions   = $aType["option"];
       $bUnsigned  = $aType["unsigned"];
-      //$this->doLog("Field: " . $sFieldName . ", type:" . $sDBType);
+      //$this->doLog("Field2: " . $sFieldName . ", type:" . $sDBType. ",option:" . print_r($aOptions,true));
       if (!empty($sType)) {
         $sDefaultType = $this->getFieldInputTypeByDBType($sDBType);
         //check on existing type
@@ -167,13 +167,22 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
       } else {
         $sType = $this->getFieldInputTypeByDBType($sDBType);
       }
-      $this->doLog("type: " . $sType);
+      //$this->doLog("type: " . $sDBType);
       //set precision 1st
       $oFieldObject->precision  = $sPrecision;
       $oFieldObject->type       = $sType;
       $oFieldObject->unsigned   = $bUnsigned;
-      if (!count($aOptions) > 0) {
-        $oFieldObject->options    = $aOptions;
+      if ($sDBType == "enum" && count($aOptions) > 0) {
+        $aEnum = array();
+        foreach($aOptions as $sValue) {
+          //remove start and tailing '
+          $sOption = substr($sValue,1,-1);
+          $aEnum[] = $sOption;
+          $oFieldObject->addOption($sOption);
+          //$this->doLog("added: " . $sValue . "[" . $oFieldObject->options. "]");
+        }
+        $oFieldObject->clearOtherOption($aEnum);
+        //$this->doLog("options: " . $oFieldObject->options);
       }
 
       $oFieldObject->cannull    = $oField["Null"]=="YES";
@@ -190,7 +199,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
   public function getFieldInputTypeByDBType($sDBType) {
     switch($sDBType) {
       case "varchar":
-        $sType = "String";
+        $sType = "string";
         break;
       case "integer":
         $sType = "int";
@@ -282,16 +291,19 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
           $aLastPrimary[] = $oTableField["Field"];
         }
 
+        //$this->doLog("Field: " . $oField["sName"] . ", " . $oFieldObject->options . ", enum: " . $oFieldObject->getEnum());
         if ($bHasField) {
           $sFieldSQL = "CHANGE COLUMN " . FlexiModelUtil::getSQLName($sFindName) .
             " " . FlexiModelUtil::getSQLName($oField["sName"]) . " " . strtoupper($oField["dbtype"]) . ""
-            . (empty($oField["precision"])? " ": "(" . $oField["precision"] . ") ") .
+            . (empty($oField["precision"])? "": "(" . $oField["precision"] . ") ") .
+            (empty($oField["options"]) ? "": "(" . $oFieldObject->getEnum() .")") .
             " " . $sSQLDefault . " " .
             ($oField["autonumber"]? "AUTO_INCREMENT": "");
         } else {
           $sFieldSQL = "ADD COLUMN "
             . FlexiModelUtil::getSQLName($oField["sName"]) . " " . strtoupper($oField["dbtype"]) . ""
-            . (empty($oField["precision"])? " ": "(" . $oField["precision"] . ") ") .
+            . (empty($oField["precision"])? "": "(" . $oField["precision"] . ") ") .
+            (empty($oField["options"]) ? "": "(" . $oFieldObject->getEnum() .")") .
             " " . $sSQLDefault . " " .
             ($oField["autonumber"]? " AUTO_INCREMENT": "");
         }
@@ -339,7 +351,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
       }
     }
 
-    $sSQL .= ";";
+    //$sSQL .= ";";
     FlexiLogger::info(__METHOD__, "SQL: " . $sSQL);
     $this->logSQL($sSQL);
     return FlexiModelUtil::getInstance()->getXPDOExecute($sSQL);
@@ -368,7 +380,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
   }
 
   public function logSQL($sSQL) {
-    $this->doLog($sSQL, "sql");
+    $this->doLog($sSQL.";", "sql");
   }
 
 }

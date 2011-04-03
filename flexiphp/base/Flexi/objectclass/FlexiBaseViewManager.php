@@ -340,20 +340,16 @@ class FlexiBaseViewManager {
   public function getFieldDisplay(FlexiTableFieldObject $oField, $oRow) {
     $sName = $oField->getName();
     $mValue = $oRow[$sName];
-
     switch($oField->type) {
       case "select-text":
       case "select-tinyint":
+      case "select-smallint":
+      case "select-bigint":
+      case "select-mediumint":
+      case "select-enum":
       case "select-int":
-        if (!empty($oField->options)) {
-          $aOptions = explode("\n", $oField->options);
-          $aResultOptions = array();
-          foreach($aOptions as $sOption) {
-            $aOption = explode("=", $sOption);
-            $sKey = $aOption[0];
-            $sLabel = count($aOption) > 1? $aOption[1]: $sKey;
-            if ($mValue == $sKey) $mValue = $sLabel;
-          }
+        if ($oField->existsOption($mValue)) {
+          $mValue = $oField->getOptionLabel($mValue);
         }
         break;
     }
@@ -507,6 +503,9 @@ class FlexiBaseViewManager {
       case "string":
       case "int":
       case "tinyint":
+      case "smallint":
+      case "mediumint":
+      case "bigint":
       case "money":
       case "decimal":
       case "double":
@@ -519,9 +518,14 @@ class FlexiBaseViewManager {
         $aResult["#type"] = "textarea.raw";
         break;
       case "select-text":
-      case "select-int":
       case "select-tinyint":
+      case "select-smallint":
+      case "select-bigint":
+      case "select-mediumint":
+      case "select-enum":
+      case "select-int":
         $aResult["#type"] = "select.raw";
+        $aResult["#options"] = $oField->getOptions();
         break;
       case "json":
         $aResult["#type"] = "textarea.raw";
@@ -538,36 +542,21 @@ class FlexiBaseViewManager {
       default:
         throw new Exception("Unsupported type: " . $oField->type);
     }
-
+    
     if (!empty($oField->formsize)) {
-      switch($oField->type){
-        case "html":
-        case "text":
-        case "json":
-          $aSize = explode(",",$oField->formsize);
-          $aResult["#rows"] = $aSize[0];
-          if (count($aSize)>=2) $aResult["#cols"] = $aSize[1];
-          break;
+      if (substr($oField->type,0,4) == "html" ||
+        substr($oField->type,0,4) == "text" ||
+        substr($oField->type,0,4) == "json") {
 
-        case "select-text":
-        case "select-int":
-        case "select-tinyint":
-          if (!empty($oField->options)) {
-            $aOptions = explode("\n", $oField->options);
-            $aResultOptions = array();
-            foreach($aOptions as $sOption) {
-              $aOption = explode("=", $sOption);
-              $sKey = $aOption[0];
-              $sValue = count($aOption) > 1? $aOption[1]: $sKey;
-              $aResultOptions[$sKey] = $sValue;
-            }
-            $aResult["#options"] = $aResultOptions;
-          }
-          
-          break;
-        default:
-          $aResult["#size"] = $oField->formsize;
+        $aSize = explode(",",$oField->formsize);
+        $aResult["#rows"] = $aSize[0];
+        if (count($aSize)>=2) $aResult["#cols"] = $aSize[1];
+      } else {
+        //default
+        $aResult["#size"] = 25;
       }
+    } else {
+      $aResult["#size"] = $oField->formsize;
     }
 
     if (isset($oRow[$sName])) {

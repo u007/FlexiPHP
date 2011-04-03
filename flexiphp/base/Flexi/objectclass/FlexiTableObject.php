@@ -160,7 +160,7 @@ class FlexiTableObject extends FlexiObject {
     if ($this->existsField($oField->getName())) throw new Exception("Field already exists: " . $oField->getName());
     $this->addChild($oField, "field");
   }
-  
+  //this is not used, to be removed
   public function getFieldValue($sName) {
     $mRaw = $this->getFieldRawValue($sName);
     $oField = $this->getField($sName);
@@ -172,16 +172,17 @@ class FlexiTableObject extends FlexiObject {
         return htmlentities($mRaw);
       case "json":
         return json_decode($mRaw);
-	  case "Text":
-	  case "int":
-    case "tinyint":
-    case "string":
-	  case "double":
-	  case "date":
-	    return substr(date(FlexiConfig::$sDisplayDateFormat, strtotime($mRaw)),0,10);
-	  case "datetime":
-	    return date(FlexiConfig::$sDisplayDateFormat, strtotime($mRaw));
-	  default:
+      case "text":
+      case "int":
+      case "tinyint":
+      case "string":
+      case "double":
+        return $mRaw;
+      case "date":
+        return substr(date(FlexiConfig::$sDisplayDateFormat, strtotime($mRaw)),0,10);
+      case "datetime":
+        return date(FlexiConfig::$sDisplayDateFormat, strtotime($mRaw));
+      default:
 	    throw new Exception(__METHOD__ . ":Unknown field type: " . $sType);
     }
   }
@@ -231,7 +232,7 @@ class FlexiTableObject extends FlexiObject {
       $sPrimarySQL = FlexiModelUtil::getSQLName($aPrimary);
       $sSQL .= "\n,PRIMARY KEY (" . $sPrimarySQL . ")\n";
     }
-    $sSQL .= ") ENGINE=InnoDB CHARSET UTF8;";
+    $sSQL .= ") ENGINE=InnoDB CHARSET UTF8";
     return $sSQL;
   }
 

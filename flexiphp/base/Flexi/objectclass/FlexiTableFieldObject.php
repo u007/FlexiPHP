@@ -30,6 +30,7 @@ class FlexiTableFieldObject extends FlexiObject {
   protected $unsigned = false;
 
   protected $rawvalue = null;
+  protected $aCachedOption = array();
   
   public function __construct($sName) {
     parent::__construct($sName, "FlexiTableField");
@@ -171,8 +172,7 @@ class FlexiTableFieldObject extends FlexiObject {
           default:
             throw new Exception("Unknown field type: " . $sType);
         }
-
-
+        
         if ($sPrecision != $this->precision) $this->precision = $sPrecision;
         if ($sDBType != $this->dbtype) $this->dbtype = $sDBType;
         $value = $sType;
@@ -186,6 +186,10 @@ class FlexiTableFieldObject extends FlexiObject {
     
 
     $this->$name = $value;
+
+    if ($name == "options") {
+      $this->loadOptions();
+    }
   }
 
   /**
@@ -200,6 +204,82 @@ class FlexiTableFieldObject extends FlexiObject {
       return $this->getName();
     }
     return $this->$name;
+  }
+
+  public function addOption($sKey, $sValue=null) {
+    if (!is_null($sValue) || !$this->existsOption($sKey)) {
+      $sLabel = is_null($sValue) ? $sKey: $sValue;
+      $this->aCachedOption[$sKey] = $sLabel;
+      $this->saveOptions();
+    }
+    return $this->options;
+  }
+
+  public function existsOption($sKey) {
+    $aOption = $this->getOptions();
+    if (isset($aOption[$sKey])) {
+      return true;
+    }
+    return false;
+  }
+
+  public function getOptionLabel($sKey) {
+    if (isset($this->aCachedOption[$sKey])) {
+      return $this->aCachedOption[$sKey];
+    }
+    return null;
+  }
+
+  public function getEnum() {
+    $aOption = $this->getOptions();
+    //var_dump($aOption);
+    $aValue = array_keys($aOption);
+    for($c = 0; $c < count($aValue); $c++) {
+      $aValue[$c] = "'" . $aValue[$c] . "'";
+    }
+    return implode(",", $aValue);
+  }
+  
+  public function getOptions() {
+    if (count($this->aCachedOption) < 1) $this->loadOptions ();
+    return $this->aCachedOption;
+  }
+
+  public function saveOptions() {
+    $aOption = $this->getOptions();
+    $this->options = "";
+    foreach($aOption as $sKey => $sValue) {
+      $this->options .= empty($this->options) ? "": "\n";
+      $this->options .= $sKey ."=".$sValue;
+    }
+    return $this->options;
+  }
+
+  public function clearOtherOption($aKeys) {
+    $aOption = $this->getOptions();
+    foreach($aOption as $sKey => $sValue) {
+      if (!in_array($sKey, $aKeys)) {
+        unset($this->aCachedOption[$sKey]);
+      }
+    }
+    $this->saveOptions();
+  }
+
+  public function loadOptions() {
+    if (trim($this->options."")=="") {
+      $this->aCachedOption = array();
+      return $this->aCachedOption;
+    }
+    $aOptions = explode("\n", $this->options);
+    $aResultOptions = array();
+    foreach($aOptions as $sOption) {
+      $aOption = explode("=", $sOption);
+      $sKey = $aOption[0];
+      $sLabel = count($aOption) > 1? $aOption[1]: $sKey;
+      $aResultOptions[$sKey] = $sLabel;
+    }
+    $this->aCachedOption = $aResultOptions;
+    return $this->aCachedOption;
   }
 
   public function __sleep() {

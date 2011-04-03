@@ -774,7 +774,7 @@ abstract class FlexiBaseController
 		}
 		else
 		{
-      echo __METHOD__.": no layout";
+      //echo __METHOD__.": no layout";
       if (FlexiConfig::$sFramework == "modx2") {
         //FlexiController::appendOutput("is render non-layout");
         FlexiController::appendOutput($this->oView->getVar($this->sRenderViewName));

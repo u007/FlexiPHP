@@ -736,129 +736,129 @@ class FlexiModelUtil
     $sPrecision = "";
     $aOption = array();
     $bUnsigned = false;
-    if (strpos($sFieldType, "varchar") !==false) {
+    if (substr($sFieldType,0,7)=="varchar") {
       $sType = "varchar";
       $sTemp = str_replace(array("varchar","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "tinytext") !==false) {
+    } else if (substr($sFieldType,0,8) == "tinytext") {
       $sType = "tinytext";
       $sTemp = str_replace(array("tinytext","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "mediumtext") !==false) {
+    } else if (substr($sFieldType,0,19) == "mediumtext") {
       $sType = "mediumtext";
       $sTemp = str_replace(array("mediumtext","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "longtext") !==false) {
+    } else if (substr($sFieldType,0,8) == "longtext") {
       $sType = "longtext";
       $sTemp = str_replace(array("longtext","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "text") !==false) {
+    } else if (substr($sFieldType,0,4) =="text") {
       $sType = "text";
       $sTemp = str_replace(array("text","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "tinyblob") !==false) {
+    } else if (substr($sFieldType,0,8)== "tinyblob") {
       $sType = "tinyblob";
       $sTemp = str_replace(array("tinyblob","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "mediumblob") !==false) {
+    } else if (substr($sFieldType,0,10)=="mediumblob") {
       $sType = "mediumblob";
       $sTemp = str_replace(array("mediumblob","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "longblob") !==false) {
+    } else if (substr($sFieldType,0,8)=="longblob") {
       $sType = "longblob";
       $sTemp = str_replace(array("longblob","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "blob") !==false) {
+    } else if (substr($sFieldType,0,4)=="blob") {
       $sType = "blob";
       $sTemp = str_replace(array("blob","(",")"), array("","",""), $sFieldType);
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
-    } else if (strpos($sFieldType, "tinyint") !==false) {
+    } else if (substr($sFieldType,0,7)=="tinyint") {
       $sTemp = str_replace(array("tinyint","(",")", "unsigned"), array("","","",""), $sFieldType);
       $sType = "tinyint";
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
       $bUnsigned = strpos($sFieldType, "unsigned") !== false;
-    } else if (strpos($sFieldType, "mediumint") !==false) {
+    } else if (substr($sFieldType,0,9)== "mediumint") {
       $sTemp = str_replace(array("mediumint","(",")", "unsigned"), array("","","",""), $sFieldType);
       $sType = "mediumint";
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
       $bUnsigned = strpos($sFieldType, "unsigned") !== false;
-    } else if (strpos($sFieldType, "smallint") !==false) {
+    } else if (substr($sFieldType,0,8)=="smallint") {
       $sTemp = str_replace(array("smallint","(",")", "unsigned"), array("","","",""), $sFieldType);
       $sType = "smallint";
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
       $bUnsigned = strpos($sFieldType, "unsigned") !== false;
-    } else if (strpos($sFieldType, "bigint") !==false) {
+    } else if (substr($sFieldType,0,6)=="bigint") {
       $sTemp = str_replace(array("bigint","(",")", "unsigned"), array("","","",""), $sFieldType);
       $sType = "bigint";
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
       $bUnsigned = strpos($sFieldType, "unsigned") !== false;
-    } else if (strpos($sFieldType, "int") !==false || strpos($sFieldType, "integer") !==false) {
+    } else if (substr($sFieldType,0,3)== "int" || substr($sFieldType,0,7)=="integer") {
       $sTemp = str_replace(array("int","(",")", "unsigned"), array("","","",""), $sFieldType);
       $sType = "int";
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
       $bUnsigned = strpos($sFieldType, "unsigned") !== false;
-    } else if (strpos($sFieldType, "float") !==false) {
+    } else if (substr($sFieldType,0,5)=="float") {
       $sTemp = str_replace(array("float","(",")", "unsigned"), array("","","",""), $sFieldType);
       $sType = "float";
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
       $bUnsigned = strpos($sFieldType, "unsigned") !== false;
-    } else if (strpos($sFieldType, "double") !==false) {
+    } else if (substr($sFieldType,0,6)=="double") {
       $sTemp = str_replace(array("double","(",")", "unsigned"), array("","","",""), $sFieldType);
       $sType = "double";
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
       $bUnsigned = strpos($sFieldType, "unsigned") !== false;
-    } else if (strpos($sFieldType, "decimal") !==false) {
+    } else if (substr($sFieldType,0,7)=="decimal") {
       $sTemp = str_replace(array("decimal","(",")", "unsigned"), array("","","",""), $sFieldType);
       $sType = "decimal";
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
       $bUnsigned = strpos($sFieldType, "unsigned") !== false;
-    } else if (strpos($sFieldType, "enum") !==false) {
+    } else if (substr($sFieldType,0,4)== "enum") {
       $sTemp = str_replace(array("enum","(",")"), array("","",""), $sFieldType);
       $sType = "enum";
       if (!empty($sTemp)) {
         $aOption = explode(",", $sTemp);
       }
-    } else if (strpos($sFieldType, "date") !==false) {
+    } else if (substr($sFieldType,0,4)=="date") {
       //$sTemp = str_replace(array("date"), array(""), $sFieldType);
       $sType = "date";
-    } else if (strpos($sFieldType, "datetime") !==false) {
+    } else if (substr($sFieldType,0,8)=="datetime") {
       //$sTemp = str_replace(array("datetime"), array(""), $sFieldType);
       $sType = "datetime";
-    } else if (strpos($sFieldType, "timestamp") !==false) {
+    } else if (substr($sFieldType,0,9)=="timestamp") {
       //$sTemp = str_replace(array("datetime"), array(""), $sFieldType);
       $sType = "timestamp";
     } else {
