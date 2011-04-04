@@ -292,20 +292,19 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
         }
 
         //$this->doLog("Field: " . $oField["sName"] . ", " . $oFieldObject->options . ", enum: " . $oFieldObject->getEnum());
+
+        
+        $sFieldTypeSQL = FlexiModelUtil::getSQLName($oField["sName"]) . " " . strtoupper($oField["dbtype"]) . ""
+          . (empty($oField["precision"])? "": "(" . $oField["precision"] . ") ") .
+          (!empty($oField["options"]) && $oField["dbtype"]=="enum" ? "(" . $oFieldObject->getEnum() .")": "") .
+          " " . $sSQLDefault . " " .
+          ($oField["autonumber"]? "AUTO_INCREMENT": "");
+
         if ($bHasField) {
-          $sFieldSQL = "CHANGE COLUMN " . FlexiModelUtil::getSQLName($sFindName) .
-            " " . FlexiModelUtil::getSQLName($oField["sName"]) . " " . strtoupper($oField["dbtype"]) . ""
-            . (empty($oField["precision"])? "": "(" . $oField["precision"] . ") ") .
-            (empty($oField["options"]) ? "": "(" . $oFieldObject->getEnum() .")") .
-            " " . $sSQLDefault . " " .
-            ($oField["autonumber"]? "AUTO_INCREMENT": "");
+          $sFieldSQL = "CHANGE COLUMN " . FlexiModelUtil::getSQLName($sFindName) . " " .
+            $sFieldTypeSQL ;
         } else {
-          $sFieldSQL = "ADD COLUMN "
-            . FlexiModelUtil::getSQLName($oField["sName"]) . " " . strtoupper($oField["dbtype"]) . ""
-            . (empty($oField["precision"])? "": "(" . $oField["precision"] . ") ") .
-            (empty($oField["options"]) ? "": "(" . $oFieldObject->getEnum() .")") .
-            " " . $sSQLDefault . " " .
-            ($oField["autonumber"]? " AUTO_INCREMENT": "");
+          $sFieldSQL = "ADD COLUMN " . $sFieldTypeSQL;
         }
         $sFieldSQL .= empty($sLastField) ? " FIRST ": " AFTER " . FlexiModelUtil::getSQLName($sLastField);
         $aFieldSQL[] = $sFieldSQL;

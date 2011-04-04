@@ -6,7 +6,7 @@ extract($vars);
 <form id="<?=$sViewDBFormPrefix?>frmList" method="GET" action="<?=$sOpURL?>">
   <input type="hidden" name="txtType" value=""/>
   <input type="button" name="btnDelete" value="Delete" onClick="<?=$sViewDBFormPrefix?>doDeleteObjects()"/>
-  <table id="<?=$sViewDBFormPrefix?>tableList" class="tableGrid" style="width: 600px">
+  <table id="<?=$sViewDBFormPrefix?>tableList" class="tableGrid" style="" cellspacing="0" cellpadding="0">
     <thead>
       <th><input type="checkbox" name="chkAll" value="1" onClick="toogleCheckAll(this, '#<?=$sViewDBFormPrefix?>tableList', 'checkPrimary')"/></th>
       <? foreach($aFieldHeader as $sField => $sHTML) { ?>

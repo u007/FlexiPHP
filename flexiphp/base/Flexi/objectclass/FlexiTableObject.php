@@ -218,11 +218,13 @@ class FlexiTableObject extends FlexiObject {
     $aFields = $this->fieldsToArray();
     
     foreach($aFields as $oField) {
+      $oFieldObject = $this->aChild["field"][$oField["sName"]];
       $sFieldSQL .= empty($sFieldSQL) ? "": ",\n";
       if ($oField["primary"]) { $sPrimaryField .= (empty($sPrimaryField) ? "": ",") . $oField["sName"]; }
       $sSQLDefault = FlexiModelUtil::getDefaultSQL($oField["default"], $oField["cannull"]);
       $sFieldSQL .= FlexiModelUtil::getSQLName($oField["sName"]) . " " .
         strtoupper($oField["dbtype"]) . " " . (empty($oField["precision"])? "": "(" . $oField["precision"] .") ") .
+        (!empty($oField["options"]) && $oField["dbtype"]=="enum" ? "(" . $oFieldObject->getEnum() .")":"") .
         " " . $sSQLDefault . " " . 
         ($oField["autonumber"]? " AUTO_INCREMENT": "");
     }
