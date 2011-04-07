@@ -59,6 +59,8 @@ class FlexiConfig
 	public static $sTimeZone	= "";
 	public static $sInputDateFormat = "";
   public static $sDisplayDateFormat = "d-m-Y H:i:s";
+  
+  public static $sInputDateTimeFormat = "";
 	
 	private static $oLoginHandler = null;
 	//to store messages
@@ -148,6 +150,7 @@ class FlexiConfig
 		self::$sTimeZone		=	$aConfig["timezone"];
 		self::$sInputDateFormat = isset($aConfig["input_dateformat"]) ? $aConfig["input_dateformat"] : self::$sInputDateFormat;
     self::$sDisplayDateFormat = isset($aConfig["display_dateformat"]) ? $aConfig["display_dateformat"] : self::$sDisplayDateFormat;
+    self::$sInputDateTimeFormat = isset($aConfig["input_datetimeformat"]) ? $aConfig["input_datetimeformat"] : self::$sInputDateTimeFormat;
 
     self::$iAdminId = isset($aConfig["admin.id"]) ? $aConfig["admin.id"] : self::$iAdminId;
     self::$sAdminUserId = isset($aConfig["admin.userid"]) ? $aConfig["admin.userid"] : self::$sAdminUserId;

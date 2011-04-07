@@ -157,6 +157,8 @@ class FlexiBaseViewManager {
    */
   public function onGetPrimaryLink(&$aPrimary) {}
 
+  /*
+   * not used
   public function getInputRow($oRow, $sType) {
     $aResult = array();
     $oTable = $this->oObjectListManager->getObject();
@@ -165,6 +167,7 @@ class FlexiBaseViewManager {
     }
     return $aResult;
   }
+   */
 
   public function getDisplayRow($oRow) {
     $aResult = array();

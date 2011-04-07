@@ -32,7 +32,7 @@ $aFlexiSetting = array_merge(array(
 	
 	"timezone"	=> "",
 	"input_dateformat" => "dd-mm-yy",
-
+  "input_datetimeformat" => "dd-mm-yy hh:ii",
   "templatepath" => "flexiphp/assets/templates",
 	"modulepath" => getcwd() . "/modules",
 	"defaultlanguage" => "en",

@@ -37,11 +37,15 @@ class FlexiTableObject extends FlexiObject {
     $aFields = & $this->aChild["field"];
     foreach($aFields as $sName => $oField) {
       //only check active, none deleted only
-      if ($oField->status==1) {
+      if ($oField->iStatus==1) {
         if ($oField->dbtype == "text") {
           if (!empty($oField->default) && strtolower($oField->default) != "null") {
-            throw new Exception("DbType text cannot have default value");
+            throw new Exception($sName . ": DbType text cannot have default value");
           }
+        }
+        
+        if (!$oField->cannull && strtolower($oField->default) == "null") {
+          throw new Exception($sName . ": Default value null on a not null-able field");
         }
       }
     }
@@ -50,18 +54,24 @@ class FlexiTableObject extends FlexiObject {
   public function checkValidData($oRow, $sType) {
     foreach($this->aChild["field"] as $sName => $oField) {
       //only check active, none deleted only
-      if ($oField->status==1) {
+      if ($oField->iStatus==1) {
         //check nulls
         $sDBType = $oField->dbtype;
         $sValue = $orow[$sField];
         $sLabel = $oField->label;
-        
-        if ($oField->cannull) {
+
+        if ($sType=="update" && $oField->primary && (!isset($oRow[$sField]) || strlen($oRow[$sField]."") < 1)) {
+          throw new Exception("Field " . $oField->label . " is primary therefore, required for update");
+        }
+
+        if (! $oField->cannull) {
           $sField = $oField->getName();
-          if (!isset($oRow[$sField])) {
+
+          if ($sType == "insert" && $oField->primary) {
+           //is ok, since is primary
+          } else if (!isset($oRow[$sField])) {
             throw new Exception("Field " . $oField->label . " is required");
-          }
-          if (strlen($oRow[$sField]) < 1) {
+          } else if (strlen($oRow[$sField]."") < 1) {
             throw new Exception("Field " . $oField->label . " is required");
           }
         }

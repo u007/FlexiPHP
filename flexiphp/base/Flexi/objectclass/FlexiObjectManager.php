@@ -22,6 +22,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
   }
 
   public function syncObject(FlexiObject $oObject) {
+    $this->checkValid($oObject);
     if ($oObject->iStatus == 1) {
       if (!FlexiModelUtil::existsTable($oObject->sTableName)) {
         return $this->createTable($oObject);

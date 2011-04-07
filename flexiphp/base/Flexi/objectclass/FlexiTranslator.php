@@ -44,10 +44,10 @@ class FlexiTranslator {
     //die(var_dump($json));
     // now have some fun with the results...
     if (empty($body)) {
-      throw new Exception("Google translate error: " . $body);
+      throw new Exception("Google translate error: " . $body . ", text: " . $sTitle);
     }
     if (isset($json->error)) {
-      throw new Exception("Google translate error: " . print_r($json->error,true));
+      throw new Exception("Google translate error: " . print_r($json->error,true) . ", text: " . $sTitle);
     }
 
     $sReturn = $json->responseData->translatedText;
