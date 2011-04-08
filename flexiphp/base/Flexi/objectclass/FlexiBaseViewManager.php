@@ -563,7 +563,27 @@ class FlexiBaseViewManager {
     }
 
     if (isset($oRow[$sName])) {
-      $aResult["#value"] = $oRow[$sName];
+      $sValue = $oRow[$sName];
+      switch($oField->type) {
+        case "date":
+        case "datetime":
+          $sFormat = isset($aResult["#format"]) ? $aResult["#format"] : 
+            ($oField->type == "date" ? FlexiConfig::$sInputDateFormat: FlexiConfig::$sInputDateTimeFormat);
+          $sFormat = str_replace(array("dd","mm","yy","hh","ii"), array("d","m","Y","H","i"), $sFormat); //fix double i, which only 1 i(min) in php
+          if (!empty($sValue)) {
+            if (substr($sValue,0, 4)=="0000") {
+              //empty date
+              $sValue = "";
+            } else {
+              $iDatetime = strtotime($sValue);
+              $sValue = date($sFormat, $iDatetime);
+            }
+          }
+        case "date":
+          
+      }//switch
+      
+      $aResult["#value"] = $sValue;
     }
 
     return $aResult;

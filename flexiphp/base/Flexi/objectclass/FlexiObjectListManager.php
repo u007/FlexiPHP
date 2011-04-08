@@ -129,12 +129,12 @@ class FlexiObjectListManager extends FlexiLogManager {
     if (!$this->onBeforeCheckValidData($oRow, $sType)) { return false; }
     $oObject->checkValidData($oRow, $sType);
     //will not pass here if checkvalid fail as it will throw exception
-    $this->onCheckValidData($bResult, $oRow, $sType);
+    $this->onCheckValidData($oObject, $oRow, $sType);
     return true;
   }
 
   public function onBeforeCheckValidData(& $oRow, &$sType) { return true; }
-  public function onCheckValidData(&$bResult, & $oRow, & $sType) {}
+  public function onCheckValidData($oObject, & $oRow, $sType) {}
 
   public function doTableQuery(& $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
     $sTable = $this->oObject->getTableName();

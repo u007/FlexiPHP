@@ -7,11 +7,11 @@ $sExternalMedia = !empty($vars["tinymce_media"]) ? $vars["tinymce_media"]: Flexi
 $sContentCSS = !empty($vars["tinymce_contentcss"]) ? $vars["tinymce_contentcss"]: FlexiConfig::$sTinyMCEContentCSS;
 
 ?>
-<script type="text/javascript" src="<?=FlexiConfig::$sFlexiBaseURL ?>/assets/jquery/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" src="<?=FlexiConfig::$sFlexiBaseURL ?>assets/jquery/tiny_mce/jquery.tinymce.js"></script>
 <script type="text/javascript">
   var oTinyMCESetting = {
     // Location of TinyMCE script
-    script_url : '<?=FlexiConfig::$sFlexiBaseURL ?>/assets/jquery/tiny_mce/tiny_mce.js',
+    script_url : '<?=FlexiConfig::$sFlexiBaseURL ?>assets/jquery/tiny_mce/tiny_mce.js',
     document_base_url       : '<?=FlexiConfig::$sBaseURLDir?>',
     relative_urls           : true,
     // General options

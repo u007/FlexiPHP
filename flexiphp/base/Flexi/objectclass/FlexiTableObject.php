@@ -59,13 +59,13 @@ class FlexiTableObject extends FlexiObject {
         $sDBType = $oField->dbtype;
         $sValue = $orow[$sField];
         $sLabel = $oField->label;
+        $sField = $oField->getName();
 
         if ($sType=="update" && $oField->primary && (!isset($oRow[$sField]) || strlen($oRow[$sField]."") < 1)) {
-          throw new Exception("Field " . $oField->label . " is primary therefore, required for update");
+          throw new Exception("Field " . $oField->label . " is primary therefore, required for update");// . print_r($oRow,true));
         }
 
         if (! $oField->cannull) {
-          $sField = $oField->getName();
 
           if ($sType == "insert" && $oField->primary) {
            //is ok, since is primary

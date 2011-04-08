@@ -167,6 +167,9 @@ class FlexiTableFieldObject extends FlexiObject {
           case "datetime":
             $sDBType = "datetime";
             break;
+          case "timestamp":
+            $sDBType = "timestamp";
+            break;
           case "hidden":
             break;
           default:
