@@ -160,6 +160,14 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
             }
             break;
 
+          case "timestamp-int":
+            if ($sDBType == "int") {
+              $sType = "timestamp-int";
+            } else {
+              $sType = $sDefaultType;
+              $this->doLog("Field: " . $sFieldName . ",unsupported timestamp for type: " . $sDBType . ", using: " . $sType);
+            }
+            break;
           //default to direct field form input = dbtype
           default:
             $sType = $sDefaultType;

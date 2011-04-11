@@ -1,5 +1,6 @@
 <?php
 
+
 if (ini_get("log_errors_max_len")!=0) {
   ini_set("log_errors_max_len", 10240);
 }
@@ -32,7 +33,7 @@ $aFlexiSetting = array_merge(array(
 	
 	"timezone"	=> "",
 	"input_dateformat" => "dd-mm-yy",
-  "input_datetimeformat" => "dd-mm-yy hh:ii",
+  "input_datetimeformat" => "dd-mm-yy hh:ii:ss",
   "templatepath" => "flexiphp/assets/templates",
 	"modulepath" => getcwd() . "/modules",
 	"defaultlanguage" => "en",

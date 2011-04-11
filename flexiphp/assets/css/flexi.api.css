@@ -239,3 +239,63 @@ div.gridbox_dhx_skyblue table.hdr td.x-toolbar-cell {
 div.gridbox table.hdr td.x-toolbar-left {
   padding: 0;
 }
+
+ul.paging {
+  border:0; margin:0; padding:0;
+  display: block; clear: both;
+}
+
+ul.paging li {
+  border:0; margin:2px; padding:0;
+  font-size:11px;
+  list-style:none;
+  margin-right:2px;
+  float: left;
+  cursor:pointer;
+  border:solid 1px #9aafe5;
+  padding: 2px;
+}
+
+ul.paging a {
+  border:solid 1px #9aafe5;
+}
+
+ul.paging .previous-off,
+ul.paging .next-off, ul.paging .first-off, ul.paging .last-off {
+  border:solid 1px #DEDEDE;
+  color:#EEEEEE;
+  float:left;
+  margin-right:2px;
+  padding:3px 4px;
+}
+
+ul.paging .next a,
+ul.paging .previous a, ul.paging first a, ul.paging last a {
+  font-weight:bold;
+}
+
+ul.paging .active{
+  background:#2e6ab1;
+  color:#FFFFFF;
+  font-weight:bold;
+  display:block;
+  float:left;
+  padding:4px 6px;
+}
+
+ul.paging a:link,
+ul.paging a:visited {
+  color:#0e509e
+  display:block;
+  float:left;
+  padding:3px 6px;
+  text-decoration:none;
+}
+
+ul.paging a:hover{
+  border:solid 1px #0e509e
+}
+
+table.grid tbody tr td {
+  vertical-align: top;
+}

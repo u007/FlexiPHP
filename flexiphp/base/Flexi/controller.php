@@ -238,7 +238,6 @@ class FlexiController
     //FlexiLogger::debug(__METHOD__, "after _run");
 
     if ($abRenderLayout) {
-      //echo "render layout!";
       $aResult["control"]->renderLayout(); 
     } else {
       //echo "no layout";

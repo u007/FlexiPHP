@@ -165,12 +165,20 @@ class FlexiTableObject extends FlexiObject {
       $this->addField($oField);
     }
   }
-  
+
+  public function setField(FlexiTableFieldObject $oField) {
+    if ($this->existsField($oField->getName())) {
+      $this->aChild["field"][$oField->getName()] = &$oField;
+      return;
+    }
+    $this->addField($oField, "field");
+  }
   public function addField(FlexiTableFieldObject $oField) {
     if ($this->existsField($oField->getName())) throw new Exception("Field already exists: " . $oField->getName());
     $this->addChild($oField, "field");
   }
   //this is not used, to be removed
+  /*
   public function getFieldValue($sName) {
     $mRaw = $this->getFieldRawValue($sName);
     $oField = $this->getField($sName);
@@ -196,7 +204,7 @@ class FlexiTableObject extends FlexiObject {
 	    throw new Exception(__METHOD__ . ":Unknown field type: " . $sType);
     }
   }
-  
+  */
   public function getFieldRawValue($sName) {
     $oField = $this->getField($sName); //test existance of field
     return $oField->rawvalue;

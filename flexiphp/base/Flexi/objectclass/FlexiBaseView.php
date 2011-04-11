@@ -128,6 +128,7 @@ class FlexiBaseView
 	
 	public function getViewFile($sView, $asPath=null)
 	{
+    $bDebug = false;
 		$sBaseDir = FlexiConfig::$sBaseDir;
 		$sViewFile = strtolower($sView);
     $sRootDir = FlexiConfig::$sRootDir;
@@ -147,12 +148,14 @@ class FlexiBaseView
 		//var_dump($sPath);
     //from direct[path]
 		$sViewPath = $sPath . "/views/" . $sViewFile . ".tpl.php";
+    if ($bDebug) echo __METHOD__ . ": " . $sViewPath . "<br/>\n";
 		if (is_file($sViewPath))
 		{
       //echo "file ok";
 			return $sViewPath;
 		}
     $sViewPath = $sPath . "/views/" . strtolower($sViewFile) . ".tpl.php";
+    if ($bDebug) echo __METHOD__ . ": " . $sViewPath . "<br/>\n";
 		if (is_file($sViewPath))
 		{
 			return $sViewPath;
@@ -160,12 +163,13 @@ class FlexiBaseView
 
     //from $sRootDir/[path]
     $sViewPath = $sRootDir . "/" . $sPath . "/views/" . $sViewFile . ".tpl.php";
-    //echo $sViewPath;
+    if ($bDebug) echo __METHOD__ . ":2: " . $sViewPath . "<br/>\n";
 		if (is_file($sViewPath))
 		{
 			return $sViewPath;
 		}
     $sViewPath = $sRootDir . "/" . $sPath . "/views/" . strtolower($sViewFile) . ".tpl.php";
+    if ($bDebug) echo __METHOD__ . ":2: " . $sViewPath . "<br/>\n";
 		if (is_file($sViewPath))
 		{
 			return $sViewPath;
@@ -174,31 +178,32 @@ class FlexiBaseView
     //from ../$sRootDir/[path]
     if ($sPath != $this->getVar("#modulepath")) {
       $sViewPath = $sRootDir . "/../" . $sPath . "/views/" . $sViewFile . ".tpl.php";
-      //echo $sViewPath;
+      if ($bDebug) echo __METHOD__ . ":3: " . $sViewPath . "<br/>\n";
       if (is_file($sViewPath))
       {
         return $sViewPath;
       }
       $sViewPath = $sRootDir . "/../" . $sPath . "/views/" . strtolower($sViewFile) . ".tpl.php";
+      if ($bDebug) echo __METHOD__ . ":3: " . $sViewPath . "<br/>\n";
       if (is_file($sViewPath))
       {
         return $sViewPath;
       }
     }
 
-    //var_dump($this->sTemplate);
+    //echo "flexi path: " . (FlexiConfig::$sTemplatePath) . "<br/>\n";
 		//$sViewPath = $sBaseDir . "/assets/templates/" . $this->sTemplate . "/" . $sViewFile . ".tpl.php";
     $sViewPath = FlexiConfig::$sTemplatePath . "/" . $this->sTemplate . "/" . $sViewFile . ".tpl.php";
     //if (FlexiConfig::$sFramework == "modx2") echo "trying: " . $sViewFile . " @ " . $sViewPath . "\r\n<br/>";
-    //echo $sViewPath;
-    //echo "trying: " . $sViewPath;
     //FlexiLogger::debug(__METHOD__, "Trying: " . $sViewPath);
+    if ($bDebug) echo __METHOD__ . ":4: " . $sViewPath . "<br/>\n";
 		if (is_file($sViewPath))
 		{
 			return $sViewPath;
 		}
 
     $sViewPath = FlexiConfig::$sTemplatePath . "/" . $this->sTemplate . "/" . strtolower($sViewFile) . ".tpl.php";
+    if ($bDebug) echo __METHOD__ . ":4: " . $sViewPath . "<br/>\n";
 		if (is_file($sViewPath))
 		{
 			return $sViewPath;
@@ -206,13 +211,14 @@ class FlexiBaseView
 
     //resolve to root default template
     $sViewPath = $sBaseDir . "/assets/templates/default/" . $sViewFile . ".tpl.php";
-    //FlexiLogger::debug(__METHOD__, "Trying: " . $sViewPath);
+    if ($bDebug) echo __METHOD__ . ": " . $sViewPath . "<br/>\n";
 		if (is_file($sViewPath))
 		{
 			return $sViewPath;
 		}
 
     $sViewPath = $sBaseDir . "/assets/templates/default/" . strtolower($sViewFile) . ".tpl.php";
+    if ($bDebug) echo __METHOD__ . ": " . $sViewPath . "<br/>\n";
     //FlexiLogger::debug(__METHOD__, "Trying: " . $sViewPath);
 		if (is_file($sViewPath))
 		{

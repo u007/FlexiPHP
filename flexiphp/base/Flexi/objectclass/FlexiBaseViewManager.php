@@ -111,6 +111,7 @@ class FlexiBaseViewManager {
   public function setObjectListManager(FlexiObjectListManager $oManager) {
     $this->oObjectListManager = $oManager;
   }
+  
   /**
    * Prepare data for listing
    *  work closely with method prepareListHeader
@@ -203,6 +204,18 @@ class FlexiBaseViewManager {
   }
 
   public function onGetFieldList(&$aListField) {}
+
+  public function getFormToObjectStore($oRow) {
+    $oForm = array();
+    $oTable = $this->oObjectListManager->getObject();
+    foreach($oTable->aChild["field"] as $sName => & $oField) {
+      $sField = $this->sFieldPrefix . $sName;
+      if (isset($oRow[$sField])) {
+        $oForm[$sName] = $oRow[$sField];
+      }
+    }
+    return $oForm;
+  }
 
   public function prepareForm($oRow, $sType) {
     $oObject = $this->oObjectListManager->getObject();
@@ -354,6 +367,10 @@ class FlexiBaseViewManager {
         if ($oField->existsOption($mValue)) {
           $mValue = $oField->getOptionLabel($mValue);
         }
+        break;
+      case "timestamp-int":
+        $sFormat = self::getPHPDateTimeFormat(FlexiConfig::$sInputDateTimeFormat);
+        $mValue = date($sFormat, $mValue);
         break;
     }
 
@@ -539,6 +556,10 @@ class FlexiBaseViewManager {
       case "datetime":
         $aResult["#type"] = "datetime.raw";
         break;
+      case "timestamp":
+      case "timestamp-int":
+        $aResult["#type"] = "datetime.raw";
+        break;
       case "hidden":
         $aResult["#type"] = "hidden.raw";
         break;
@@ -552,8 +573,8 @@ class FlexiBaseViewManager {
         substr($oField->type,0,4) == "json") {
 
         $aSize = explode(",",$oField->formsize);
-        $aResult["#rows"] = $aSize[0];
-        if (count($aSize)>=2) $aResult["#cols"] = $aSize[1];
+        $aResult["#cols"] = $aSize[0];
+        if (count($aSize)>=2) $aResult["#rows"] = $aSize[1];
       } else {
         //default
         $aResult["#size"] = 25;
@@ -569,7 +590,7 @@ class FlexiBaseViewManager {
         case "datetime":
           $sFormat = isset($aResult["#format"]) ? $aResult["#format"] : 
             ($oField->type == "date" ? FlexiConfig::$sInputDateFormat: FlexiConfig::$sInputDateTimeFormat);
-          $sFormat = str_replace(array("dd","mm","yy","hh","ii"), array("d","m","Y","H","i"), $sFormat); //fix double i, which only 1 i(min) in php
+          $sFormat = self::getPHPDateTimeFormat($sFormat); //fix double i, which only 1 i(min) in php
           if (!empty($sValue)) {
             if (substr($sValue,0, 4)=="0000") {
               //empty date
@@ -587,6 +608,10 @@ class FlexiBaseViewManager {
     }
 
     return $aResult;
+  }
+
+  public static function getPHPDateTimeFormat($sFormat) {
+    return str_replace(array("dd","mm","yy","hh","ii","ss"), array("d","m","Y","H","i","s"), $sFormat);
   }
 
   /**

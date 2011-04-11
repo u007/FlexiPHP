@@ -170,6 +170,9 @@ class FlexiTableFieldObject extends FlexiObject {
           case "timestamp":
             $sDBType = "timestamp";
             break;
+          case "timestamp-int":
+            $sDBType = "int";
+            if (empty($sPrecision)) $sPrecision = "11";
           case "hidden":
             break;
           default:

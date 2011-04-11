@@ -58,9 +58,9 @@ class FlexiConfig
 	
 	public static $sTimeZone	= "";
 	public static $sInputDateFormat = "";
-  public static $sDisplayDateFormat = "d-m-Y H:i:s";
+  public static $sDisplayDateFormat = "dd-mm-yy";
   
-  public static $sInputDateTimeFormat = "";
+  public static $sInputDateTimeFormat = "dd-mm-yy hh:ii:ss";
 	
 	private static $oLoginHandler = null;
 	//to store messages
@@ -171,6 +171,7 @@ class FlexiConfig
 			date_default_timezone_set(self::$sTimeZone);
 		}
 		self::$sModulePath = $aConfig["modulepath"];
+    //echo "Setting path : " . $aConfig["templatepath"];
     self::$sTemplatePath = $aConfig["templatepath"];
     
     /*

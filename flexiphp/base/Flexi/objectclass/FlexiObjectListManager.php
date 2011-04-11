@@ -29,7 +29,7 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aWhere = FlexiModelUtil::parseSQLCond($aCond);
     if (empty($aWhere["sql"])) throw new Exception("No condition specified");
     //var_dump($aCond);
-    $sSQL = "delete from " . FlexiModelUtil::getSQLName($sTable) . " where ".
+    $sSQL = "DELETE FROM " . FlexiModelUtil::getSQLName($sTable) . " WHERE ".
       $aWhere["sql"];
     //echo "SQL: " . $sSQL;
     return FlexiModelUtil::getInstance()->getXPDOExecute($sSQL, $aWhere["param"]);
@@ -44,6 +44,25 @@ class FlexiObjectListManager extends FlexiLogManager {
     }
     return $aResult;
   }
+
+  public function mergeObjectRow(&$oRow) {
+    $bDebug = false;
+    $oObject = $this->getObject();
+    $this->onBeforeMerge($oRow);
+
+    foreach($oObject->aChild["field"] as $sField => $oField) {
+      if ($bDebug) echo __METHOD__ . ": field: " . $sField . "\n<br/>";
+      if (isset($oRow[$sField])) {
+        //if (! $this->onBeforeStoreField($oField, $oRow, $sType)) continue;
+        $oStore[$sField] = $this->getFieldDataFromForm($oField, $oRow);
+      }
+    }
+    $this->onMerge($oStore, $oObject, $oRow);
+    return $oStore;
+  }
+
+  public function onBeforeMerge(&$oRow) {}
+  public function onMerge(&$oStore, &$oObject, $oRow) {}
 
   public function storeObjectRow(&$oRow, &$sType) {
     $bDebug = false;
@@ -141,6 +160,10 @@ class FlexiObjectListManager extends FlexiLogManager {
     return $this->doQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
   }
 
+  public function doTableCountQuery(& $aCond=array(), & $aGroupBy=null) {
+    $sTable = $this->oObject->getTableName();
+    return $this->doQueryCount($sTable, $aCond, $aGroupBy);
+  }
   /**
    * Load a single row data of object
    * @param array $aCond
@@ -217,7 +240,7 @@ class FlexiObjectListManager extends FlexiLogManager {
    * @param int $iLimit
    * @param int $iOffset
    */
-  public function getQuery($sTable="", & $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
+  public function getQuery($sTable="", $aCond=array(), $aGroupBy=null, $aOrderby=null, $sSelect=null, $iLimit=null, $iOffset=0) {
     $bDebug = false;
     $xpdo = FlexiModelUtil::getInstance()->getXPDO();
 
@@ -227,18 +250,18 @@ class FlexiObjectListManager extends FlexiLogManager {
     //$this->onQueryParam($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $sSQL = "";
     if (empty($sSelect)) {
-      $sSQL = "select * from " . $sTable;
+      $sSQL = "SELECT * FROM " . $sTable;
     } else {
       $sSQL = $sSelect;
       if (!empty($sTable)) {
-        $sSQL .= " from " . FlexiModelUtil::getSQLName($sTable);
+        $sSQL .= " FROM " . FlexiModelUtil::getSQLName($sTable);
       }
     }
     $aParam = array();
     $aWhere = FlexiModelUtil::parseSQLCond($aCond);
 
     if (!empty($aWhere["sql"])) {
-      $sSQL .= " where " . $aWhere["sql"];
+      $sSQL .= " WHERE " . $aWhere["sql"];
       $aParam = array_merge($aParam, $aWhere["param"]);
     }
     
@@ -259,6 +282,8 @@ class FlexiObjectListManager extends FlexiLogManager {
       foreach($aOrderby as $sOrderBy) {
         $sOrderbySQL .= empty($sOrderbySQL) ? "": ",";
         $aOrder = explode(" " , $sOrderBy);
+        $sOrderType = count($aOrder) > 1?
+          (strtolower($aOrder[1])=="asc" ? "ASC": "DESC") : "ASC";
         $sOrderbySQL .= FlexiModelUtil::parseSQLName($aOrder[0]) . " " . $sOrderType;
       }
       $sSQL .= !empty($sOrderbySQL) ? " order by " . $sOrderbySQL : "";
@@ -281,6 +306,27 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $aResult;
   }
+  /**
+   * Get query count
+   * @param String $sTable
+   * @param array $aCond
+   * @param array $aGroupBy
+   * @return array 1 row of cnt
+   */
+  public function doQueryCount($sTable="", $aCond=array(), & $aGroupBy=null) {
+    $sResultSQL = $this->getQuery($sTable, $aCond, $aGroupBy, null, "SELECT COUNT(*) AS cnt ");
+    
+    $xpdo = FlexiModelUtil::getInstance()->getXPDO();
+    $this->onQuery($sResultSQL);
+    $stmt = $xpdo->query($sResultSQL);
+    if ($stmt) {
+      $oRow = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $oRow;
+    } else {
+      $aError = $xpdo->errorInfo();
+      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+    }
+  }
 
   public function onDoQuery(&$sTable, &$aCond, &$aGroupBy, &$aOrderby, &$sSelect, &$iLimit, &$iOffset) {}
 
@@ -288,13 +334,13 @@ class FlexiObjectListManager extends FlexiLogManager {
     $xpdo = FlexiModelUtil::getInstance()->getXPDO();
     $sSQL = $this->getQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $this->onQuery($sSQL);
-    //echo "sql: " . $sResultSQL;
+    //echo "sql: " . $sSQL;
     $stmt = $xpdo->query($sSQL);
     if ($stmt) {
       return $stmt;
     } else {
       $aError = $xpdo->errorInfo();
-      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+      throw new Exception("Query failed: " . $aError[2] . ":".$sSQL);
     }
   }
 

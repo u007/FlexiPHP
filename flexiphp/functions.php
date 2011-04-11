@@ -227,7 +227,7 @@ function flexiGetClassPath($sClass) {
   //if (FlexiConfig::$sFramework == "modx2")
   //  echo "checking: " . FlexiConfig::$sBaseDir . "/../" . FlexiConfig::$sModulePath . "\r\n<br/>";
 //  if (FlexiConfig::$sFramework == "modx2")
-//    echo "module path: " . FlexiConfig::$sModulePath . "\r\n<br/>";
+  //echo "module path: " . FlexiConfig::$sModulePath . "\r\n<br/>";
   if (is_dir(FlexiConfig::$sModulePath))
 	{
 		$aModuleList = flexiDirList(FlexiConfig::$sModulePath);
@@ -285,45 +285,6 @@ function flexiInclude($sClass)
   }
 
   return false;
-
-	//autoload files
-//	if (is_dir(FlexiConfig::$sModulePath))
-//	{
-//		$aModuleList = flexiDirList(FlexiConfig::$sModulePath);
-//		foreach($aModuleList as $sPath)
-//		{
-//			$sFilePath = FlexiConfig::$sModulePath . "/" . $sPath . "/autoload.php";
-//			if (is_file($sFilePath))
-//			{
-//				require_once($sFilePath);
-//				if (call_user_func ($sPath . "_autoload", array($sClass))) { return true; }
-//			}
-//		}
-//	}
-//
-//	$aModuleList = flexiDirList($sBaseDir . "/modules");
-//	foreach($aModuleList as $sPath)
-//	{
-//		$sFilePath = $sBaseDir . "/modules/" . $sPath . "/autoload.php";
-//		if (is_file($sFilePath))
-//		{
-//			require_once($sFilePath);
-//			if (call_user_func ($sPath . "_autoload", array($sClass))) { return true; }
-//		}
-//	}
-//
-//	$aModuleList = flexiDirList($sBaseDir . "/base");
-//	foreach($aBaseList as $sPath)
-//	{
-//		$sFilePath = $sBaseDir . "/base/" . $sPath . "/autoload.php";
-//		if (is_file($sFilePath))
-//		{
-//			require_once($sFilePath);
-//			if (call_user_func ($sPath . "_autoload", array($sClass))) { return true; }
-//		}
-//	}
-//
-//	return false;
 }
 
 function flexiDirList($sPath, $bCached = true)
