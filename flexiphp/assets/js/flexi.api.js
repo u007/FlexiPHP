@@ -165,11 +165,41 @@ function doFillCombo(target, data) {
     jQuery("option", target).remove();
   }
 
+  var bStartGroup = false;
+  var sOption = ""; var sLastGroup = "";
   for(var i=0; i < data.length; i++) {
+
     if (data[i].label) {
-      jQuery(target).append(
-        "<option value='" + data[i].data + "'>" + data[i].label + "</option>\n"
-      );
+      //contains optgroup info
+      if (data[i].optgroup) {
+        //is not same group, if has existing, close it and append
+        if (data[i].optgroup != sLastGroup) {
+          if (sOption != "") {
+            jQuery(target).append(sOption+"</optgroup>\n");
+            sOption="";
+          }
+          if (data[i].optgroup != "") {
+            sOption = "<optgroup label='" + data[i].label + "'>\n";
+          }
+        } else {
+          //same as last group
+          sOption +="<option value='" + data[i].data + "'>" + data[i].label + "</option>\n";
+        }
+
+        if (data[i].optgroup=="") {
+          //is empty group = no group, directlly append
+          jQuery(target).append(sOption);
+          sOption = ""; //reset group opt
+        } else if (i==data.length-1) {
+          //is last row
+          jQuery(target).append(sOption+"</optgroup>\n");
+        }
+        sLastGroup = data[i].optgroup;
+      } else {
+        jQuery(target).append(
+          "<option value='" + data[i].data + "'>" + data[i].label + "</option>\n"
+        );
+      }
     } else {
       jQuery(target).append(
         "<option value='" + i + "'>" + data[i] + "</option>\n"
@@ -214,17 +244,16 @@ function cloneObject(target) {
   return newObj;
 }
 
-function doAjaxRenderOptionList(sURL, sTarget, aData) {
+function doAjaxRenderOptionList(sURL, sTarget, aData, onLoaded) {
   doAjaxCall(sURL, aData, "GET", function(sResult) {
     var aResult = eval("(" + sResult + ")");
 
     if (aResult.status==1) {
       var aData = aResult['return'];
       doFillCombo(sTarget, aData);
-      //jQuery(sTarget + " option").remove();
-      //for(var c=0; c<aData.length; c++) {
-      //  jQuery(sTarget).append("<option value='" + aData[c].data + "'>" + aData[c].label + "</option>");
-      //}
+      if (onLoaded) {
+        onLoaded();
+      }
     }
   });
 }

@@ -79,7 +79,7 @@ class FlexiLogger
           "type" => $iType,
           "createdon" => gmmktime(),
           //"user" => FlexiConfig::getLoginHandler()->getLoggedInUserId(),
-          "user" => !$_SESSION['screenname'] ? $_SESSION['screenname']: $_SESSION['activenodeid'],
+          "user" => !empty($_SESSION['screenname']) ? $_SESSION['screenname']: (isset($_SESSION['activenodeid'])? $_SESSION['activenodeid']: 0),
           "description" => $sMessage
         );
         FlexiModelUtil::getInstance()->insertXPDO("modx_event_log", $aLog);

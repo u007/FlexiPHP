@@ -74,6 +74,10 @@ class FlexiTableFieldObject extends FlexiObject {
         $sPrecision = $this->precision;
         $sDBType = empty($this->dbtype) ? "varchar": $this->dbtype;
         switch(strtolower($sType)) {
+          case "select-char":
+            $sDBType = "char";
+            if (empty($sPrecision)) $sPrecision = "1";
+            break;
           case "select-tinyint":
             $sDBType = "tinyint";
             break;
@@ -113,12 +117,19 @@ class FlexiTableFieldObject extends FlexiObject {
           case "json":
             $sDBType = "varchar";
             if (empty($sPrecision)) $sPrecision = "500";
+          case "char":
+            $sDBType = "char";
+            if (empty($sPrecision)) $sPrecision = "1";
+            break;
           case "json-tiny":
             $sDBType = "tinytext";
+            break;
           case "json-medium":
             $sDBType = "mediumtext";
+            break;
           case "json-long":
             $sDBType = "longtext";
+            break;
           case "text":
               $sDBType = "text";
               //if (empty($sPrecision)) $sPrecision = "255";

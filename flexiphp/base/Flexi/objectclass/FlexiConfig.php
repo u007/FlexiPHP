@@ -212,11 +212,8 @@ class FlexiConfig
 
     self::$sRepositoryDir = empty(self::$sRepositoryDir) ?
       self::$sAssetsDir . "models/": self::$sRepositoryDir;
-    
-		if (isset($aURL["query"]))
-		{
-			parse_str($aURL["query"], self::$aQueryString);
-		}
+
+    self::$aQueryString = $_GET;
     
 		//fragment?
 		

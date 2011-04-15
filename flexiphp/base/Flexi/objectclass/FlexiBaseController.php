@@ -360,7 +360,7 @@ abstract class FlexiBaseController
       //Flexilogger::info(__METHOD__, "Rendering View: " . $this->sRenderViewName . ":" . $this->sViewName . " method:" . $asMethod);
       $this->oView->addVar($this->sRenderViewName, $this->renderView());
     } else {
-      Flexilogger::info(__METHOD__, "No view to render: " . $this->sRenderViewName);
+      Flexilogger::debug(__METHOD__, "No view to render: " . $this->sRenderViewName);
     }
 
     //FlexiLogger::info(__METHOD__, "rendered output: " . $this->oView->getVar($this->sRenderViewName));

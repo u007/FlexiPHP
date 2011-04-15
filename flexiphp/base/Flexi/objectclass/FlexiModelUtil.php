@@ -7,6 +7,7 @@ class FlexiModelUtil
 	private $aSetting = array();
 	private $sDSN = "";
 	protected $oDb = null;
+  protected $xpdo = null;
 
   public static $aTableId = array();
 	
@@ -742,6 +743,12 @@ class FlexiModelUtil
       if (!empty($sTemp)) {
         $sPrecision = $sTemp;
       }
+    } else if (substr($sFieldType,0,4) == "char") {
+      $sType = "char";
+      $sTemp = str_replace(array("char","(",")"), array("","",""), $sFieldType);
+      if (!empty($sTemp)) {
+        $sPrecision = $sTemp;
+      }
     } else if (substr($sFieldType,0,8) == "tinytext") {
       $sType = "tinytext";
       $sTemp = str_replace(array("tinytext","(",")"), array("","",""), $sFieldType);
@@ -1035,5 +1042,15 @@ class FlexiModelUtil
       default:
         return "Error: " . $sErrorType;
     }
+  }
+
+  public function  __sleep() {
+    $aKey = array_keys(get_object_vars($this));
+
+    $aResult = array();
+    foreach($aKey as $sKey) {
+      if ($sKey != "xpdo") $aResult[] = $sKey;
+    }
+    return $aResult;
   }
 }

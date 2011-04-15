@@ -3,7 +3,8 @@
 class FlexiCronBaseController extends FlexiBaseController {
   public $sInformEmail = "";
   public $iStartTime = 0;
-  
+  public $sLogType = "debug";
+
   public function onInit() {
     //cron doesnt have layout or view
     $this->disableView();
@@ -25,7 +26,7 @@ class FlexiCronBaseController extends FlexiBaseController {
   public function showStatus($sMethod, $sMsg) {
     $sLog = "(" . $this->getPeakMemory() . "MB:" .
      "". $this->getElapsedTime() . "s)" . (empty($sMsg) ? "": ":" . $sMsg);
-    $this->log($sMethod, $sLog, "info");
+    $this->log($sMethod, $sLog, $this->sLogType);
   }
 
   public function log($sMethod, $sMsg, $sType) {

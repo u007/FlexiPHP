@@ -59,7 +59,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
       $oFieldObject = $oObject->existsField($sFieldName)? $oObject->aChild["field"][$sFieldName] :
               new FlexiTableFieldObject($sFieldName);
       $aType = FlexiModelUtil::parseFieldType($oField["Type"]);
-
+      
       $sType      = $oFieldObject->type;
       $sPrecision = $aType["precision"];
       $sDBType    = $aType["type"];
@@ -77,6 +77,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
           case "select-text":
           case "select-enum":
           case "select-bigint":
+          case "select-char":
             switch($sDBType) {
               case "int":
               case "smallint":
@@ -84,6 +85,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
               case "text":
               case "enum":
               case "bigint":
+              case "char":
                 $sType = "select-" . $sDBType;
                 break;
               case "varchar":
@@ -176,7 +178,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
       } else {
         $sType = $this->getFieldInputTypeByDBType($sDBType);
       }
-      //$this->doLog("type: " . $sDBType);
+      //$this->doLog($sFieldName . ", type: " . $sDBType);
       //set precision 1st
       $oFieldObject->precision  = $sPrecision;
       $oFieldObject->type       = $sType;
@@ -193,7 +195,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
         $oFieldObject->clearOtherOption($aEnum);
         //$this->doLog("options: " . $oFieldObject->options);
       }
-
+      $this->doLog($sFieldName . ", type: " . $oFieldObject->type . ", dbtype:" . $oFieldObject->dbtype);
       $oFieldObject->cannull    = $oField["Null"]=="YES";
       $oFieldObject->primary    = $oField["Key"] == "PRI";
       $oFieldObject->default    = is_null($oField["Default"])? null: "'".$oField["Default"]."'";
@@ -250,6 +252,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
       case "datetime":
       case "timestamp":
       case "blob":
+      case "char":
         $sType = $sDBType;
         break;
       default:

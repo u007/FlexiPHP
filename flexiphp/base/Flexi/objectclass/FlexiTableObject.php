@@ -261,9 +261,9 @@ class FlexiTableObject extends FlexiObject {
     //clean up deleted fields
     $aFields = & $this->getAllFields();
 
-    foreach($aFields as $sName => $aValue) {
+    foreach($this->aChild["field"] as $sName => $aValue) {
       if ($aValue->iStatus == 0) {
-        $this->delField($sName);
+        unset($this->aChild["field"][$sName]);
       }
     }
     return array_keys( get_object_vars( $this ) );
