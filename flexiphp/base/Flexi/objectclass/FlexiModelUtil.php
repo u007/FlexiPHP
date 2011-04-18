@@ -226,6 +226,11 @@ class FlexiModelUtil
   }
 
 
+  public function getXPDOLastId() {
+    $xpdo = $this->getXPDO();
+    return $xpdo->lastInsertId();
+  }
+
   public function newXPDOModel($sClass) {
     $xpdo = $this->getXPDO();
     return $xpdo->newObject($sClass);
@@ -610,7 +615,9 @@ class FlexiModelUtil
     if ($bDebug) echo __METHOD__ . ": sql:" . $sSQL . "\n<br/>";
     if ($bDebug) echo __METHOD__ . ": param:" . print_r($aWhere["param"],true) . "\n<br/>";
 
-    return $this->getXPDOExecute($sSQL, $aWhere["param"]);
+    $this->getXPDOExecute($sSQL, $aWhere["param"]);
+    //if no exception, shall return true
+    return true;
   }
 
   public function insertXPDO($sTable, $oRow, $aPrimary=array()) {

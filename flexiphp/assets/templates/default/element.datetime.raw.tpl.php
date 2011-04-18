@@ -31,7 +31,6 @@ if (isset($vars["#maxdate"]))
 		<?=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?>  
 		<? if (isset($vars["#attributes"])) { echo FlexiStringUtil::attributesToString($vars["#attributes"]); } ?>>
   <input type="hidden" name="<?=$vars["#name"]?>" id="<?=$vars["#id"]?>" value="<?=$mValue?>" />
-	<br/>
 	<? if(isset($vars["#notice"])) { ?>
 	<div class="flexiphp_div_notice"><?=$vars["#notice"]["msg"]?></div>
 	<? } ?>

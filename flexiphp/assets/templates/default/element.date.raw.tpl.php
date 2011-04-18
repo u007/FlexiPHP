@@ -23,14 +23,26 @@ if (isset($vars["#maxdate"]))
 	$sMaxDate = ", maxDate: new Date(" . $aDate[0] . ", " . $aDate[1] . ", " . $aDate[2] . ")";
 }
 
+$sFormat = isset($vars["#format"]) ? $vars["#format"] : FlexiConfig::$sInputDateFormat;
+$sPHPFormat = FlexiDateUtil::getPHPDateTimeFormat($sFormat); //fix double i, which only 1 i(min) in php
+$sDisplayValue = "";
+if (!empty($mValue)) {
+  if (substr($mValue,0, 4)=="0000") {
+    //empty date
+    $sDisplayValue = "";
+  } else {
+    $iDatetime = strtotime($mValue);
+    $sDisplayValue = date($sPHPFormat, $iDatetime);
+  }
+}
 
 ?>
 <?=isset($vars["#prefix"]) ? $vars["#prefix"] : ""; ?>
-	<input type="text" name="<?=$vars["#name"]?>" <?=is_null($mValue) ? "" : " value=\"" . $mValue . "\""?><?=$sMaxLen?>
-		<?=empty($vars["#id"]) ? "" : " id=\"" . $vars["#id"] . "\""?><?=$bDisabled ? " disabled=\"disabled\"" : ""?>
+	<input type="text" name="<?=$vars["#name"]?>label" <?=is_null($mValue) ? "" : " value=\"" . $sDisplayValue . "\""?><?=$sMaxLen?>
+		<?=empty($vars["#id"]) ? "" : " id=\"" . $vars["#id"] . "label\""?><?=$bDisabled ? " disabled=\"disabled\"" : ""?>
 		<?=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?> 
 		<? if (isset($vars["#attributes"])) { echo FlexiStringUtil::attributesToString($vars["#attributes"]); } ?>>
-	<br/>
+  <input type="hidden" name="<?=$vars["#name"]?>" id="<?=$vars["#id"]?>" value="<?=$mValue?>" />
 	<? if(isset($vars["#notice"])) { ?>
 	<div class="flexiphp_div_notice"><?=$vars["#notice"]["msg"]?></div>
 	<? } ?>
@@ -39,15 +51,19 @@ if (isset($vars["#maxdate"]))
 	<? } ?>
 	<script type="text/javascript">
 	jQuery(document).ready( function() {
-		jQuery("#<?=$vars["#id"]?>").datepicker({
+		jQuery("#<?=$vars["#id"]?>label").datepicker({
 			showWeek: true,
-			dateFormat: '<?=isset($vars["#format"]) ? $vars["#format"] : FlexiConfig::$sInputDateFormat ?>',
+			dateFormat: '<?=$sFormat ?>',
 			altFormat: 'yy-mm-dd',
+      altField: '#<?=$vars["#id"]?>',
 			changeMonth: true,
 			changeYear: true
 			<?=$sMinDate?>
 			<?=$sMaxDate?>
 			});
+
+    //jQuery("#<?=$vars["#id"]?>label").datepicker("setDate", jQuery("#<?=$vars["#id"]?>").val());
+    //jQuery("#<?=$vars["#id"]?>label").datepicker({value: jQuery("#<?=$vars["#id"]?>label").val()});
 	});
 	</script>
 <?=isset($vars["#suffix"]) ? $vars["#suffix"] : "" ?>

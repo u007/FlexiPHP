@@ -166,6 +166,14 @@ class FlexiTableObject extends FlexiObject {
     }
   }
 
+  public function setFieldConfig($sField, $sName, $sValue) {
+    if (!$this->existsField($sField)) {
+      throw new Exception("No such field: " . $sField);
+    }
+
+    $this->aChild["field"][$sField]->$sName = $sValue;
+  }
+
   public function setField(FlexiTableFieldObject $oField) {
     if ($this->existsField($oField->getName())) {
       $this->aChild["field"][$oField->getName()] = &$oField;

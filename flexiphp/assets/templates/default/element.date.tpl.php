@@ -37,7 +37,6 @@ if (isset($vars["#maxdate"]))
 		<?=empty($vars["#id"]) ? "" : " id=\"" . $vars["#id"] . "\""?><?=$bDisabled ? " disabled=\"disabled\"" : ""?>
 		<?=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?> 
 		<? if (isset($vars["#attributes"])) { echo FlexiStringUtil::attributesToString($vars["#attributes"]); } ?>>
-	<br/>
 	<? if(isset($vars["#notice"])) { ?>
 	<div class="flexiphp_div_notice"><?=$vars["#notice"]["msg"]?></div>
 	<? } ?>

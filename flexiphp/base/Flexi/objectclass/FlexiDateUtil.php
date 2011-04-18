@@ -1,9 +1,4 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of FlexiDateUtil
  *
@@ -80,6 +75,57 @@ class FlexiDateUtil {
 
     return mktime($aTimeOnly[0], $aTimeOnly[1], $aTimeOnly[2],
             $aDateOnly[1], $aDateOnly[2], $aDateOnly[0]);
+  }
+  public static function parseFormToSQLDate($sDateValue, $sFormFormat=null) {
+    if (empty($sDateValue)) { return null; }
+
+    $sResult = self::parseFormToSQLDateTime($sDateValue, $sFormFormat);
+    $aDate = explode(" ", $sResult);
+    return $aDate[0];
+  }
+
+  public static function parseFormToSQLDateTime($sDateValue, $sFormFormat=null) {
+    $bDebug = false;
+    if (empty($sDateValue)) { return null; }
+
+    $sFormFormat = empty($sFormFormat)? FlexiConfig::$sInputDateFormat: $sFormFormat;
+    $sPHPFormat = self::getPHPDateTimeFormat($sFormFormat);
+    
+    preg_match_all("/([-_\/\:i.]+)/i", $sPHPFormat, $match, PREG_OFFSET_CAPTURE);
+    $iLastPos = 0;
+    $aDate = getdate();
+    foreach($match[0] as $aMatch) {
+      $sSep = $aMatch[0];
+      $iPos = $aMatch[1];
+      if ($iPos-$iLastPos > 0) {
+        $sDate = substr($sDateValue, $iLastPos, $iPos-$iLastPos);
+        $sType = substr($sPHPFormat, $iLastPos, $iPos-$iLastPos);
+        switch(strtolower($sType)) {
+          case "d":
+            $aDate["mday"] = $sDate;
+            break;
+          case "m":
+            $aDate["mon"] = $sDate;
+            break;
+          case "y":
+            $aDate["year"] = $sDate;
+            break;
+          case "h":
+            $aDate["hours"] = $sDate;
+            break;
+          case "i":
+            $aDate["minutes"] = $sDate;
+            break;
+          case "s":
+            $aDate["seconds"] = $sDate;
+            break;
+        }
+      }
+      //"d","m","Y","H","i","s"
+      $iLastPos = $iPos;
+    }
+    return $aDate["year"] . "-" . $aDate["mon"] . "-" . $aDate["mday"] .
+      " " . $aDate["hours"] . ":" . $aDate["minutes"] . ":" . $aDate["seconds"];
   }
 
   /**
@@ -268,6 +314,9 @@ class FlexiDateUtil {
 
     return $aResult;
   }
-  
+
+  public static function getPHPDateTimeFormat($sFormat) {
+    return str_replace(array("dd","mm","yy","hh","ii","ss"), array("d","m","Y","H","i","s"), $sFormat);
+  }
 
 }

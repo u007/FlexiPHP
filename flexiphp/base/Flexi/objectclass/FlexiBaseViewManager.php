@@ -205,13 +205,21 @@ class FlexiBaseViewManager {
 
   public function onGetFieldList(&$aListField) {}
 
-  public function getFormToObjectStore($oRow) {
+  public function getFormToObjectStore($oRow, $sFormType) {
+    $bDebug = false;
     $oForm = array();
     $oTable = $this->oObjectListManager->getObject();
     foreach($oTable->aChild["field"] as $sName => & $oField) {
       $sField = $this->sFieldPrefix . $sName;
-      if (isset($oRow[$sField])) {
-        $oForm[$sName] = $oRow[$sField];
+
+      if ($bDebug) echo __METHOD__ . ":Field:" . $sName . "<br/>\n";
+      
+      $sCond = "input".$sFormType;
+      if (($sFormType=="update" && $oField->primary) ||
+        in_array($oField->$sCond, array("edit","display","hidden"))
+      ){
+        $sValue = $oRow[$sField];
+        $oForm[$sName] = $sValue;
       }
     }
     return $oForm;
@@ -263,7 +271,26 @@ class FlexiBaseViewManager {
   public function onBeforeRenderListField(FlexiTableFieldObject &$oField) { return true; }
   public function onAfterRenderListField(& $sOutput, FlexiTableFieldObject & $oField) {}
 
-  
+  /**
+   * Render input fields
+   * @param FlexiTableObject $oTable : object schema
+   * @param array $oRow : data in array
+   * @return array()
+   */
+  public function renderFieldsDisplay(FlexiTableObject $oTable, $oRow) {
+    $aResult = array();
+    $sTable = $oTable->getTableName();
+    foreach($oTable->aChild["field"] as $sName => & $oField) {
+      //echo "ok check\n";
+      $sOutput = $this->getFieldDisplay($oField, $oRow);
+      $sLabel  = $this->getFieldLabel($oField);
+      
+      $this->onAfterRenderFieldDisplay($sOutput, $sLabel, $oField, $oRow);
+      $aResult[$oField->sName] = array("label" => $sLabel, "display" => $sOutput);
+    }
+    return $aResult;
+  }
+
   /**
    * Render input fields
    * @param FlexiTableObject $oTable : object schema
@@ -299,12 +326,12 @@ class FlexiBaseViewManager {
     $bRender = true;
     switch ($sFormInput) {
       case "edit":
-        $bRender = true;
-        break;
       case "readonly":
+      case "display":
         $bRender = true;
         break;
       case "hidden":
+      case "none":
         $bRender = false;
         break;
     }
@@ -313,6 +340,12 @@ class FlexiBaseViewManager {
     if (strlen($sLabel)==0) return "";
     if (! $bRender) return "";
     return "<label for=\"field" . $oField->getName() . "\">" . $sLabel . "</label>";
+  }
+
+  public function getFieldLabel(FlexiTableFieldObject $oField) {
+    $sLabel = $oField->label;
+    $this->onFieldLabel($sLabel, $oField);
+    return $sLabel;
   }
 
   public function getFieldInputLabel(FlexiTableFieldObject $oField, $sType) {
@@ -325,7 +358,7 @@ class FlexiBaseViewManager {
     $sInputName = "input" . $sType;
     $sFormInput = $oField->$sInputName;
 
-    $sOutput = "";
+    $sOutput = ""; $bAddHidden = false;
     switch ($sFormInput) {
       case "edit":
         $oForm = $this->getFieldInput($oField, $oRow);
@@ -333,17 +366,26 @@ class FlexiBaseViewManager {
         $sOutput = $this->oView->renderMarkup($oForm, $oForm["#name"]);
         break;
       case "readonly":
+      case "display":
         $sOutput = $this->getFieldDisplay($oField, $oRow) . "\n";
+        $bAddHidden = true;
         //continue to output hidden field
+        break;
       case "hidden":
-        $oFieldConfig = clone($oField);
-        $oFieldConfig->type = "hidden";
-        $oForm = $this->getFieldInput($oFieldConfig, $oRow);
-        $this->onRenderFieldInput($oForm, $oField, $oRow, $sType);
-        $sOutput .= $this->oView->renderMarkup($oForm, $oForm["#name"]);
+        $bAddHidden = true;
+        break;
+      case "none":
         break;
     }
-    
+
+    if ($bAddHidden) {
+      $oFieldConfig = clone($oField);
+      $oFieldConfig->type = "hidden";
+      $oForm = $this->getFieldInput($oFieldConfig, $oRow);
+      $this->onRenderFieldInput($oForm, $oField, $oRow, $sType);
+      $sOutput .= $this->oView->renderMarkup($oForm, $oForm["#name"]);
+    }
+
     return $sOutput;
   }
 
@@ -369,7 +411,7 @@ class FlexiBaseViewManager {
         }
         break;
       case "timestamp-int":
-        $sFormat = self::getPHPDateTimeFormat(FlexiConfig::$sInputDateTimeFormat);
+        $sFormat = FlexiDateUtil::getPHPDateTimeFormat(FlexiConfig::$sInputDateTimeFormat);
         $mValue = date($sFormat, $mValue);
         break;
     }
@@ -577,10 +619,10 @@ class FlexiBaseViewManager {
         if (count($aSize)>=2) $aResult["#rows"] = $aSize[1];
       } else {
         //default
-        $aResult["#size"] = 25;
+        $aResult["#size"] = $oField->formsize;
       }
     } else {
-      $aResult["#size"] = $oField->formsize;
+      
     }
 
     if (isset($oRow[$sName])) {
@@ -588,9 +630,11 @@ class FlexiBaseViewManager {
       switch($oField->type) {
         case "date":
         case "datetime":
+          //dont need this as actual value is already hidden
+          /*
           $sFormat = isset($aResult["#format"]) ? $aResult["#format"] : 
             ($oField->type == "date" ? FlexiConfig::$sInputDateFormat: FlexiConfig::$sInputDateTimeFormat);
-          $sFormat = self::getPHPDateTimeFormat($sFormat); //fix double i, which only 1 i(min) in php
+          $sFormat = FlexiDateUtil::getPHPDateTimeFormat($sFormat); //fix double i, which only 1 i(min) in php
           if (!empty($sValue)) {
             if (substr($sValue,0, 4)=="0000") {
               //empty date
@@ -600,8 +644,8 @@ class FlexiBaseViewManager {
               $sValue = date($sFormat, $iDatetime);
             }
           }
-        case "date":
-          
+         */
+          break;
       }//switch
       
       $aResult["#value"] = $sValue;
@@ -610,10 +654,9 @@ class FlexiBaseViewManager {
     return $aResult;
   }
 
-  public static function getPHPDateTimeFormat($sFormat) {
-    return str_replace(array("dd","mm","yy","hh","ii","ss"), array("d","m","Y","H","i","s"), $sFormat);
-  }
+  
 
+  public function onFieldLabel(&$sLabel, FlexiTableFieldObject &$oField) {}
   /**
    * to change field label event
    * @param String $sLabel
@@ -628,4 +671,5 @@ class FlexiBaseViewManager {
   public function onBeforeRenderFieldInput(FlexiTableFieldObject &$oField, $sType) { return true; }
   public function onRenderFieldInput(& $aField, FlexiTableFieldObject &$oField, $oRow, $sType) {}
   public function onAfterRenderFieldInput(& $sOutput, &$sLabel, FlexiTableFieldObject & $oField, $oRow, $sType) {}
+  public function onAfterRenderFieldDisplay(& $sOutput, &$sLabel, FlexiTableFieldObject & $oField, $oRow) {}
 }
