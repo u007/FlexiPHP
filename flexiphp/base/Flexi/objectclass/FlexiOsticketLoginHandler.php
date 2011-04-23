@@ -152,7 +152,11 @@ class FlexiOsticketLoginHandler extends FlexiLoginBaseHandler
 		if ($this->isFlexiAdminLoggedIn()) {
       return true;
     }
-    //TODO other login type, based on db
+    global $thisuser;
+    if ($thisuser->isAdmin()) {
+      return true;
+    }
+    return false;
 	}
   
 	public function getIsVerified($asLoginId) {

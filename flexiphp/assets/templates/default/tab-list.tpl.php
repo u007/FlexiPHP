@@ -1,15 +1,23 @@
 <?php
 extract($vars);
 
-?>
+$bCanDelete = empty($bCanDelete)? false: true;
+$bCanEdit   = empty($bCanEdit)? false: true;
 
-<form id="<?=$sViewDBFormPrefix?>frmList" method="GET" action="<?=$sOpURL?>">
+?>
+<form id="<?=$sViewDBFormPrefix?>frmList" method="GET" action="<?=$sOpURL?>" class="frmList">
   <input type="hidden" name="txtType" value=""/>
+  <input type="hidden" name="limit" value="" />
+  <input type="hidden" name="start" value="" />
+  <? if($bCanDelete) { ?>
   <input type="button" name="btnDelete" value="Delete" onClick="<?=$sViewDBFormPrefix?>doDeleteObjects()"/>
-  <div id="<?=$sViewDBFormPrefix?>tableListPageTop"></div>
+  <? } ?>
+  <div id="<?=$sViewDBFormPrefix?>tableListPageTop" class="divPaging"></div>
   <table id="<?=$sViewDBFormPrefix?>tableList" class="tableGrid" style="" cellspacing="0" cellpadding="0">
     <thead>
+      <? if($bCanDelete) { ?>
       <th><input type="checkbox" name="chkAll" value="1" onClick="toogleCheckAll(this, '#<?=$sViewDBFormPrefix?>tableList', 'checkPrimary')"/></th>
+      <? } ?>
       <? foreach($aFieldHeader as $sField => $sHTML) { ?>
       <th><?=$sHTML?></th>
       <? } ?>
@@ -35,15 +43,21 @@ jQuery(document).ready(function() {
   jQuery("#<?=$sViewDBFormPrefix?>frmList").ajaxForm(
   {
     beforeSubmit: function() {
+      var processname = "<?=$sViewDBFormPrefix?>objectlist";
+      _processing[processname] = false;
+      jQuery("#<?=$sViewDBFormPrefix?>title").html("loading...");
     },
     dataType:  'json',
     success: function(data) {
+      var processname = "<?=$sViewDBFormPrefix?>objectlist";
       if (!data.status) appendNotice(data.msg, "error");
       else {
-        appendNotice(data.msg, "success");
-        <?=$sViewDBFormPrefix?>doLoadList();
+        if (data.msg) appendNotice(data.msg, "success");
+        <?=$sViewDBFormPrefix?>showObjectList(data);
         jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs( "select" , 0 );
       }
+      _processing[processname] = false;
+      jQuery("#<?=$sViewDBFormPrefix?>title").html("");
     }
   });
 });
@@ -67,20 +81,18 @@ function <?=$sViewDBFormPrefix?>doLoadList(pageno) {
   if (_processing[processname]) return;
   _processing[processname] = true;
 
-
-  jQuery("#<?=$sViewDBFormPrefix?>tableList tbody").html("<tr><td colspan='<?=count($aFieldHeader)+1?>'>Loading...</td></tr>");
-  var aParam = [];
-
-  if (pageno) {
-    aParam = {
-      "start" : (<?=$sViewDBFormPrefix?>iLimit*(pageno-1))+1,
-      "limit" : <?=$sViewDBFormPrefix?>iLimit
-    };
-  }
+  var start = <?=$sViewDBFormPrefix?>iLimit*(pageno-1);
+  start = !start ? 0: start;
+  //console.log(start);
+  jQuery("#<?=$sViewDBFormPrefix?>frmList input[name=txtType]").val("list");
+  jQuery("#<?=$sViewDBFormPrefix?>frmList input[name=start]").val(start);
+  jQuery("#<?=$sViewDBFormPrefix?>frmList").submit();
+  return;
 
   doAjaxCall('<?=$sListURL ?>', aParam,"GET",
     function(sReturn) {
       <?=$sViewDBFormPrefix?>showObjectList(eval("("+sReturn+")"));
+      jQuery("#<?=$sViewDBFormPrefix?>title").html("");
       _processing[processname] = false;
     });
 }
@@ -107,7 +119,9 @@ function <?=$sViewDBFormPrefix?>showObjectList(result) {
       for(var c=0;c < data.length; c++) {
         //console.log("adding: " + data[c]["sName"]);
         oRow = [];
+        <? if($bCanDelete) { ?>
         oRow[0] = "<td><input type='checkbox' name='checkPrimary[]' value='" + jsonEncodeObject(data[c]._primary) + "'/></td>\n";
+        <? } ?>
         for(var d=0; d<aCols.length; d++) {
           oRow[oRow.length] = "<td>" + data[c][aCols[d]] + "</td>";
         }
@@ -146,13 +160,21 @@ function <?=$sViewDBFormPrefix?>showObjectList(result) {
     divPage.append("<li class=\"" + (iPage < iPageCount ? "last": "last-off") +
       "\" onClick=\"<?=$sViewDBFormPrefix?>Page("+iPageCount+")\">Last»»</li>");
 
+    divPage.append("<li class=\"reload\" onClick=\"<?=$sViewDBFormPrefix?>Page("+iPage+",1)\">Reload</li>");
+
     jQuery("#<?=$sViewDBFormPrefix?>tableListPageTop").html(jQuery("#<?=$sViewDBFormPrefix?>tableListPage").html());
+
+    if (aReturn["total"]) {
+      jQuery("#<?=$sViewDBFormPrefix?>frmList input[name=limit]").val(aReturn["limit"]);
+      jQuery("#<?=$sViewDBFormPrefix?>frmList input[name=start]").val(aReturn["start"]);
+  }
   }
   <?=$this->render("onloadlist.tab-form") ?>
+  jQuery("#<?=$sViewDBFormPrefix?>title").html("");
 }
 
-function <?=$sViewDBFormPrefix?>Page(pageno) {
-  if (<?=$sViewDBFormPrefix?>iPage==pageno) return;
+function <?=$sViewDBFormPrefix?>Page(pageno, forceLoad) {
+  if (<?=$sViewDBFormPrefix?>iPage==pageno && !forceLoad) return;
   <?=$sViewDBFormPrefix?>doLoadList(pageno);
 }
 

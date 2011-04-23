@@ -123,6 +123,7 @@ class FlexiBaseViewManager {
    * @param int $iOffset
    */
   public function getQueryDisplayList($aCond, $aGroupBy, $aOrder, $sSelect, $iLimit, $iOffset) {
+    //echo __METHOD__ . ": query select: " . $sSelect . "<br/>\n";
     $aList = $this->oObjectListManager->doTableQuery($aCond, $aGroupBy, $aOrder, $sSelect, $iLimit, $iOffset);
     //may add additional fields
     $aResult = array();
@@ -211,15 +212,17 @@ class FlexiBaseViewManager {
     $oTable = $this->oObjectListManager->getObject();
     foreach($oTable->aChild["field"] as $sName => & $oField) {
       $sField = $this->sFieldPrefix . $sName;
-
       if ($bDebug) echo __METHOD__ . ":Field:" . $sName . "<br/>\n";
-      
-      $sCond = "input".$sFormType;
-      if (($sFormType=="update" && $oField->primary) ||
-        in_array($oField->$sCond, array("edit","display","hidden"))
-      ){
-        $sValue = $oRow[$sField];
-        $oForm[$sName] = $sValue;
+      //ensure form has the field
+      if (isset($oRow[$sField])) {
+        $sCond = "input".$sFormType;
+        //ensure this form field is updatable or insertable or is primary
+        if (($sFormType=="update" && $oField->primary) ||
+          in_array($oField->$sCond, array("edit","display","hidden"))
+        ){
+          $sValue = $oRow[$sField];
+          $oForm[$sName] = $sValue;
+        }
       }
     }
     return $oForm;
@@ -339,6 +342,7 @@ class FlexiBaseViewManager {
     if (is_null($sLabel)) return "";
     if (strlen($sLabel)==0) return "";
     if (! $bRender) return "";
+    //echo "render: " . $oField->getName() . ", type: " . $sType;
     return "<label for=\"field" . $oField->getName() . "\">" . $sLabel . "</label>";
   }
 
@@ -413,6 +417,14 @@ class FlexiBaseViewManager {
       case "timestamp-int":
         $sFormat = FlexiDateUtil::getPHPDateTimeFormat(FlexiConfig::$sInputDateTimeFormat);
         $mValue = date($sFormat, $mValue);
+        break;
+      case "datetime":
+        $sFormat = FlexiDateUtil::getPHPDateTimeFormat(FlexiConfig::$sInputDateTimeFormat);
+        $mValue = date($sFormat, strtotime($mValue));
+        break;
+      case "date":
+        $sFormat = FlexiDateUtil::getPHPDateTimeFormat(FlexiConfig::$sDisplayDateFormat);
+        $mValue = date($sFormat, strtotime($mValue));
         break;
     }
 

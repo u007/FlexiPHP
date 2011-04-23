@@ -496,15 +496,23 @@ class FlexiModelUtil
     return $mName;
   }
 
-  public static function parseSQLKey($sKey, $sValue) {
+  public static function parseSQLKey($sKey, $sValue, $bStatementValue=false) {
     $bDebug = false;
     $result = ""; $aParam = array();
     $aCond = explode(":", $sKey);
 
     //default
     $sType = "and";
-    $sOperator = "=";
-    if(count($aCond)==1) {
+    $sOperator = "";
+    $bHasParam = true;
+    if (is_numeric($sKey)) {
+      //is condition without field name
+      return array(
+        "type" => $sType,
+        "sql" => "(" . $sValue . ")",
+        "param" => array()
+      );
+    } else if(count($aCond)==1) {
       $sField = $sKey;
       $sOperator = "=";
       $sType = "and";
@@ -541,8 +549,20 @@ class FlexiModelUtil
     
     //$sParamName = ":" . $sField . FlexiStringUtil::createRandomPassword(4);
     $sParamName = ":" . preg_replace("/[^a-zA-Z0-9_]/", "_", $sField) . FlexiStringUtil::createRandomPassword(4);
-
+    
+    
     switch(strtolower(trim($sOperator))) {
+      case "in":
+        //we are hardcoding value into it,
+        //  direct sql injection
+        $bHasParam = false;
+        if (is_array($sValue)) {
+          $sSQLValue = self::getSQLValue($sValue);
+        } else {
+          $sSQLValue = $sValue; //expect statement in there
+        }
+        $sSQL = $sField . " " . $sOperator . " (" . $sSQLValue . ")";
+        break;
       case "isnull":
       case "is null":
         $sSQL = $sField . " IS NULL";
@@ -554,8 +574,10 @@ class FlexiModelUtil
       default:
         $sSQL = $sField . " " . $sOperator . " " . $sParamName;
     }
+    if ($bHasParam) {
+      $aParam[$sParamName] = $sValue;
+    }
     
-    $aParam[$sParamName] = $sValue;
     return array(
       "type"  => $sType,
       "sql"   => $sSQL,
@@ -708,23 +730,50 @@ class FlexiModelUtil
     $bDebug = false;
     $result = ""; $aParam = array();
     if ($bDebug) echo __METHOD__ . ":count: " . count($aValue) . "<br/>\n";
+    $aOperator = array();
     foreach($aValue as $sKey=> $mValue) {
       if (is_array($mValue)) {
         $aInnerCond = self::parseSQLCond($mValue);
         if ($bDebug) echo __METHOD__ . ":Is array: " . print_r($aInnerCond,true) . "<br/>\n";
-        $aCond = self::parseSQLKey($sKey, "");
+
+        if (is_numeric($sKey)) {
+          //is an array with no condition as param
+          //  operator of inner condition cover by first operator within inner condition
+          $aCond = self::parseSQLKey($sKey, $aInnerCond["sql"]);
+          $aCond["type"] = $aInnerCond["operator"][0];
+        } else {
+          //has condition
+          $aCond = self::parseSQLKey($sKey, $aInnerCond["sql"]);
+        }
+        //todo:
+        //  and also support for IN statement
+        //echo "key:";
+        //var_dump($sKey);
+        //echo "<hr/>";
+        //echo "cond:";
+        //var_dump($aCond);
+        //echo "<hr/>";
+        //var_dump($aInnerCond);
+        //echo "<hr/>";
         $result .= empty($result) ? "": " " . $aCond["type"] . " ";
-        $result .= "(" . $aInnerCond["sql"] . ")";
+        $result .= $aCond["sql"];
+        //$result .= "(" . $aInnerCond["sql"] . ")";
         $aParam = array_merge($aParam, $aInnerCond["param"]);
       } else {
+        //echo "Key: " . $sKey . "\n<br/>";
         $aCond = self::parseSQLKey($sKey, $mValue);
+        //echo "cond:";
+        //var_dump($aCond);
+        //echo "<hr/>";
         if ($bDebug) echo __METHOD__ . ":Is string: " . print_r($aCond,true) . "<br/>\n";
         $result .= empty($result) ? "": " " . $aCond["type"] . " ";
         $result .= $aCond["sql"];
         $aParam = array_merge($aParam, $aCond["param"]);
       } //is string
+
+      $aOperator[] = $aCond["type"];
     } //foreach
-    return array("sql" => $result, "param" => $aParam);
+    return array("sql" => $result, "param" => $aParam, "operator" => $aOperator);
   } //function
 	
 	public function getRecordCount(& $oRecord, $sSelect = "count(*) as cnt", $sCol = "cnt")
@@ -929,11 +978,25 @@ class FlexiModelUtil
     return $sName;
   }
 
-  public static function getSQLValue($sValue) {
+  /**
+   * Return a delimitered value, after escape
+   *  if is string, 'value',
+   *  if is array, 'value1','value2','value3'
+   * @param mixed $mValue
+   * @return String SQL
+   */
+  public static function getSQLValue($mValue) {
     switch(FlexiConfig::$sDBType) {
       case "mysql":
-        return "'" . self::getSQLRaw($sValue) . "'";
-
+        if (is_array($mValue)) {
+          $aResult = array();
+          foreach($mValue as $sValue) {
+            $aResult[] = "'" . self::getSQLRaw($sValue) . "'";
+          }
+          return implode(",", $aResult);
+        }
+        //is not array
+        return "'" . self::getSQLRaw($mValue) . "'";
     }
     return $sName;
   }

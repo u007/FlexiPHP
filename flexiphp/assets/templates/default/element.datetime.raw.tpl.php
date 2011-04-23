@@ -23,6 +23,9 @@ if (isset($vars["#maxdate"]))
 	$sMaxDate = ", maxDate: new Date(" . $aDate[0] . ", " . $aDate[1] . ", " . $aDate[2] . ")";
 }
 
+//reformat for jquery datetime input
+$sFormat = isset($vars["#format"]) ? $vars["#format"] : FlexiConfig::$sInputDateTimeFormat;
+$sFormat = str_replace(":ss", ":00", $sFormat);
 
 ?>
 <?=isset($vars["#prefix"]) ? $vars["#prefix"] : ""; ?>
@@ -41,7 +44,7 @@ if (isset($vars["#maxdate"]))
 	jQuery(document).ready( function() {
     var aConfig = {
     showWeek: true,
-    format: '<?=isset($vars["#format"]) ? $vars["#format"] : FlexiConfig::$sInputDateTimeFormat ?>',
+    format: '<?=$sFormat ?>',
     altFormat: 'yy-mm-dd hh:ii',
     altField: '#<?=$vars["#id"]?>',
     changeMonth: true,

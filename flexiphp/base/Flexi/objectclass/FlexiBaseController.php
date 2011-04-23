@@ -357,6 +357,7 @@ abstract class FlexiBaseController
 		$this->afterControl($asMethod, $bReturn);
     
     if (!empty($this->sRenderViewName)) {
+      //echo "viewvarname: " . $this->sRenderViewName;
       //Flexilogger::info(__METHOD__, "Rendering View: " . $this->sRenderViewName . ":" . $this->sViewName . " method:" . $asMethod);
       $this->oView->addVar($this->sRenderViewName, $this->renderView());
     } else {
@@ -774,7 +775,7 @@ abstract class FlexiBaseController
 		}
 		else
 		{
-      //echo __METHOD__.": no layout";
+      //echo __METHOD__.": no layout, viewname: " . $this->sRenderViewName;
       if (FlexiConfig::$sFramework == "modx2") {
         //FlexiController::appendOutput("is render non-layout");
         FlexiController::appendOutput($this->oView->getVar($this->sRenderViewName));
@@ -828,7 +829,7 @@ abstract class FlexiBaseController
 	public function renderView($asView="", $aVars=null, $asPath=null)
 	{
 		$sView = empty($asView) ? $this->sViewName : $asView;
-		
+		//echo "view template: " . $sView;
 		if (empty($sView)) { return ""; }
 		$sPath = is_null($asPath) ? $this->sModulePath : $asPath;
 		return $this->oView->render($sView, $aVars, $sPath);

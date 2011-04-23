@@ -331,6 +331,7 @@ class FlexiObjectListManager extends FlexiLogManager {
   public function onDoQuery(&$sTable, &$aCond, &$aGroupBy, &$aOrderby, &$sSelect, &$iLimit, &$iOffset) {}
 
   public function _doQuery($sTable="", & $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
+    //echo __METHOD__ . ": select: " . $sSelect . "<br/>\n";
     $xpdo = FlexiModelUtil::getInstance()->getXPDO();
     $sSQL = $this->getQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $this->onQuery($sSQL);

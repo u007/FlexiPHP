@@ -19,10 +19,16 @@
     <? } ?>
   <? } ?>
   </div>
-  <div class="buttonHolder">
-    <button type="submit" class="primaryAction">Save</button>
-    <button type="button" class="primaryAction" onClick="<?=$sViewDBFormPrefix?>resetForm()">Cancel</button>
+        <div class="ctrlHolder">
+          <label for="" > </label>
+          <div class="subnav_btn_idle" style="float:left;width:70px;text-align:center;">
+            <input type="submit" class="btnsubmit" style="width:70px" value="Save">
   </div>
+          <div class="subnav_btn_idle" style="margin-left: 5px; float:left;width:70px;text-align:center;">
+            <input type="button" class="btnsubmit" style="width:70px" onClick="<?=$sViewDBFormPrefix?>resetForm()" value="Cancel" />
+          </div>
+
+        </div>
 
 </form>
 
@@ -91,6 +97,7 @@ function <?=$sViewDBFormPrefix?>doLoadObject(cond) {
   var processname = "<?=$sViewDBFormPrefix?>loadobject";
   if (_processing[processname]) return;
 
+  <? if(1==2) { ?>console.log(<?=json_encode($vars)?>); <? } ?>
   jQuery("#<?=$sViewDBFormPrefix?>divFrmObject").html("Loading...");
   jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs("select", 1);
   doAjaxCall('<?=$sLoadURL ?>', cond,"GET",
@@ -104,6 +111,7 @@ function <?=$sViewDBFormPrefix?>showObjectForm(result) {
   if(! result.status) appendNotice(result.msg, "error");
   else {
     var data = result["return"];
+    console.log(jQuery("#<?=$sViewDBFormPrefix?>divFrmObject"));
     jQuery("#<?=$sViewDBFormPrefix?>divFrmObject").html("");
     jQuery("#<?=$sViewDBFormPrefix?>frmObject input[name=txtFormType]").val("update");
     for(var c in data) {
@@ -119,7 +127,11 @@ function <?=$sViewDBFormPrefix?>showObjectForm(result) {
     }
   }
   <?=$sViewDBFormPrefix?>onAfterInitForm();
-  
+  if (<?=$sViewDBFormPrefix?>tabs) {
+    if(<?=$sViewDBFormPrefix?>tabs.selectChild) {
+      <?=$sViewDBFormPrefix?>tabs.selectChild(1);
+    }
+  }
   <?=$this->render("onshowobject.tab-form") ?>
 }
 </script>

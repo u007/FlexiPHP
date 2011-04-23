@@ -243,7 +243,9 @@ div.gridbox table.hdr td.x-toolbar-left {
 ul.paging {
   border:0; margin:0; padding:0;
   display: block; clear: both;
+  min-height: 28px;
 }
+
 
 ul.paging li {
   border:0; margin:2px; padding:0;
@@ -298,4 +300,25 @@ ul.paging a:hover{
 
 table.grid tbody tr td {
   vertical-align: top;
+}
+
+.frmList input[name=btnDelete] {
+  float: left;
+  margin-right: 5px;
+  padding:3px 4px;
+  border:solid 1px #9aafe5;
+}
+
+div.divPaging {
+  float: left;
+  display: block;
+  clear: right;
+}
+
+.tableGrid {
+  clear: both;
+}
+
+div.ctrlHolder {
+  min-height: 40px;
 }

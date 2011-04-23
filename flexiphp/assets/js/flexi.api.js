@@ -157,7 +157,7 @@ function toogleCheckAll(check, target, sPrefix) {
   }
 }
 
-function doFillCombo(target, data) {
+function doFillCombo(target, data, bRenderGroup) {
   var sLastValue = jQuery(target).val();
   if (typeof(target)=="string") {
     jQuery(target + " option").remove();
@@ -171,7 +171,7 @@ function doFillCombo(target, data) {
 
     if (data[i].label) {
       //contains optgroup info
-      if (data[i].optgroup) {
+      if (bRenderGroup && data[i].optgroup) {
         //is not same group, if has existing, close it and append
         if (data[i].optgroup != sLastGroup) {
           if (sOption != "") {
@@ -244,13 +244,13 @@ function cloneObject(target) {
   return newObj;
 }
 
-function doAjaxRenderOptionList(sURL, sTarget, aData, onLoaded) {
+function doAjaxRenderOptionList(sURL, sTarget, aData, onLoaded, bRenderGroup) {
   doAjaxCall(sURL, aData, "GET", function(sResult) {
     var aResult = eval("(" + sResult + ")");
 
     if (aResult.status==1) {
       var aData = aResult['return'];
-      doFillCombo(sTarget, aData);
+      doFillCombo(sTarget, aData, bRenderGroup);
       if (onLoaded) {
         onLoaded();
       }
