@@ -72,14 +72,20 @@ class FlexiObjectListManager extends FlexiLogManager {
     if ($bDebug) echo __METHOD__ . ": data: " . print_r($oRow,true) . "\n<br/>";
 
     $oObject = $this->getObject();
+    $aPrimary = $oObject->getPrimaryFields();
     $oStore = array();
+    $oCurrentRow = $sType == "insert" ? array(): $this->getRow($oRow);
     if (! $this->onBeforeStore($oObject, $oRow, $sType)) return false;
     
     foreach($oObject->aChild["field"] as $sField => $oField) {
       if ($bDebug) echo __METHOD__ . ": field: " . $sField . "\n<br/>";
-      if (isset($oRow[$sField])) {
-        //if (! $this->onBeforeStoreField($oField, $oRow, $sType)) continue;
-        $oStore[$sField] = $this->getFieldDataFromForm($oField, $oRow);
+      if ($oField->type == "file-varchar" || $oField->type=="file-text") {
+        $this->doUploadField($oField, $oStore, $oRow, $oCurrentRow);
+      } else {
+        if (isset($oRow[$sField])) {
+          //if (! $this->onBeforeStoreField($oField, $oRow, $sType)) continue;
+          $oStore[$sField] = $this->getFieldDataFromForm($oField, $oRow);
+        }
       }
     }
     if( !$this->onStore($oStore, $oObject, $oRow, $sType)) {
@@ -114,7 +120,7 @@ class FlexiObjectListManager extends FlexiLogManager {
    * @param array $oRow
    * @return String
    */
-  public function getFieldDataFromForm(FlexiTableFieldObject $oField, $oRow) {
+  public function getFieldDataFromForm(FlexiTableFieldObject $oField, & $oRow) {
     $bDebug = false;
     if ($bDebug) echo __METHOD__ . ": " . print_r($oRow, true) . "\n<br/>";
     $sName = $oField->getName();
@@ -126,6 +132,38 @@ class FlexiObjectListManager extends FlexiLogManager {
     }
     return $mValue;
   }
+
+  /**
+   * upload a field
+   * @param FlexiTableFieldObject $oField
+   * @param array $oStore
+   * @param array $oRow (new form row)
+   * @param array $oCurrentRow  (old row)
+   */
+  public function doUploadField(FlexiTableFieldObject $oField, & $oStore, & $oForm, $oCurrentRow) {
+    $sName = $oField->getName();
+    $sSavePath = FlexiFileUtil::getFullUploadPath("media/libraries");
+
+    $sNewFile = "media." . time();
+    //var_dump($oRow[$sName]);
+    $aStatus = FlexiFileUtil::storeUploadFile($oForm[$sName], $sSavePath, $sNewFile. ".");
+    $this->onGetUploadFileName($sSaveDir, $sNewFile);
+    
+    if ($aStatus["status"]) {
+      //replace photo if already exists
+      if (! empty($oCurrentRow[$sName])) {
+        unlink(FlexiFileUtil::getBasePath() . "/" . $oCurrentRow[$sName]);
+      }
+      //resize image based on max width, height
+      //FlexiImageUtil::imageResize(345, 287, $aStatus["path"]);
+      $oStore[$sName]    = FlexiFileUtil::getRelativePathFromBase($aStatus["path"]);
+    } else {
+      //No file
+    }
+  }
+  //overide to replace save dir and file name
+  public function onGetUploadFileName(&$sSaveDir, &$sNewFile) {}
+
   /**
    * event for insert or update
    *  return true to continue
@@ -230,6 +268,24 @@ class FlexiObjectListManager extends FlexiLogManager {
   }
 
   public function onNewRow(& $oRow, $aParam) {}
+
+  /**
+   * Get a row by row value with primary fields
+   * @param array $oRow
+   * @return array
+   */
+  public function getRow($oRow) {
+    $aPrimary = $this->getPrimaryFields();
+    $sTable = $this->oObject->getTableName();
+    $aCond = array();
+    foreach($aPrimary as $sPrimary) {
+      if (!isset($oRow[$sPrimary])) throw new Exception("Primary field missing: " . $sPrimary);
+      $aCond[$sPrimary] = $oRow[$sPrimary];
+    }
+    $sSQL = $this->getQuery($sTable, $aCond);
+    
+    return FlexiModelUtil::getInstance()->getXPDOFetchOne($sSQL);
+  }
   /**
    * Pass in parameter to get query SQL
    * @param String $sTable

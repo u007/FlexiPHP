@@ -933,6 +933,12 @@ abstract class FlexiBaseController
     return json_encode($aResult);
   }
 
+  public function returnJSONInTextArea($bStatus, $mReturn = null, $sMessage = "", $mParam = null) {
+    $aResult = $this->returnResult($bStatus, $mReturn, $sMessage, $mParam);
+    $sResult = json_encode($aResult);
+    return "<textarea>\n" . $sResult . "\n</textarea>";
+  }
+
   public function returnResult($bStatus, $mReturn = null, $sMessage = "", $mParam = null) {
     return array(
       "status" => $bStatus ? 1 : 0,

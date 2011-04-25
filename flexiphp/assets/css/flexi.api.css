@@ -152,6 +152,11 @@ input, select, textarea {
   
 }
 
+.fieldUploadDisplay {
+  min-width: 50px;
+  min-height: 20px;
+}
+
 .left {
   float: left;
 }
@@ -246,7 +251,6 @@ ul.paging {
   min-height: 28px;
 }
 
-
 ul.paging li {
   border:0; margin:2px; padding:0;
   font-size:11px;
@@ -321,4 +325,17 @@ div.divPaging {
 
 div.ctrlHolder {
   min-height: 40px;
+}
+
+body.yui3-skin-sam div.ctrlHolderTitle {
+  background: url("http://yui.yahooapis.com/3.3.0/build/assets/skins/sam/sprite.png") repeat-x scroll 0 0 #D8D8D8;
+  border: solid 1px #A3A3A3;
+  padding: 0.4em 0.75em;
+}
+
+div.ctrlHolderTitle {
+  border-bottom: 2px solid #eeeeee;
+  width: 97.5%;
+  min-height: 0;
+  margin: 0;
 }

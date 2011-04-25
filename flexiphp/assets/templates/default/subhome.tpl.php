@@ -5,6 +5,11 @@ $bCanDelete = empty($bCanDelete)? false: true;
 $bCanEdit   = empty($bCanEdit)? false: true;
 $bCanAdd   = empty($bCanAdd)? false: true;
 ?>
+<? if(!empty($vars["#title"])) { ?>
+<div class="ctrlHolderTitle" >
+  <?=$vars["#title"]?>
+</div>
+<? } ?>
 <?=$this->render("home.header");?>
 <div class="clear" style="height: 5px;"></div>
 <div id="<?=$sViewDBFormPrefix?>tabs" class="yui-navset">

@@ -1,11 +1,14 @@
 <?php
- extract($vars);
- 
+extract($vars);
+
 
 ?>
-<form id="<?=$sViewDBFormPrefix?>frmObject" name="frmObject" class="uniForm" method="POST" action="<?=$sSaveURL?>">
+<form id="<?=$sViewDBFormPrefix?>frmObject" name="frmObject" class="uniForm" method="POST" action="<?=$sSaveURL?>" enctype="multipart/form-data">
   <input type="hidden" name="txtFormType" value="<?=$formtype?>" />
   <div id="<?=$sViewDBFormPrefix?>divFrmObject">
+    <div class="ctrlHolderTitle" >
+      New Record
+    </div>
 <? foreach($aFieldsInput as $sName => $aForm) {
     if (!empty($aForm["label"])) { ?>
       <div class="ctrlHolder">
@@ -75,6 +78,7 @@ jQuery(document).ready(function() {
     beforeSubmit: function() {
     },
     dataType:  'json',
+    iframe: true,
     success: function(data) {
       if (!data.status) appendNotice(data.msg, "error");
       else {
@@ -111,8 +115,8 @@ function <?=$sViewDBFormPrefix?>showObjectForm(result) {
   if(! result.status) appendNotice(result.msg, "error");
   else {
     var data = result["return"];
-    console.log(jQuery("#<?=$sViewDBFormPrefix?>divFrmObject"));
-    jQuery("#<?=$sViewDBFormPrefix?>divFrmObject").html("");
+    //console.log(jQuery("#<?=$sViewDBFormPrefix?>divFrmObject"));
+    jQuery("#<?=$sViewDBFormPrefix?>divFrmObject").html("<div class=\"ctrlHolderTitle\">Edit Record</div>");
     jQuery("#<?=$sViewDBFormPrefix?>frmObject input[name=txtFormType]").val("update");
     for(var c in data) {
       var sHTML = "";

@@ -131,7 +131,7 @@ function <?=$sViewDBFormPrefix?>showObjectList(result) {
       //todo add trigger
       //jQuery("#tableList input[name*=check]").;
     } else {
-      target.append("<tr><td colspan='" + aCols.length + "'>No records found</td></tr>");
+      target.append("<tr><td colspan='" + (aCols.length<?=$bCanDelete ? "+1":""?>) + "'>No records found</td></tr>");
     }
 
     var iPageIndexCount = 10;

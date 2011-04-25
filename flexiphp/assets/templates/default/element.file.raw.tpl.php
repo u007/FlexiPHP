@@ -9,9 +9,10 @@ $sRequired = isset($vars["#required"]) ?
 	($vars["#required"] ? "<span class=\"required\">*</span>": "") : "";
 ?>
 <?=isset($vars["#prefix"]) ? $vars["#prefix"] : ""; ?>
+  <div class="fieldUploadDisplay"><?=is_null($mValue)? "&nbsp;" : "File" ?></div>
 	<input type="file" name="<?=$vars["#name"]?>" <?=is_null($mValue) ? "" : " value=\"" . $mValue . "\""?><?=$sMaxLen?>
 		<?=empty($vars["#id"]) ? "" : " id=\"" . $vars["#id"] . "\""?><?=$bDisabled ? " disabled=\"disabled\"" : ""?>
-		<?=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?> 
+		<?//=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?>
 		<? if (isset($vars["#attributes"])) { echo FlexiStringUtil::attributesToString($vars["#attributes"]); } ?>>
 	<? if(isset($vars["#description"])) { ?>
 	<br/>

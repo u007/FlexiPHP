@@ -10,7 +10,16 @@ class FlexiFileUtil {
 
   public static function getMediaURL($asPath, $sRole="", $sName="") {
     //echo "oripath: " . $asPath;
-    $sPath = FlexiConfig::$bIsAdminPath ? "../" . $asPath : $asPath;
+    
+    if ($asPath[0] != "/" && substr($asPath,0,3) != "c:\\") {
+      $sPath = FlexiConfig::$sRootDir . $asPath;
+    } else {
+      $sPath = $asPath;
+    }
+    
+    //if (!file_exists($sPath)) throw new Exception("1File missing: " . $sPath);
+    $sPath = realpath($sPath);
+    if ($sPath===false) throw new Exception("File missing: " . $sPath);
     //echo "path: " . $sPath;
     //FlexiLogger::info(__METHOD__, "isadmin: " . (FlexiConfig::$bIsAdminPath? "yes": "no") . ": " . $sPath);
     $oControl = FlexiController::getCurrentController();
@@ -131,6 +140,40 @@ class FlexiFileUtil {
       if(move_uploaded_file($sTempFile, $sMovePath)) {
         FlexiLogger::info(__METHOD__, "Moved file from: " . $sTempFile . " to " . $sMovePath);
         $aReturn["status"] = true;
+      } else {
+        throw new FlexiException("Error moving file from: " . $sTempFile . " to " . $sMovePath, ERROR_FILE_MOVE);
+      }
+    }
+    return $aReturn;
+  }
+
+  public static function storeUploadFile($oFile, $sMovePath="", $sPrefix="", $sSuffix="", $iRandomNameSize=10) {
+    $sTempFile = $oFile["tmp_name"];
+    if (empty($oFile["tmp_name"])) return false;
+    $aInfo = pathinfo($oFile["name"]);
+    $sNewFile = $sMovePath . "/" . $sPrefix .
+      ($iRandomNameSize > 0 ? FlexiStringUtil::createRandomPassword($iRandomNameSize): "") . $sSuffix .
+      "." . $aInfo["extension"];
+    return self::_storeUploadFile($oFile, $sNewFile);
+  }
+
+  public static function _storeUploadFile($oFile, $asMovePath) {
+    $sTempFile = $oFile["tmp_name"];
+    if (empty($asMovePath)) throw new Exception("New file path not specified");
+    if (empty($sTempFile)) return false;
+    if (!is_uploaded_file($sTempFile)) { throw new Exception("Crack attempt!"); }
+    
+    //FlexiLogger::error(__METHOD__, $sFormName . ", path: " . $asMovePath);
+    $sMovePath = $asMovePath;
+    $aInfo = pathinfo($oFile["name"]);
+    $aReturn = array("status" => false, "path" => $sTempFile, "size" => filesize($sTempFile), "type" => $aInfo["extension"]);
+    if (!empty($sMovePath) && $sTempFile != $sMovePath) {
+      $aReturn["path"] = $sMovePath;
+      if (is_file($sMovePath)) { unlink($sMovePath); }
+      if(move_uploaded_file($sTempFile, $sMovePath)) {
+        FlexiLogger::info(__METHOD__, "Moved file from: " . $sTempFile . " to " . $sMovePath);
+        $aReturn["status"] = true;
+        $aReturn["path"] = $sMovePath;
       } else {
         throw new FlexiException("Error moving file from: " . $sTempFile . " to " . $sMovePath, ERROR_FILE_MOVE);
       }

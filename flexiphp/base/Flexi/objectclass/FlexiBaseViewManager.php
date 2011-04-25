@@ -214,14 +214,25 @@ class FlexiBaseViewManager {
       $sField = $this->sFieldPrefix . $sName;
       if ($bDebug) echo __METHOD__ . ":Field:" . $sName . "<br/>\n";
       //ensure form has the field
-      if (isset($oRow[$sField])) {
+      if ($oField->type=="file-varchar" || $oField->type=="file-text") {
         $sCond = "input".$sFormType;
         //ensure this form field is updatable or insertable or is primary
         if (($sFormType=="update" && $oField->primary) ||
           in_array($oField->$sCond, array("edit","display","hidden"))
         ){
-          $sValue = $oRow[$sField];
-          $oForm[$sName] = $sValue;
+          $aValue = $_FILES[$sField];
+          $oForm[$sName] = $aValue;
+        }
+      } else {
+        if (isset($oRow[$sField])) {
+          $sCond = "input".$sFormType;
+          //ensure this form field is updatable or insertable or is primary
+          if (($sFormType=="update" && $oField->primary) ||
+            in_array($oField->$sCond, array("edit","display","hidden"))
+          ){
+            $sValue = $oRow[$sField];
+            $oForm[$sName] = $sValue;
+          }
         }
       }
     }
@@ -402,6 +413,8 @@ class FlexiBaseViewManager {
   public function getFieldDisplay(FlexiTableFieldObject $oField, $oRow) {
     $sName = $oField->getName();
     $mValue = $oRow[$sName];
+
+    $bAllowHTML = $oField->allowhtml;
     switch($oField->type) {
       case "select-text":
       case "select-tinyint":
@@ -426,9 +439,18 @@ class FlexiBaseViewManager {
         $sFormat = FlexiDateUtil::getPHPDateTimeFormat(FlexiConfig::$sDisplayDateFormat);
         $mValue = date($sFormat, strtotime($mValue));
         break;
+      case "file-varchar":
+      case "file-text":
+        if (!empty($mValue)) {
+          $sURL = FlexiFileUtil::getMediaURL($mValue);
+          $mValue = "<a href='" . $sURL . "' target='_blank'>Open</a>";
+        }
+        $bAllowHTML = true;
+        break;
     }
 
-    if ($oField->allowhtml) {
+    if (is_null($mValue)) $mValue = "";
+    if ($bAllowHTML) {
       if(!empty($oField->allowtag)) {
         $aSafe = $this->getFieldSafeTags($oField);
         $sTag = implode(",", $aSafe["tag"]); $aAttribute = $aSafe["attribute"];
@@ -613,6 +635,11 @@ class FlexiBaseViewManager {
       case "timestamp":
       case "timestamp-int":
         $aResult["#type"] = "datetime.raw";
+        break;
+
+      case "file-varchar":
+      case "file-text":
+        $aResult["#type"] = "file.raw";
         break;
       case "hidden":
         $aResult["#type"] = "hidden.raw";
