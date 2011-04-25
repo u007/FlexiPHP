@@ -10,7 +10,8 @@ function flexiURL($sURL, $bAjax = false)
 	{
 		return $sURL;
 	}
-	
+
+  //echo "Getting: " . $sURL . ", " . ($bAjax ? ",is ajax": ",normal")."<br/>\n";
 	//$sep = substr(FlexiConfig::$sBaseURL, -1) == "/" ? "" : "/";
   if ($bAjax) {
     $iPos = strpos(FlexiConfig::$sBaseURL, "?");
