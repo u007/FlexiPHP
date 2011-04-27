@@ -90,32 +90,16 @@ class FlexiBaseView
 		$vars["#css"] 			= $this->aHeader["css"];
 		$vars["#js"]				= $this->aHeader["js"];
     $vars["#template"]  = $this->sTemplate;
+    
+    $sViewFile = ""; //final file
 
-    $sFViewFile = "";
-
-    //try framework.viewname, example: modx2.index
-    if (! empty(FlexiConfig::$sFramework)) {
-      if (substr($sView, 0, strlen(FlexiConfig::$sFramework)+1) != FlexiConfig::$sFramework.".") {
-        //if view name does not start with framework
-        $sFViewFile = $this->getViewFile(FlexiConfig::$sFramework.".".$sView, $asPath);
-        if (! is_null($sFViewFile))
-        {
-          //FlexiLogger::info(__METHOD__, "Found: " . FlexiConfig::$sFramework.".".$sView);
-          $sViewFile = $sFViewFile;
-        }
-      }
+    $sViewFile = $this->getViewFile($sView, $asPath);
+    
+    if (empty($sViewFile)) {
+      FlexiLogger::error(__METHOD__, "View: " . $sView . " is missing...");
+      return null;
     }
-
-    //if framework template not found...
-    if (empty($sFViewFile)) {
-      $sViewFile = $this->getViewFile($sView, $asPath);
-      if (is_null($sViewFile))
-      {
-        FlexiLogger::error(__METHOD__, "View: " . $sView . " is missing...");
-        return null;
-      }
-    }
-
+    
     //echo "rendering view: " . $sViewFile;
 		ob_start();
     //FlexiLogger::info(__METHOD__, "found view: " . $sViewFile);
@@ -129,104 +113,63 @@ class FlexiBaseView
 	public function getViewFile($sView, $asPath=null)
 	{
     $bDebug = false;
-		$sBaseDir = FlexiConfig::$sBaseDir;
 		$sViewFile = strtolower($sView);
-    $sRootDir = FlexiConfig::$sRootDir;
-    //throw new Exception("aspath: " . $asPath);
-		if (is_null($asPath))
-		{
-			$sPath = $this->getVar("#modulepath");
-		}
-		else
-		{
-			$sPath = $asPath;
-		}
-    //FlexiLogger::info(__METHOD__ . ", ");
-//    if ($this->getVar("#module")=="FlexiRepoList") {
-//      FlexiLogger::info(__METHOD__, "view: " . $sView . ", path: " . $sPath); // . ", #modulepath: " . $this->getVar("#modulepath"));
-//    }
-		//var_dump($sPath);
-    //from direct[path]
-		$sViewPath = $sPath . "/views/" . $sViewFile . ".tpl.php";
-    if ($bDebug) echo __METHOD__ . ": " . $sViewPath . "<br/>\n";
-		if (is_file($sViewPath))
-		{
-      //echo "file ok";
-			return $sViewPath;
-		}
-    $sViewPath = $sPath . "/views/" . strtolower($sViewFile) . ".tpl.php";
-    if ($bDebug) echo __METHOD__ . ": " . $sViewPath . "<br/>\n";
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
 
-    //from $sRootDir/[path]
-    $sViewPath = $sRootDir . "/" . $sPath . "/views/" . $sViewFile . ".tpl.php";
-    if ($bDebug) echo __METHOD__ . ":2: " . $sViewPath . "<br/>\n";
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
-    $sViewPath = $sRootDir . "/" . $sPath . "/views/" . strtolower($sViewFile) . ".tpl.php";
-    if ($bDebug) echo __METHOD__ . ":2: " . $sViewPath . "<br/>\n";
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
+    $sModulePath = $this->getVar("#modulepath");
+    $sModule     = strtolower($this->getVar("#module"));
 
-    //from ../$sRootDir/[path]
-    if ($sPath != $this->getVar("#modulepath")) {
-      $sViewPath = $sRootDir . "/../" . $sPath . "/views/" . $sViewFile . ".tpl.php";
-      if ($bDebug) echo __METHOD__ . ":3: " . $sViewPath . "<br/>\n";
-      if (is_file($sViewPath))
+    $sTempPath  = is_null($asPath)? $sModulePath: $asPath;
+    $sPath = realpath($sTempPath);
+    if ($sPath === false) {
+      $sPath = realpath(FlexiConfig::$sRootDir . "/" . $sTempPath);
+    }
+    if ($sPath === false) throw new Exception("Path not found: " . $sTempPath);
+    /*
+     * 1st, find for framework.view, or view file from path or modulepath
+     * 2nd, find all 3 path with module/framework.view and module/view
+     * 3rd, find all 3 path for framework.view and view
+     * The 3 paths:
+     *  then try template folder
+     *  then try template/default
+     *  then try flexiphp/template/default
+     */
+    $aPath = array();
+    $aPath = array_merge($aPath, $this->getViewPaths($sPath . "/views", $sViewFile));
+    //module/
+    $aPath = array_merge($aPath, $this->getViewPaths(FlexiConfig::$sTemplatePath . "/" . $this->sTemplate . "/" . $sModule, $sViewFile));
+    $aPath = array_merge($aPath, $this->getViewPaths(FlexiConfig::$sTemplatePath . "/default/" . $sModule, $sViewFile));
+    $aPath = array_merge($aPath, $this->getViewPaths(FlexiConfig::$sBaseDir . "/assets/templates/default/" . $sModule, $sViewFile));
+    //view directly
+    $aPath = array_merge($aPath, $this->getViewPaths(FlexiConfig::$sTemplatePath . "/" . $this->sTemplate, $sViewFile));
+    $aPath = array_merge($aPath, $this->getViewPaths(FlexiConfig::$sTemplatePath . "/default", $sViewFile));
+    $aPath = array_merge($aPath, $this->getViewPaths(FlexiConfig::$sBaseDir . "/assets/templates/default", $sViewFile));
+    
+    //var_dump($aPath);
+    foreach($aPath as $sViewPath) {
+      if (is_file($sViewPath . ".tpl.php"))
       {
-        return $sViewPath;
-      }
-      $sViewPath = $sRootDir . "/../" . $sPath . "/views/" . strtolower($sViewFile) . ".tpl.php";
-      if ($bDebug) echo __METHOD__ . ":3: " . $sViewPath . "<br/>\n";
-      if (is_file($sViewPath))
-      {
-        return $sViewPath;
+        return $sViewPath . ".tpl.php";
       }
     }
-
-    //echo "flexi path: " . (FlexiConfig::$sTemplatePath) . "<br/>\n";
-		//$sViewPath = $sBaseDir . "/assets/templates/" . $this->sTemplate . "/" . $sViewFile . ".tpl.php";
-    $sViewPath = FlexiConfig::$sTemplatePath . "/" . $this->sTemplate . "/" . $sViewFile . ".tpl.php";
-    //if (FlexiConfig::$sFramework == "modx2") echo "trying: " . $sViewFile . " @ " . $sViewPath . "\r\n<br/>";
-    //FlexiLogger::debug(__METHOD__, "Trying: " . $sViewPath);
-    if ($bDebug) echo __METHOD__ . ":4: " . $sViewPath . "<br/>\n";
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
-
-    $sViewPath = FlexiConfig::$sTemplatePath . "/" . $this->sTemplate . "/" . strtolower($sViewFile) . ".tpl.php";
-    if ($bDebug) echo __METHOD__ . ":4: " . $sViewPath . "<br/>\n";
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
-
-    //resolve to root default template
-    $sViewPath = $sBaseDir . "/assets/templates/default/" . $sViewFile . ".tpl.php";
-    if ($bDebug) echo __METHOD__ . ": " . $sViewPath . "<br/>\n";
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
-
-    $sViewPath = $sBaseDir . "/assets/templates/default/" . strtolower($sViewFile) . ".tpl.php";
-    if ($bDebug) echo __METHOD__ . ": " . $sViewPath . "<br/>\n";
-    //FlexiLogger::debug(__METHOD__, "Trying: " . $sViewPath);
-		if (is_file($sViewPath))
-		{
-			return $sViewPath;
-		}
-		
 		return null;
 	}
+
+  public function getViewPaths($sPath, $sViewFile) {
+    $aPath = array();
+    $sLowerView = strtolower($sViewFile);
+    
+    if (!empty(FlexiConfig::$sFramework)) {
+      $aPath[] = $sPath . "/" . FlexiConfig::$sFramework . ".". $sViewFile;
+      if(strcmp($sViewFile, $sLowerView)!=0)
+        $aPath[] = $sPath . "/" . FlexiConfig::$sFramework . ".". $sLowerView;
+    }
+    
+    $aPath[] = $sPath . "/" . $sViewFile;
+    if(strcmp($sViewFile, $sLowerView)!=0)
+      $aPath[] = $sPath . "/" . $sLowerView;
+
+    return $aPath;
+  }
 	
 	
 }

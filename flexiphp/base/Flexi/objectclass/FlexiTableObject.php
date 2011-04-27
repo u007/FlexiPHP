@@ -64,13 +64,22 @@ class FlexiTableObject extends FlexiObject {
         if ($sType=="update" && $oField->primary && (!isset($oRow[$sField]) || strlen($oRow[$sField]."") < 1)) {
           throw new Exception("Field " . $oField->label . " is primary therefore, required for update");// . print_r($oRow,true));
         }
-
+        
         if (! $oField->cannull) {
 
           if ($sType == "insert" && $oField->primary) {
            //is ok, since is primary
           } else if (!isset($oRow[$sField])) {
-            throw new Exception("Field " . $oField->label . " is required");
+            $sCanName = "input" . $sType;
+            switch($oField->$sCanName) {
+              case "readonly":
+              case "none":
+                //is okay, we dont need it
+                break;
+              default:
+                //we need it!
+                throw new Exception("Field " . $oField->label . " is required");
+            }
           } else if (strlen($oRow[$sField]."") < 1) {
             throw new Exception("Field " . $oField->label . " is required");
           }

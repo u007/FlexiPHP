@@ -392,11 +392,12 @@ class FlexiBaseViewManager {
       case "none":
         break;
     }
-
+    //var_dump($oRow);
     if ($bAddHidden) {
       $oFieldConfig = clone($oField);
       $oFieldConfig->type = "hidden";
       $oForm = $this->getFieldInput($oFieldConfig, $oRow);
+      //var_dump($oForm);
       $this->onRenderFieldInput($oForm, $oField, $oRow, $sType);
       $sOutput .= $this->oView->renderMarkup($oForm, $oForm["#name"]);
     }

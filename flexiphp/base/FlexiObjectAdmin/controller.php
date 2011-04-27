@@ -4,8 +4,10 @@ class FlexiObjectAdminController extends FlexiAdminBaseController {
   public $sPath = "";
   
   public function onInit() {
+    parent::onInit();
     $oService = $this->getService("FlexiObject");
-    $oService->setPath(dirname(__FILE__) . "/models");
+    $oService->setPath(FlexiConfig::$sAssetsDir . "models");
+    //echo FlexiConfig::$sAssetsDir . "models";
     //$this->checkSetup();
   }
   public function methodDefault() {
@@ -61,7 +63,7 @@ class FlexiObjectAdminController extends FlexiAdminBaseController {
           $oField->autonumber   = $aData["txtFieldAutoNumber$c"];
           
           $oField->precision    = $aData["txtFieldPrecision$c"];
-          $oField->cannull      = $aData["txtFieldCanNull$c"];
+          $oField->cannull      = empty($aData["txtFieldCanNull$c"]) ? 0: $aData["txtFieldCanNull$c"];
           $oField->default      = $aData["txtFieldDefault$c"];
           
           $oField->primary      = $aData["txtFieldPrimary$c"];
@@ -81,8 +83,11 @@ class FlexiObjectAdminController extends FlexiAdminBaseController {
           $oField->allowtag       = $aData["txtFieldAllowTag$c"];
 
           $oField->formsize       = $aData["txtFieldFormSize$c"];
-          //type should be last, to overwrite precision, default and dbtype
+          $oField->linkname       = $aData["txtFieldLinkName$c"];
 
+          $oField->options        = $aData["txtFieldOptions$c"];
+
+          //type should be last, to overwrite precision, default and dbtype
           $oObject->addField($oField);
         }
       }
@@ -95,6 +100,22 @@ class FlexiObjectAdminController extends FlexiAdminBaseController {
     }
     
     return true;
+  }
+
+  public function methodAjaxImport() {
+    $this->disableView();
+    $sName = $this->getRequest("name");
+    $oService = $this->getService("FlexiObject");
+
+    try {
+      $oService->import($sName);
+      echo $this->returnJSON(true, null, "Import completed");
+      return true;
+    } catch (Exception $e) {
+      echo $this->returnJSON(false, null, $e->getMessage());
+    }
+
+    return false;
   }
 
   public function methodAjaxSync() {
@@ -156,6 +177,43 @@ class FlexiObjectAdminController extends FlexiAdminBaseController {
     $this->disableView();
     $aList = $this->getListArray();
     echo $this->returnJSON(true, $aList);
+    return true;
+  }
+
+  public function methodAjaxTableList() {
+    $this->disableView();
+    $aList = FlexiModelUtil::getTableList();
+    echo $this->returnJSON(true, $aList);
+    return true;
+  }
+
+  public function methodAjaxLog() {
+    $this->disableView();
+    $sType = $this->getRequest("type", "info");
+    $sLineSep = $this->getRequest("sep","\n");
+    $oService = $this->getService("FlexiObject");
+    $sLog = realpath($oService->sLogPath . "/" . $sType . ".log");
+
+    if (empty($sLog)) {
+      echo $this->returnJSON(true, "");
+    } else {
+      //$sContent = file_get_contents($sLog);
+      $sContent = implode("", FlexiFileUtil::getTail($sLog,80));
+      //var_dump($sContent);
+      $sContent = str_replace("\r\n", "\n", $sContent);
+
+      $aContent = explode($sLineSep, $sContent);
+      $aContent = array_reverse($aContent);
+      if (trim($aContent[0]) == "") {
+        array_shift($aContent);
+      }
+      $sContent = implode($sLineSep, $aContent);
+      $sContent .= !empty($sContent)? $sLineSep: "";
+      $sContent = str_replace("\n", "<br/>\n", $sContent);
+
+      //$sContent = str_replace("\n", "\n<br/>", $sContent);
+      echo $this->returnJSON(true, $sContent);
+    }
     return true;
   }
 

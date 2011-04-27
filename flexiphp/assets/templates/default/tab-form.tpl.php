@@ -134,6 +134,8 @@ function <?=$sViewDBFormPrefix?>showObjectForm(result) {
   if (<?=$sViewDBFormPrefix?>tabs) {
     if(<?=$sViewDBFormPrefix?>tabs.selectChild) {
       <?=$sViewDBFormPrefix?>tabs.selectChild(1);
+    } else if (jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs) {
+      jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs("select", 1);
     }
   }
   <?=$this->render("onshowobject.tab-form") ?>

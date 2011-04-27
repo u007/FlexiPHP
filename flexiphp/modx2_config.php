@@ -5,6 +5,8 @@ require_once(dirname(__FILE__) . "/config.base.php");
 global $database_type, $database_server, $database_user, $database_password, $dbase;
 global $modx;
 
+$aBaseURL = parse_url(MODX_SITE_URL);
+$sBaseURL = $aBaseURL["path"] . (substr($aBaseURL["path"],-1)=="/"? "": "/");
 $aFlexiSetting = array_merge($aFlexiSetting, array(
   "dbtype" 		=> $database_type,
   "dbhost" 		=> $database_server,
@@ -16,9 +18,9 @@ $aFlexiSetting = array_merge($aFlexiSetting, array(
   "framework" => "modx2",
   "templatepath" => "assets/flexitemplate",
   //"baseurl"   => $modx->config["site_url"],
-  "baseurl" => MODX_SITE_URL,
-  "rooturl" => MODX_SITE_URL . "flexiphp/",
-  "assetsurl" => MODX_SITE_URL . "assets/",
+  "baseurl" => $sBaseURL,
+  "rooturl" => $sBaseURL . "flexiphp/",
+  "assetsurl" => $sBaseURL . "assets/",
   "support.email" => $modx->config["emailsender"]
   )
 );

@@ -93,6 +93,7 @@ class FlexiTableFieldObject extends FlexiObject {
           case "select-text":
             $sDBType = "varchar";
             if (empty($sPrecision)) $sPrecision = "100";
+            break;
           case "select-enum":
             $sDBType = "enum";
             break;
