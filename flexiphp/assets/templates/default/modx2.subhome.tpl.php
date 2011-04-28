@@ -1,6 +1,7 @@
 <?php
 extract($vars);
 //var_dump($vars["bCanEdit"]);
+$aTabs = $vars["#tabs"];
 $bCanDelete = empty($bCanDelete)? false: true;
 $bCanEdit   = empty($bCanEdit)? false: true;
 $bCanAdd   = empty($bCanAdd)? false: true;
@@ -24,6 +25,9 @@ jQuery(document).ready(function() {
     <? if ($bCanEdit || $bCanAdd) { ?>
     <li><a href="#<?=$sViewDBFormPrefix?>tab-form"><span>Form</span></a></li>
     <? } ?>
+    <? foreach($aTabs as $oTab) { ?>
+    <li><a href="#<?=$sViewDBFormPrefix?><?=$oTab["name"]?>"><em><?=$oTab["label"]?></em></a></li>
+    <? } ?>
   </ul>
   <div id="<?=$sViewDBFormPrefix?>tab-list">
     <?=$this->render("tab-list");?>
@@ -31,6 +35,9 @@ jQuery(document).ready(function() {
   <div id="<?=$sViewDBFormPrefix?>tab-form">
     <?=$this->render("tab-form");?>
   </div>
+  <? foreach($aTabs as $oTab) { ?>
+    <div id="<?=$sViewDBFormPrefix?><?=$oTab["name"]?>"><?=empty($oTab["view"])? "": $this->render($oTab["view"]) ?></div>
+  <? } ?>
 </div>
 
 <script type="text/javascript">

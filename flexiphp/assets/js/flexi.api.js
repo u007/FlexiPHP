@@ -88,6 +88,19 @@ function getTimeStringFromSQLDateTime(datetime) {
   return "00:00:00";
 }
 
+function appendGritterNote(msg, title, sticky, duration) {
+  var sticky = sticky===undefined ? false: sticky;
+  var title = title === undefined ? "Info": title;
+  var duration = duration===undefined ? "": duration;
+  
+  jQuery.gritter.add({
+    title: title,
+    text: msg,
+    sticky: sticky,
+    time: duration
+  });
+}
+
 function appendNotice(msg, type) {
   jQuery(_sNoticeTarget).append(getNoticeHTML(msg,type));
   cleanupNotice(function() {

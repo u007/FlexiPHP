@@ -6,9 +6,17 @@ class FlexiBaseViewManager {
   protected $sFieldPrefix = "field";
   protected $sListLinkCol = "id";
   protected $aView = array();
+  protected $aTabs = array();
   
   public function  __construct($aParam) {
     //parent::__construct($aParam);
+  }
+
+  //override this
+  public function onInit() {}
+
+  public function addTab($sName, $sLabel, $sView="") {
+    $this->aTabs[] = array("name" => $sName, "label" => $sLabel, "view" => $sView);
   }
 
   /**
@@ -110,6 +118,7 @@ class FlexiBaseViewManager {
   
   public function setObjectListManager(FlexiObjectListManager $oManager) {
     $this->oObjectListManager = $oManager;
+    $this->onInit();
   }
   
   /**
@@ -202,6 +211,8 @@ class FlexiBaseViewManager {
     $aListField = $oObject->getListFields();
     $this->onGetFieldList($aListField);
     $this->oView->addVar("aListFieldName", $aListField);
+    
+    $this->oView->addVar("#tabs", $this->aTabs);
   }
 
   public function onGetFieldList(&$aListField) {}

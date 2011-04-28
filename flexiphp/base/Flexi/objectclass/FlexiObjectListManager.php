@@ -18,8 +18,10 @@ class FlexiObjectListManager extends FlexiLogManager {
   
   public function setObjectName($sName) {
     $this->oObject = $this->getManager()->load($sName);
+    $this->onSetObject($this->oObject);
   }
 
+  public function onSetObject(&$oObject) {}
 
   public function deleteRows($oCond) {
     $sTable = $this->oObject->sTableName;
