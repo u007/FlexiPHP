@@ -87,7 +87,7 @@ jQuery(document).ready(function() {
         
         if (jQuery("#<?=$sViewDBFormPrefix?>frmObject input[name=txtFormType]").val()=="insert") {
     	  <?=$sViewDBFormPrefix?>resetForm();
-    	  jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs( "select" , 0 );
+        switchTab("<?=$sViewDBFormPrefix?>tabs", 0);
         } else {
           
         }
@@ -103,7 +103,7 @@ function <?=$sViewDBFormPrefix?>doLoadObject(cond) {
 
   <? if(1==2) { ?>console.log(<?=json_encode($vars)?>); <? } ?>
   jQuery("#<?=$sViewDBFormPrefix?>divFrmObject").html("Loading...");
-  jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs("select", 1);
+  switchTab("<?=$sViewDBFormPrefix?>tabs", 1);
   doAjaxCall('<?=$sLoadURL ?>', cond,"GET",
     function(sReturn) {
       <?=$sViewDBFormPrefix?>showObjectForm(eval("("+sReturn+")"));
@@ -131,13 +131,7 @@ function <?=$sViewDBFormPrefix?>showObjectForm(result) {
     }
   }
   <?=$sViewDBFormPrefix?>onAfterInitForm();
-  if (<?=$sViewDBFormPrefix?>tabs) {
-    if(<?=$sViewDBFormPrefix?>tabs.selectChild) {
-      <?=$sViewDBFormPrefix?>tabs.selectChild(1);
-    } else if (jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs) {
-      jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs("select", 1);
-    }
-  }
+  switchTab("<?=$sViewDBFormPrefix?>tabs", 1);
   <?=$this->render("onshowobject.tab-form") ?>
 }
 </script>

@@ -3,6 +3,8 @@
 
 function flexiURL($sURL, $bAjax = false)
 {
+  if (!is_string($sURL)) throw new Exception("URL is not string: " . serialize ($sURL));
+
 	if (substr(strtolower($sURL),0, 5) == "http:" || 
 		substr(strtolower($sURL),0, 6) == "https:" || 
 		substr(strtolower($sURL),0, 4) == "ftp:" || 
@@ -45,7 +47,7 @@ function flexiURL($sURL, $bAjax = false)
       global $iActionId;
       $sBaseURL = dirname($sBaseURL) . "/flexi." . FlexiConfig::$sFramework . ".php?a=" . $iActionId;
     }
-
+    $sBaseURL = str_replace("//", "/", $sBaseURL);
     if (FlexiConfig::$sFramework != "modx2" && !empty($sQuery)) {
       if (strpos($sBaseURL, "?")===false) {
         $sBaseURL .="?" . $sQuery;
@@ -57,7 +59,6 @@ function flexiURL($sURL, $bAjax = false)
   } else {
     $sBaseURL = FlexiConfig::$sBaseURL;
   }
-
   //if (FlexiConfig::$sFramework == "modx2") var_dump($sBaseURL);
   //var_dump(FlexiConfig::$aQueryString);
 	
@@ -84,6 +85,7 @@ function flexiURL($sURL, $bAjax = false)
       } else {
         $sResult = $sBaseURL . "?" . $sURL;
       }
+      
 			break;
 		case "":
 			$sResult = $sBaseURL . "?" . $sURL;
@@ -91,7 +93,6 @@ function flexiURL($sURL, $bAjax = false)
 			
 		default:
 			parse_str($sURL, $aInfo);
-			//var_dump($sURL);
 			$aInfo = array_merge(FlexiConfig::$aQueryString, $aInfo);
 			//var_dump($aInfo);
 			
@@ -101,6 +102,9 @@ function flexiURL($sURL, $bAjax = false)
 			{
 				$sKey = str_replace("?", "", $sKey);
 				$sQuery .= empty($sQuery) ? "" : "&";
+        if (is_array($sValue)) {
+          $sValue = implode(",", $sValue);
+        }
 				$sQuery .= urlencode($sKey) . "=" . urlencode($sValue);
 			}
 			

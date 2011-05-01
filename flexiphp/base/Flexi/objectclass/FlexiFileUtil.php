@@ -9,17 +9,13 @@ class FlexiFileUtil {
   public static $aLocks = array();
 
   public static function getMediaURL($asPath, $sRole="", $sName="") {
-    //echo "oripath: " . $asPath;
-    
     if ($asPath[0] != "/" && substr($asPath,0,3) != "c:\\") {
-      $sPath = FlexiConfig::$sRootDir . $asPath;
+      $sTempPath = FlexiConfig::$sRootDir . "/" . $asPath;
     } else {
-      $sPath = $asPath;
+      $sTempPath = $asPath;
     }
-    
-    //if (!file_exists($sPath)) throw new Exception("1File missing: " . $sPath);
-    $sPath = realpath($sPath);
-    if ($sPath===false) throw new Exception("File missing: " . $sPath);
+    $sPath = realpath($sTempPath);
+    if ($sPath===false) throw new Exception("File missing: " . $sTempPath);
     //echo "path: " . $sPath;
     //FlexiLogger::info(__METHOD__, "isadmin: " . (FlexiConfig::$bIsAdminPath? "yes": "no") . ": " . $sPath);
     $oControl = FlexiController::getCurrentController();

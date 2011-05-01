@@ -1,6 +1,37 @@
 var _targetPickElement = {fieldvalue:"",fieldlabel:""};
 
 
+function switchTab(target, tabno) {
+  var sType = "jQuery";
+  var oTarget = jQuery("#" + target);
+
+  if (oTarget.length > 0) {
+    if (oTarget.hasClass("yui-navset")) {
+      if (!oTarget.hasClass("yui3-tabview-content")) {
+        console.log('not loaded');
+        return; //ignore, not loaded
+      }
+      sType = "YUI";
+    }
+  }
+  switch(sType) {
+    case "YUI":
+      eval(target).selectChild(tabno);
+      break;
+    case "jQuery":
+      if (oTarget.length > 0) {
+        oTarget.tabs( "select" , tabno);
+      }
+      break;
+    default:
+      if (console) {
+        if (console.log) {
+          console.log("Unknown tab: " . target);
+        }
+      }
+  }//switch
+}
+
 /**
  * load a url to a div
  *  with prefix and tab name based on prefix of viewname

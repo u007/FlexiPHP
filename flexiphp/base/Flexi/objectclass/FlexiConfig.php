@@ -188,6 +188,7 @@ class FlexiConfig
 		$sURL .= empty($aURL["path"]) ? "/" : $aURL["path"];
     */
     self::$sBaseURLDir = substr(self::$sBaseURL,-1)=="/" ? self::$sBaseURL : dirname(self::$sBaseURL)."/";
+    self::$sBaseURLDir = str_replace("//", "/", self::$sBaseURLDir);
 		//self::$sBaseURL = $sURL;
 		
     if (self::$sFramework == "modx") {

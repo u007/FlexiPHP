@@ -353,6 +353,8 @@ class FlexiObjectListManager extends FlexiLogManager {
     if ($bDebug) echo __METHOD__ . ": " . $sSQL . "<br/>\n";
     $this->onParseQueryBinding($sSQL, $aParam);
     $sResultSQL = $xpdo->parseBindings($sSQL, $aParam);
+    if ($bDebug) echo __METHOD__ . ": " . $sResultSQL . "<br/>\n";
+
     return $sResultSQL;
   }
 

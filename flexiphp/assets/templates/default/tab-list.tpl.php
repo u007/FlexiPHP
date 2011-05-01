@@ -7,8 +7,9 @@ $bCanEdit   = empty($bCanEdit)? false: true;
 ?>
 <form id="<?=$sViewDBFormPrefix?>frmList" method="GET" action="<?=$sOpURL?>" class="frmList">
   <input type="hidden" name="txtType" value=""/>
-  <input type="hidden" name="limit" value="" />
-  <input type="hidden" name="start" value="" />
+  <? foreach($aParam as $sKey => $sValue) { ?>
+  <input type="hidden" name="<?=$sKey?>" value="<?=$sValue?>" />
+  <? } ?>
   <? if($bCanDelete) { ?>
   <input type="button" name="btnDelete" value="Delete" onClick="<?=$sViewDBFormPrefix?>doDeleteObjects()"/>
   <? } ?>
@@ -50,11 +51,19 @@ jQuery(document).ready(function() {
     dataType:  'json',
     success: function(data) {
       var processname = "<?=$sViewDBFormPrefix?>objectlist";
+      var listformtype = jQuery("#<?=$sViewDBFormPrefix?>frmList input[name=txtType]").val();
       if (!data.status) appendNotice(data.msg, "error");
       else {
         if (data.msg) appendNotice(data.msg, "success");
+        switch(listformtype) {
+          case "list":
         <?=$sViewDBFormPrefix?>showObjectList(data);
-        jQuery("#<?=$sViewDBFormPrefix?>tabs").tabs( "select" , 0 );
+        switchTab("<?=$sViewDBFormPrefix?>tabs", 0);
+            break;
+          case "del":
+            <?=$sViewDBFormPrefix?>Page(<?=$sViewDBFormPrefix?>iPage, 1);
+            break;
+        }//switch
       }
       _processing[processname] = false;
       jQuery("#<?=$sViewDBFormPrefix?>title").html("");
@@ -174,6 +183,7 @@ function <?=$sViewDBFormPrefix?>showObjectList(result) {
 }
 
 function <?=$sViewDBFormPrefix?>Page(pageno, forceLoad) {
+  jQuery("#<?=$sViewDBFormPrefix?>frmList input[name=txtType]").val("list");
   if (<?=$sViewDBFormPrefix?>iPage==pageno && !forceLoad) return;
   <?=$sViewDBFormPrefix?>doLoadList(pageno);
 }

@@ -14,11 +14,51 @@ class FlexiBaseViewManager {
 
   //override this
   public function onInit() {}
+  public function onSetView($sName) {}
+  public function onGetDisplayRow(&$oResult, $oRow){}
+  public function onGetFieldList(&$aListField) {}
+  public function onRenderFieldListHeader(&$aHeaderFields) {}
+  /**
+   * return true to render field to list
+   * @param FlexiTableFieldObject $oField
+   * @return boolean
+   */
+  public function onBeforeRenderFieldHeader(FlexiTableFieldObject &$oField) { return true; }
+  public function onAfterRenderFieldHeader(& $sOutput, FlexiTableFieldObject & $oField) {}
+  /**
+   * return true to render field to list
+   * @param FlexiTableFieldObject $oField
+   * @return boolean
+   */
+  public function onBeforeRenderListField(FlexiTableFieldObject &$oField) { return true; }
+  public function onAfterRenderListField(& $sOutput, FlexiTableFieldObject & $oField) {}
+  /**
+   * passed in value is alias name of primary
+   * @param array $aPrimary
+   */
+  public function onGetPrimaryLink(&$aPrimary) {}
 
   public function addTab($sName, $sLabel, $sView="") {
     $this->aTabs[] = array("name" => $sName, "label" => $sLabel, "view" => $sView);
   }
 
+  public function onFieldLabel(&$sLabel, FlexiTableFieldObject &$oField) {}
+  /**
+   * to change field label event
+   * @param String $sLabel
+   */
+  public function onInputFieldLabel(& $sLabel, FlexiTableFieldObject &$oField, $sType) {}
+  /**
+   * return true to continue, or false to not render
+   * @param FlexiTableFieldObject $oField
+   * @param String $sType
+   * @return boolean
+   */
+  public function onBeforeRenderFieldInput(FlexiTableFieldObject &$oField, $sType) { return true; }
+  public function onRenderFieldInput(& $aField, FlexiTableFieldObject &$oField, $oRow, $sType) {}
+  public function onAfterRenderFieldInput(& $sOutput, &$sLabel, FlexiTableFieldObject & $oField, $oRow, $sType) {}
+  public function onAfterRenderFieldDisplay(& $sOutput, &$sLabel, FlexiTableFieldObject & $oField, $oRow) {}
+  
   /**
    * Render a view template of a child/other view
    *  and assign to main view as a variable
@@ -45,7 +85,6 @@ class FlexiBaseViewManager {
     return $this->getView($sTargetView)->render($sView);
   }
 
-  public function onSetView($sName) {}
   /**
    * Set DB Form Prefix, will be used in template
    * @param String $sPrefix
@@ -162,11 +201,7 @@ class FlexiBaseViewManager {
     
     return array("primary" => $aAlias, "link" => $sLink);
   }
-  /**
-   * passed in value is alias name of primary
-   * @param array $aPrimary
-   */
-  public function onGetPrimaryLink(&$aPrimary) {}
+  
 
   /*
    * not used
@@ -189,8 +224,6 @@ class FlexiBaseViewManager {
     $this->onGetDisplayRow($aResult, $oRow);
     return $aResult;
   }
-
-  public function onGetDisplayRow(&$oResult, $oRow){}
   
   public function jsCleanArray($aValue, $sep="\"") {
     $aResult = array();
@@ -215,7 +248,6 @@ class FlexiBaseViewManager {
     $this->oView->addVar("#tabs", $this->aTabs);
   }
 
-  public function onGetFieldList(&$aListField) {}
 
   public function getFormToObjectStore($oRow, $sFormType) {
     $bDebug = false;
@@ -273,29 +305,11 @@ class FlexiBaseViewManager {
     return $aResult;
   }
 
-  public function onRenderFieldListHeader(&$aHeaderFields) {}
-
   public function renderFieldHeader(FlexiTableFieldObject $oField) {
     return $oField->label;
   }
   
   
-  /**
-   * return true to render field to list
-   * @param FlexiTableFieldObject $oField
-   * @return boolean
-   */
-  public function onBeforeRenderFieldHeader(FlexiTableFieldObject &$oField) { return true; }
-  public function onAfterRenderFieldHeader(& $sOutput, FlexiTableFieldObject & $oField) {}
-
-  /**
-   * return true to render field to list
-   * @param FlexiTableFieldObject $oField
-   * @return boolean
-   */
-  public function onBeforeRenderListField(FlexiTableFieldObject &$oField) { return true; }
-  public function onAfterRenderListField(& $sOutput, FlexiTableFieldObject & $oField) {}
-
   /**
    * Render input fields
    * @param FlexiTableObject $oTable : object schema
@@ -441,15 +455,28 @@ class FlexiBaseViewManager {
         break;
       case "timestamp-int":
         $sFormat = FlexiDateUtil::getPHPDateTimeFormat(FlexiConfig::$sInputDateTimeFormat);
-        $mValue = date($sFormat, $mValue);
+        if (!empty($mValue) && $mValue > 0) {
+          $mValue = date($sFormat, $mValue);
+        } else {
+          $mValue = "";
+        }
         break;
       case "datetime":
         $sFormat = FlexiDateUtil::getPHPDateTimeFormat(FlexiConfig::$sInputDateTimeFormat);
-        $mValue = date($sFormat, strtotime($mValue));
+        if (!empty($mValue) && $mValue != "0000-00-00" && $mValue !="0000-00-00 00:00:00") {
+          $mValue = date($sFormat, strtotime($mValue));
+        } else {
+          $mValue = "";
+        }
+        
         break;
       case "date":
         $sFormat = FlexiDateUtil::getPHPDateTimeFormat(FlexiConfig::$sDisplayDateFormat);
-        $mValue = date($sFormat, strtotime($mValue));
+        if (!empty($mValue) && $mValue != "0000-00-00" && $mValue !="0000-00-00 00:00:00") {
+          $mValue = date($sFormat, strtotime($mValue));
+        } else {
+          $mValue = "";
+        }
         break;
       case "file-varchar":
       case "file-text":
@@ -682,21 +709,16 @@ class FlexiBaseViewManager {
         case "date":
         case "datetime":
           //dont need this as actual value is already hidden
-          /*
-          $sFormat = isset($aResult["#format"]) ? $aResult["#format"] : 
-            ($oField->type == "date" ? FlexiConfig::$sInputDateFormat: FlexiConfig::$sInputDateTimeFormat);
-          $sFormat = FlexiDateUtil::getPHPDateTimeFormat($sFormat); //fix double i, which only 1 i(min) in php
-          if (!empty($sValue)) {
-            if (substr($sValue,0, 4)=="0000") {
-              //empty date
-              $sValue = "";
-            } else {
-              $iDatetime = strtotime($sValue);
-              $sValue = date($sFormat, $iDatetime);
-            }
+          if ($sValue =="0000-00-00" || $sValue == "0000-00-00 00:00:00") {
+            $sValue = "";
           }
-         */
           break;
+        case "timestamp":
+          if (empty($sValue)) {
+            $sValue = "";
+          } else {
+            $sValue = date("Y-m-d H:i:s", $sValue);
+          }
       }//switch
       
       $aResult["#value"] = $sValue;
@@ -705,22 +727,4 @@ class FlexiBaseViewManager {
     return $aResult;
   }
 
-  
-
-  public function onFieldLabel(&$sLabel, FlexiTableFieldObject &$oField) {}
-  /**
-   * to change field label event
-   * @param String $sLabel
-   */
-  public function onInputFieldLabel(& $sLabel, FlexiTableFieldObject &$oField, $sType) {}
-  /**
-   * return true to continue, or false to not render
-   * @param FlexiTableFieldObject $oField
-   * @param String $sType
-   * @return boolean
-   */
-  public function onBeforeRenderFieldInput(FlexiTableFieldObject &$oField, $sType) { return true; }
-  public function onRenderFieldInput(& $aField, FlexiTableFieldObject &$oField, $oRow, $sType) {}
-  public function onAfterRenderFieldInput(& $sOutput, &$sLabel, FlexiTableFieldObject & $oField, $oRow, $sType) {}
-  public function onAfterRenderFieldDisplay(& $sOutput, &$sLabel, FlexiTableFieldObject & $oField, $oRow) {}
 }
