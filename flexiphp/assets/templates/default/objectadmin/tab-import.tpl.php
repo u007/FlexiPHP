@@ -17,7 +17,18 @@ extract($vars);
 </table>
 
 <? } else { ?>
-No objects found...
+<table id="importtableList" class="tableGrid" style="width: 500px">
+  <thead>
+    <th>Table</th>
+    <th>Exists</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="3">No objects found...</td>
+    </tr>
+  </tbody>
+</table>
 <?
 }
 ?>
@@ -44,9 +55,9 @@ function showImportObjectList(result) {
       for(var c=0;c < data.length; c++) {
         //console.log("adding: " + data[c]["sName"]);
         target.append("<tr>\n\
-        <td>" + data[c]["name"] + "</td>\n\
-        <td>" + "" + "</td>\n\
-        <td>\n\
+        <td style='border-top: 1px solid #AAAAAA;'>" + data[c]["name"] + "</td>\n\
+        <td style='border-top: 1px solid #AAAAAA;'>" + "" + "</td>\n\
+        <td style='border-top: 1px solid #AAAAAA;'>\n\
           [ <a href='javascript:' onClick='doImportObject(\"" + data[c]["name"] + "\")'>Import</a> ]\n\
           [ <a href='javascript:' onClick='doDeleteTable(\"" + data[c]["name"] + "\")'>Delete</a> ]\n\
         </td>\n\

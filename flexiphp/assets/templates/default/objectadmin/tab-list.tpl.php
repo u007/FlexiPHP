@@ -17,7 +17,18 @@ extract($vars);
 </table>
 
 <? } else { ?>
-No objects found...
+<table id="tableList" class="tableGrid" style="width: 500px">
+  <thead>
+    <th>Name</th>
+    <th>Table</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="3">No objects found...</td>
+    </tr>
+  </tbody>
+</table>
 <?
 }
 ?>
