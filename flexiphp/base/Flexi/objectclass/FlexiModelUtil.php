@@ -487,7 +487,7 @@ class FlexiModelUtil
         $sAliasName = "";
         foreach($aSingleName as $sOneName) {
           $sAliasName .= empty($sAliasName) ? "": ".";
-          $sAliasName .= "`" . mysql_real_escape_string($sOneName) . "`";
+          $sAliasName .= "`" . mysql_escape_string($sOneName) . "`";
         }
         $sResult .= $sAliasName;
       }
@@ -968,11 +968,11 @@ class FlexiModelUtil
       case "mysql":
         if (is_array($mName)) {
           foreach($mName as & $sName) {
-            $sName = "`" . mysql_real_escape_string($sName) . "`";
+            $sName = "`" . mysql_escape_string($sName) . "`";
           }
           return implode(",", $mName);
         } else {
-          return "`" . mysql_real_escape_string($mName) . "`";
+          return "`" . mysql_escape_string($mName) . "`";
         }
     }
     return $sName;
@@ -1004,7 +1004,7 @@ class FlexiModelUtil
   public static function getSQLRaw($sValue) {
     switch(FlexiConfig::$sDBType) {
       case "mysql":
-        return mysql_real_escape_string($sValue);
+        return mysql_escape_string($sValue);
 
     }
     return $sName;
@@ -1052,6 +1052,7 @@ class FlexiModelUtil
    */
   public static function getTableSchema($sName, $bCache=true) {
     static $aCache = array();
+    if (empty($sName)) throw new Exception("Table name not specified: " . $sName);
     if ($bCache && isset($aCache[$sName])) return $aCache[$sName];
     switch(FlexiConfig::$sDBType) {
       case "mysql":
