@@ -1,0 +1,30 @@
+.tableGrid tr td, thead th {
+    padding: 2px;
+    text-align: center;
+}
+.tableGrid thead {
+    background: none repeat scroll 0 0 transparent;
+}
+.tableGrid {
+    background: none repeat scroll 0 0 #666666;
+    border: 1px solid #B0BEC7;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.tableGrid thead th {
+    background: -moz-linear-gradient(center bottom , #666666 27%, #777777 50%, #666666 0pt) repeat scroll 0 0 transparent;
+    border-bottom: 1px solid #B0BEC7;
+    color: #DDDDDD;
+    font-weight: bold;
+    padding: 3px 0;
+    text-shadow: 0 -1px 0 #3F3F3F;
+}
+.tableGrid tbody tr:nth-child(2n), .tableGrid tbody tr:nth-child(2n) {
+    background: none repeat scroll 0 0 #D7F0F8;
+}
+.tableGrid tbody tr:nth-child(2n+1), .tableGrid tbody tr:nth-child(2n+1) {
+    background: none repeat scroll 0 0 #FFFFFF;
+}
+.ui-widget {
+    font-size: 12px;
+}
