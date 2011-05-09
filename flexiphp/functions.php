@@ -48,6 +48,8 @@ function flexiURL($sURL, $bAjax = false)
       $sBaseURL = dirname($sBaseURL) . "/flexi." . FlexiConfig::$sFramework . ".php?a=" . $iActionId;
     }
     $sBaseURL = str_replace("//", "/", $sBaseURL);
+    //echo "baseurl-1: " .$sBaseURL;
+    
     if (FlexiConfig::$sFramework != "modx2" && !empty($sQuery)) {
       if (strpos($sBaseURL, "?")===false) {
         $sBaseURL .="?" . $sQuery;
@@ -55,9 +57,10 @@ function flexiURL($sURL, $bAjax = false)
         $sBaseURL .="&" . $sQuery;
       }
     }
-
+    //echo "baseurl-12: " .$sBaseURL;
   } else {
     $sBaseURL = FlexiConfig::$sBaseURL;
+    //echo "not ajax: " . $sURL;
   }
   //if (FlexiConfig::$sFramework == "modx2") var_dump($sBaseURL);
   //var_dump(FlexiConfig::$aQueryString);
@@ -80,15 +83,16 @@ function flexiURL($sURL, $bAjax = false)
         if (!$bAjax) {
           $aInfo = array_merge(FlexiConfig::$aQueryString, $aInfo);
         }
-
+        //echo "baseurl2: " .$sBaseURL;
+        //die();
         $sResult = $sBaseURL . (strpos($sBaseURL, "?")!==false ? "&" : "?") . FlexiURLUtil::getQueryStringFromArray($aInfo);
       } else {
-        $sResult = $sBaseURL . "?" . $sURL;
+        $sResult = $sBaseURL . (strpos($sBaseURL, "?")!==false ? "&" : "?") . $sURL;
       }
       
 			break;
 		case "":
-			$sResult = $sBaseURL . "?" . $sURL;
+			$sResult = $sBaseURL . (strpos($sBaseURL, "?")!==false ? "&" : "?") . $sURL;
 			break;
 			
 		default:
