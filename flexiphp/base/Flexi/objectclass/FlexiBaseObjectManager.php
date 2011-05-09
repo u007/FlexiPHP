@@ -90,12 +90,15 @@ class FlexiBaseObjectManager {
     if (!file_exists($sFile)) {
       throw new Exception("No such file: " . $sFile);
     }
-    $sContent = file_get_contents($sFile);
-    
+    $sContent = trim(file_get_contents($sFile));
+    if (empty($sContent)) throw new Exception("File is empty");
     if (substr($sContent,0,2)=="<" . "?") {
       //is new version
       require($sFile);
-      return unserialize($_tmp);
+      if (empty($_tmp)) throw new Exception("Tmp var is empty");
+      $oObject = unserialize($_tmp);
+      if ($oObject===false) throw new Exception("Unable to unserialize content: " . $_tmp);
+      return $oObject;
     } else {
       //old version is plain file
       return unserialize($sContent);
