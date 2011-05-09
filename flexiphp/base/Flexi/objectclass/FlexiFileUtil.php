@@ -8,7 +8,7 @@
 class FlexiFileUtil {
   public static $aLocks = array();
 
-  public static function getMediaURL($asPath, $sRole="", $sName="") {
+  public static function getMediaURL($asPath, $sRole="", $sName="", $aParam = array()) {
     if ($asPath[0] != "/" && substr($asPath,0,3) != "c:\\") {
       $sTempPath = FlexiConfig::$sRootDir . "/" . $asPath;
     } else {
@@ -19,8 +19,10 @@ class FlexiFileUtil {
     //echo "path: " . $sPath;
     //FlexiLogger::info(__METHOD__, "isadmin: " . (FlexiConfig::$bIsAdminPath? "yes": "no") . ": " . $sPath);
     $oControl = FlexiController::getCurrentController();
-    $sID = FlexiStringUtil::createRandomPassword(20);
-    $sFilePath=FlexiCryptUtil::b64URLEncrypt("r=" . $sRole . "&path=" . $sPath . "&name=" . $sName);
+    $sQuery = "r=" . $sRole . "&path=" . $sPath . "&name=" . $sName . 
+      (count($aParam) < 1? "": "&" . http_build_query($aParam));
+    
+    $sFilePath=FlexiCryptUtil::b64URLEncrypt($sQuery);
     
     $sURL = $oControl->url(array("p"=>$sFilePath), "GetFile", "media", true);
     return $sURL;
