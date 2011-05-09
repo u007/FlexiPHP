@@ -49,6 +49,11 @@ YUI().use('tabview', function(Y) {
     <?=$sViewDBFormPrefix?>tabs.render();
 });
 
+<? if (!$bCanEdit && !$bCanAdd) { ?>
+jQuery(document).ready(function() {
+  jQuery("#<?=$sViewDBFormPrefix?>tab-form").hide();
+});
+<? } ?>
 </script>
 
 <?=$this->render("home.footer");?>
