@@ -9,7 +9,6 @@ $iActualPageCount		= ceil($iMaxRows / $iRowPerPage);
 $params				= isset($vars["params"]) ? $vars["params"] : array();
 
 $sURL					= isset($vars["url"]) ? $vars["url"] : "[url]";
-//var_dump($sURL);
 
 
 $iC = $iPage - 10 > 0 ? $iPage - 10: 1;
