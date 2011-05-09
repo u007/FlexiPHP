@@ -12,6 +12,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
   }
 
   public function import($sName) {
+    if (empty($sName)) throw new Exception("Name not specified");
     $oObject = $this->getImport($sName, $sName);
     return $this->store($oObject);
   }
@@ -50,9 +51,10 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
    */
   public function getImport($sName, $sTable) {
     $bExists = $this->exists($sTable);
+    if (empty($sName) || empty($sTable)) throw new Exception("Name or table not specified: " . $sName . ", " . $sTable);
     $aField = FlexiModelUtil::getTableSchema($sTable);
     $oObject = $bExists? $this->load($sName): new FlexiTableObject($sName, $sTable);
-
+    
     $this->doLog("Importing: " . $sName);
     foreach($aField as $oField) {
       $sFieldName = $oField["Field"];
