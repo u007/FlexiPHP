@@ -19,10 +19,11 @@ class FlexiAdminBaseController extends FlexiBaseController {
       $modx->regClientCSS(FlexiConfig::$sAssetsURL ."flexitemplate/oo/style.css");
 
       $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL."assets/jquery/jquery-1.5.min.js");
-      $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL."assets/jquery/jquery.noconflict.js");
       $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL."assets/jquery/jquery-ui-1.8.9.custom.min.js");
       $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL."assets/jquery/jquery.form.js");
       $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL ."assets/js/jquery.colorbox-min.js");
+      $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL."assets/jquery/jquery.noconflict.js");
+      
       $modx->regClientStartupScript(FlexiConfig::$sFlexiBaseURL."assets/js/flexi.api.js");
 
       $modx->regClientStartupScript(FlexiConfig::$sAssetsURL."js/system.js");
