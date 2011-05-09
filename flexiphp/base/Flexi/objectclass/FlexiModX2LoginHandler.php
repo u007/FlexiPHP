@@ -377,7 +377,7 @@ class FlexiModX2LoginHandler extends FlexiLoginBaseHandler
 
   public function hasAccessToPolicy($sPolicy) {
     global $modx;
-    FlexiLogger::info(__METHOD__, "Checking context: " . $modx->context->get("key") . ", policy: " . $sPolicy);
+    //FlexiLogger::info(__METHOD__, "Checking context: " . $modx->context->get("key") . ", policy: " . $sPolicy);
     return $modx->hasPermission($sPolicy);
   }
 
