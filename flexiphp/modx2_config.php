@@ -31,6 +31,7 @@ if (isset($bIsAdminModule) && $bIsAdminModule) {
   global $iActionId;
   if(empty($iActionId)) { $iActionId = $_GET["a"]; }
   $aFlexiSetting["baseurl"] .= "manager/index.php?a=" . $iActionId;
+  $aFlexiSetting["bIsAdminPath"] = true;
 } else {
   $aFlexiSetting["baseurl"] .= "workspace.html";
 }
