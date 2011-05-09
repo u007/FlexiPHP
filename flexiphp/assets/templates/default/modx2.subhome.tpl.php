@@ -35,7 +35,9 @@ jQuery(document).ready(function() {
   <div id="<?=$sViewDBFormPrefix?>tab-form">
     <?=$this->render("tab-form");?>
   </div>
-  <? foreach($aTabs as $oTab) { ?>
+  <? 
+  //var_dump($aTabs);
+  foreach($aTabs as $oTab) { ?>
     <div id="<?=$sViewDBFormPrefix?><?=$oTab["name"]?>"><?=empty($oTab["view"])? "": $this->render($oTab["view"]) ?></div>
   <? } ?>
 </div>
@@ -51,6 +53,12 @@ jQuery(document).ready(function() {
   });
 
 });
+
+<? if (!$bCanEdit && !$bCanAdd) { ?>
+jQuery(document).ready(function() {
+  jQuery("#<?=$sViewDBFormPrefix?>tab-form").hide();
+});
+<? } ?>
 </script>
 
 <?=$this->render("home.footer");?>
