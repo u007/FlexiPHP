@@ -290,6 +290,8 @@ class FlexiBaseViewManager {
   }
 
   public function renderFieldsListHeader(FlexiTableObject $oTable) {
+    if (is_null($oTable)) throw new Exception("Object cannot be null");
+    if (get_class($oTable)!="FlexiTableObject") throw new Exception("Unknown class: " . get_class($oTable) .", " . serialize ($oTable));
     $aResult = array();
     $sTable = $oTable->getTableName();
     foreach($oTable->aChild["field"] as $sName => & $oField) {
