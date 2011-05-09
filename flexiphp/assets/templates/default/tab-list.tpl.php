@@ -10,6 +10,7 @@ $bCanEdit   = empty($bCanEdit)? false: true;
   <? foreach($aParam as $sKey => $sValue) { ?>
   <input type="hidden" name="<?=$sKey?>" value="<?=$sValue?>" />
   <? } ?>
+  <?=$this->render("tab-listsearch"); ?>
   <? if($bCanDelete) { ?>
   <input type="button" name="btnDelete" value="Delete" onClick="<?=$sViewDBFormPrefix?>doDeleteObjects()"/>
   <? } ?>
@@ -210,6 +211,16 @@ function <?=$sViewDBFormPrefix?>doDeleteObject(cond) {
 
 jQuery(document).ready(function() {
   <?=$sViewDBFormPrefix?>doLoadList();
+    
+  if (jQuery("#<?=$sViewDBFormPrefix?>divSearch").length > 0) {
+    //has search
+    jQuery("#<?=$sViewDBFormPrefix?>divSearch input[type=text]").change(function() {
+      jQuery("#<?=$sViewDBFormPrefix?>frmList input[name=start]").val(0); //reset page for search change
+    });
+    jQuery("#<?=$sViewDBFormPrefix?>divSearch select").change(function() {
+      jQuery("#<?=$sViewDBFormPrefix?>frmList input[name=start]").val(0); //reset page for search change
+    });
+  }
   <?=$this->render("onload.tab-list")?>
 })
 
