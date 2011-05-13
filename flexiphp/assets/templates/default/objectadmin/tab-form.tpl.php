@@ -7,6 +7,7 @@
  $aOptions = array(
    "string"     => "String",
    "char"       => "Char",
+   "email"     => "eMail",
    "select-tinyint"     => "Combo(TinyInt)",
    "select-smallint"     => "Combo(SmallInt)",
    "select-int"     => "Combo(Int)",
@@ -115,7 +116,7 @@
         </thead>
         <tbody>
           <tr id="tableFieldsNewRow">
-            <td colspan="17" style="text-align: left;">[ <a href="javascript:" onClick="newObjectField()">+</a> ]<td>
+            <td colspan="19" style="text-align: left;">[ <a href="javascript:" onClick="newObjectField()">+</a> ]<td>
           </tr>
         </tbody>
       </table>
