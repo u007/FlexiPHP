@@ -74,6 +74,10 @@ class FlexiTableFieldObject extends FlexiObject {
         $sPrecision = $this->precision;
         $sDBType = empty($this->dbtype) ? "varchar": $this->dbtype;
         switch(strtolower($sType)) {
+          case "email":
+            $sDBType = "varchar";
+            if (empty($sPrecision)) $sPrecision = "255";
+            break;
           case "select-char":
             $sDBType = "char";
             if (empty($sPrecision)) $sPrecision = "1";
