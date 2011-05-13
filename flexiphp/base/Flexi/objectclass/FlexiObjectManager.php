@@ -163,7 +163,20 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
                 //throw new Exception ("Unsupported money for type: " . $sDBType);
             }
             break;
-
+          
+          case "email":
+            switch($sDBType) {
+              case "text":
+              case "tinytext":
+              case "varchar":
+              case "char":
+                $sType = "email";
+                break;
+              default:
+                $sType = $sDefaultType;
+                $this->doLog("Field: " . $sFieldName . ",unsupported select for type: " . $sDBType . ", using: " . $sType);
+                //throw new Exception ("Unsupported select for type: " . $sDBType);
+            }
           case "timestamp-int":
             if ($sDBType == "int") {
               $sType = "timestamp-int";
@@ -200,7 +213,7 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
       $this->doLog($sFieldName . ", type: " . $oFieldObject->type . ", dbtype:" . $oFieldObject->dbtype);
       $oFieldObject->cannull    = $oField["Null"]=="YES";
       $oFieldObject->primary    = $oField["Key"] == "PRI";
-      $oFieldObject->default    = is_null($oField["Default"])? null: "'".$oField["Default"]."'";
+      $oFieldObject->default    = is_null($oField["Default"])? ($oFieldObject->cannull ? null: ""): "'".$oField["Default"]."'";
       $oFieldObject->autonumber = strpos($oField["Extra"],"auto_increment")!==false;
       
       $oObject->aChild["field"][$sFieldName] = $oFieldObject;
