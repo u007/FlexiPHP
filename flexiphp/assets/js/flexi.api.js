@@ -1,6 +1,12 @@
 var _targetPickElement = {fieldvalue:"",fieldlabel:""};
 
 
+function resetFields(target) {
+  jQuery("#" + target + " input[type=textfield]").val("");
+  jQuery("#" + target + " input[type=file]").val("");
+  jQuery("#" + target + " select").val("");
+}
+
 function switchTab(target, tabno) {
   var sType = "jQuery";
   var oTarget = jQuery("#" + target);
