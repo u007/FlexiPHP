@@ -56,10 +56,11 @@ class FlexiTableObject extends FlexiObject {
       //only check active, none deleted only
       if ($oField->iStatus==1) {
         //check nulls
-        $sDBType = $oField->dbtype;
-        $sValue = $orow[$sField];
-        $sLabel = $oField->label;
-        $sField = $oField->getName();
+        $sFieldType   = $oField->type;
+        $sDBType      = $oField->dbtype;
+        $sValue       = $orow[$sField];
+        $sLabel       = $oField->label;
+        $sField       = $oField->getName();
 
         if ($sType=="update" && $oField->primary && (!isset($oRow[$sField]) || strlen($oRow[$sField]."") < 1)) {
           throw new Exception("Field " . $oField->label . " is primary therefore, required for update");// . print_r($oRow,true));
@@ -95,9 +96,17 @@ class FlexiTableObject extends FlexiObject {
             case "double":
             case "decimal":
               if (!is_numeric($sValue)) { throw new Exception("Field " . $sLabel . " is not a number"); }
-            
           }
+          
+          switch($sFieldType) {
+            case "email":
+              if (! FlexiStringUtil::isValidEmail($sValue)) { throw new Exception("Field " . $sLabel . " is not a valid email"); }
+          }
+          
         } //end if
+        
+        
+        
       }//status
     }//foreach fields
     
