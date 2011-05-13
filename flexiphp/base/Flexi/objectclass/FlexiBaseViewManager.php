@@ -11,12 +11,26 @@ class FlexiBaseViewManager {
   public function  __construct($aParam) {
     //parent::__construct($aParam);
   }
-
+  
+  public function setListFields($aList) {
+    $oTable = $this->oObjectListManager->getObject();
+    foreach($oTable->aChild["field"] as $sField => $oField) {
+      if (! in_array($sField, $aList)) {
+        $oTable->aChild["field"][$sField]->canlist = false;
+      } else {
+        $oTable->aChild["field"][$sField]->canlist = true;
+      }
+    }
+  }
+  public function getMethodName() {
+    if (is_null($this->oView)) throw new Exception("View is not ready yet");
+    return $this->oView->getVar("#method");
+  }
   //override this
   public function onInit() {}
   public function onSetView($sName) {}
   public function onGetDisplayRow(&$oResult, $oRow){}
-  public function onGetFieldList(&$aListField) {}
+  public function onGetFieldList(&$aListField, $sListName="") {}
   public function onRenderFieldListHeader(&$aHeaderFields) {}
   /**
    * return true to render field to list
@@ -233,16 +247,16 @@ class FlexiBaseViewManager {
     return $aResult;
   }
 
-  public function prepareListHeader() {
+  public function prepareListHeader($sListName="") {
     if (is_null($this->oView)) throw new Exception("View not set");
     if (is_null($this->oObjectListManager)) throw new Exception("ObjectListManager not set");
     
-    $oObject = $this->oObjectListManager->getObject();
-    $aHeaderFields = $this->renderFieldsListHeader($oObject);
+      $oObject = $this->oObjectListManager->getObject();
+      $aHeaderFields = $this->renderFieldsListHeader($oObject);
     $this->oView->addVar("aFieldHeader", $aHeaderFields);
     
     $aListField = $oObject->getListFields();
-    $this->onGetFieldList($aListField);
+    $this->onGetFieldList($aListField, $sListName);
     $this->oView->addVar("aListFieldName", $aListField);
     
     $this->oView->addVar("#tabs", $this->aTabs);
@@ -484,11 +498,20 @@ class FlexiBaseViewManager {
       case "file-text":
         if (!empty($mValue)) {
           $sURL = FlexiFileUtil::getMediaURL($mValue);
+          $oField->allowtag = "a";
           $mValue = "<a href='" . $sURL . "' target='_blank'>Open</a>";
         }
         $bAllowHTML = true;
         break;
-    }
+      case "email":
+        if (!empty($mValue)) {
+          $oField->allowtag = "a";
+          $sURL = "mailto:" . $mValue;
+          $mValue = "<a href='" . $sURL . "'>" . $mValue . "</a>";
+        }
+        $bAllowHTML = true;
+        break;
+    }//switch type
 
     if (is_null($mValue)) $mValue = "";
     if ($bAllowHTML) {
@@ -646,6 +669,7 @@ class FlexiBaseViewManager {
       case "money":
       case "decimal":
       case "double":
+      case "email":
         $aResult["#type"] = "textfield.raw";
         break;
       case "html":
