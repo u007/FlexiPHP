@@ -51,16 +51,25 @@ class FlexiBaseObjectManager {
     return unlink($sFile);
   }
 
+  /**
+   * store serialized data in b64 to avoid data error
+   * @param type $sFile
+   * @param type $data
+   * @param type $sPrefix
+   * @return string 
+   */
   public function store($sFile, $data, $sPrefix="") {
     $sPath = $this->sPath;
     $sWriteFile = $sPath . "/" . $sPrefix . $sFile;
 
     $sWriteData = serialize($data);
-    $sWriteData = str_replace("\"", "\\\"", $sWriteData);
+    $sWriteData = base64_encode($sWriteData);
+    $sWriteData .= substr($sWriteData,-2) == "==" ? "": "=="; //append force ==
+    //$sWriteData = str_replace("\"", "\\\"", $sWriteData);
     $sWriteData = "<" . "?\n" . 
       "$" . "_tmp=\"" . $sWriteData . "\";\n" . 
       "";
-      
+    
     if (!file_put_contents($sWriteFile, $sWriteData)) {
       throw new FlexiException("Unable to write: " . $sWriteFile, ERROR_WRITE);
     }
@@ -96,6 +105,12 @@ class FlexiBaseObjectManager {
       //is new version
       require($sFile);
       if (empty($_tmp)) throw new Exception("Tmp var is empty");
+      
+      //decode new base64 formated
+      //echo "[" . substr($_tmp,-2) . "]";
+      if (substr($_tmp,-2) == "==") {
+        $_tmp = base64_decode($_tmp);
+      }
       $oObject = unserialize($_tmp);
       if ($oObject===false) throw new Exception("Unable to unserialize content: " . $_tmp);
       return $oObject;
