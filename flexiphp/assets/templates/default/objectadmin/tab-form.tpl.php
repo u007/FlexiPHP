@@ -1,7 +1,7 @@
 <?php
  extract($vars);
  
- $sURL = $this->url(null, "save", $modulename, "", true);
+ $sURL = $this->url(null, "save", $vars["#module"], "", true);
 
 
  $aOptions = array(
@@ -90,7 +90,7 @@
   <div class="ctrlHolder">
     <span>Fields [ <a href="javascript:" onClick="newObjectField()">+Add</a> ]</span>
     <div id="divFields" style="width: 880px">
-      <table id="tableFields" style="width: 1800px" class="tableGrid" >
+      <table id="tableFields" style="width: 1800px" class="tableGrid style1" >
         <thead>
           <th width="25"></th>
           <th width="25"></th>

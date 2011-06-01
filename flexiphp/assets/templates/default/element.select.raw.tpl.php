@@ -10,6 +10,8 @@ $bMultiple = isset($vars["#multiple"]) ? $vars["#multiple"] : false;
 $sRequired = isset($vars["#required"]) ?
 	($vars["#required"] ? "<span class=\"required\">*</span>": "") : "";
 
+$sExtendedURL = isset($vars["#extendedurl"]) ? $vars["#extendedurl"]: "";
+
 ?><select name="<?=$vars["#name"]?>" 
 		<?=empty($vars["#id"]) ? "" : " id=\"" . $vars["#id"] . "\""?><?=$bDisabled ? " disabled=\"disabled\"" : ""?>
 		<?=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?><?
@@ -18,7 +20,7 @@ $sRequired = isset($vars["#required"]) ?
 	<? 
 	
 	if (isset($vars["#options"])) {
-		foreach($vars["#options"] as $sKey => $sOption) { 
+		foreach($vars["#options"] as $sKey => $sOption) {
 			$sKeyValue = FlexiParser::parseHTMLInputValue($sKey);
 			
 			$bSelected = false;
@@ -31,6 +33,16 @@ $sRequired = isset($vars["#required"]) ?
 			?>
 		<option value="<?=$sKeyValue?>" <?=$bSelected? " selected" : "" ?>><?=FlexiParser::parseNoHTML($sOption)?></option>
 	<? 
-		} 
+		}
 	} ?>
 	</select>
+<? if (!empty($sExtendedURL)) { 
+  $iInnerWidth = empty($vars["#popupwidth"]) ? 600: $vars["#popupwidth"];
+  $iInnerHeight = empty($vars["#popupheight"]) ? 450: $vars["#popupheight"];
+  
+  ?>
+<a href="javascript:" onClick="jQuery.colorbox({href: '<?=$sExtendedURL?>', 
+    innerWidth: <?=$iInnerWidth?>, innerHeight: <?=$iInnerHeight?>,})" >More...</a>
+<? } ?>
+
+

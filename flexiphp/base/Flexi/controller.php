@@ -233,6 +233,7 @@ class FlexiController
 	public function run($asModule, $asMethod, $abRenderLayout = true)
 	{
 		FlexiLogger::debug(__METHOD__, "module: " . $asModule . ", method: " . $asMethod . ", renderlayout:" . ($abRenderLayout ? "yes" : "no"));
+    //echo (__METHOD__. ":module: " . $asModule . ", method: " . $asMethod . ", renderlayout:" . ($abRenderLayout ? "yes" : "no"));
 		$oView = new FlexiView();
 		$aResult = $this->_run($asModule, $asMethod, $oView);
     //FlexiLogger::debug(__METHOD__, "after _run");

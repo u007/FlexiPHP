@@ -55,7 +55,7 @@ jQuery(document).ready(function() {
       if (!data.status) appendNotice(data.msg, "error");
       else {
         appendNotice(data.msg, "success");
-        <?=$sViewDBFormPrefix?>doLoadList();
+        <?=$sViewDBFormPrefix?>doLoadList(<?=$sViewDBFormPrefix?>iPage);
         
         if (jQuery("#<?=$sViewDBFormPrefix?>frmObject input[name=txtFormType]").val()=="insert") {
     	  <?=$sViewDBFormPrefix?>resetForm();

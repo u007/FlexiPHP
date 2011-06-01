@@ -10,8 +10,4 @@ $aLoginForm = !isset($vars["#login.form"]) ?
     : $vars["#login.form"];
 
 ?>
-<?
-if (FlexiConfig::$sFramework == "") {?>
-<?=$this->render("notice"); ?>
-<? } ?>
 <?=$this->renderMarkup($aLoginForm, "login_form");?>

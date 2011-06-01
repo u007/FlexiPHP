@@ -14,13 +14,19 @@ function switchTab(target, tabno) {
   if (oTarget.length > 0) {
     if (oTarget.hasClass("yui-navset")) {
       if (!oTarget.hasClass("yui3-tabview-content")) {
-        console.log('not loaded');
+        //console.log('not loaded');
         return; //ignore, not loaded
       }
       sType = "YUI";
+    } else if (jQuery("ul.idTabs", oTarget).length > 0) {
+      oTarget = jQuery("ul.idTabs", oTarget);
+      sType = "idTabs";
     }
   }
   switch(sType) {
+    case "idTabs":
+      oTarget.idTabs(tabno); 
+      break;
     case "YUI":
       eval(target).selectChild(tabno);
       break;
@@ -45,7 +51,7 @@ function switchTab(target, tabno) {
 function openSubLink(sViewPrefix, target, url, tabno) {
   jQuery("#"+sViewPrefix + target).html("Loading...");
   jQuery("#"+sViewPrefix + target).load(url);
-  jQuery("#"+sViewPrefix +"tabs").tabs("select", tabno);
+  switchTab(sViewPrefix +"tabs", tabno);
 }
 
 function numberFormat(iValue, decimal, thousandsep) {
@@ -205,6 +211,35 @@ function toogleCheckAll(check, target, sPrefix) {
   } else {
     jQuery(target + " input[name*=check]").removeAttr("checked");
   }
+}
+
+function doComboSelect(target, row, fieldlabel, fieldvalue) {
+  var aList = jQuery(target + " option");
+  
+  var bFound=false;
+  if (!aList.length) {
+    if(jQuery(target).length < 1) {
+      showError("doComboSelect: Target not found:" + target);
+      return false;
+    }
+  } else {
+    for(var c=0; c < aList.length; c++) {
+      if (aList[c].value == row[fieldvalue]) {
+        bFound=true;
+        break;
+      }
+    }
+  }
+  
+  if (!bFound) {
+    var oOption = jQuery("<option>" + row[fieldlabel] + "</option>");
+    jQuery(oOption).attr("value", row[fieldvalue]);
+    jQuery(target).append(oOption);
+  }
+  
+  jQuery(target).val(row[fieldvalue]);
+  jQuery.colorbox.close();
+  return true;
 }
 
 function doFillCombo(target, data, bRenderGroup) {
@@ -384,4 +419,8 @@ function doApplyPopup(sTargetValueField, sTargetLabelField, sURL, aiWidth, aiHei
       jQuery(sTarget).colorbox({iframe:true, href: sURL,
         width: iWidth, height: iHeight});
     })
+}
+
+function showError(sError) {
+  alert(sError);
 }
