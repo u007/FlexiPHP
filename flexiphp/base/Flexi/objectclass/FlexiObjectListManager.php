@@ -6,7 +6,7 @@ class FlexiObjectListManager extends FlexiLogManager {
   protected $oObject = null;
   
   
-  public function __construct($aParam) {
+  public function __construct($aParam=null) {
     parent::__construct($aParam);
     $this->setPath(FlexiConfig::$sRepositoryDir);
     $this->setLogPath(FlexiConfig::$sAssetsDir . "_logs");
@@ -194,7 +194,33 @@ class FlexiObjectListManager extends FlexiLogManager {
 
   public function onBeforeCheckValidData(& $oRow, &$sType) { return true; }
   public function onCheckValidData($oObject, & $oRow, $sType) {}
-
+  
+  /**
+   * Get option list as key=>value
+   * @param String $sLabelCol Colume name for label
+   * @param String $sValue colume name for value
+   * @param array $aCond
+   * @param array $aGroupBy
+   * @param array $aOrderby
+   * @param String $sSelect
+   * @param int $iLimit
+   * @param int $iOffset 
+   */
+  public function getOptionList($sLabelCol, $sValue=null, $aCond=array(), $aGroupBy=null, $aOrderby=null, $sSelect=null, $iLimit=null, $iOffset=0) {
+    $aList = $this->doTableQuery($aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
+    $aResult = array();
+    $oObject = $this->getObject();
+    $aPrimary = $oObject->getPrimaryFields();
+    foreach($aList as $oRow) {
+      $aKey = array();
+      foreach($aPrimary as $sCol) {
+        $aKey[] = $oRow[$sCol];
+      }
+      $aResult[implode(",", $aKey)] = $oRow[$sLabelCol];
+    }
+    return $aResult;
+  }
+  
   public function doTableQuery(& $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
     $sTable = $this->oObject->getTableName();
     return $this->doQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
@@ -395,7 +421,6 @@ class FlexiObjectListManager extends FlexiLogManager {
     $xpdo = FlexiModelUtil::getInstance()->getXPDO();
     $sSQL = $this->getQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $this->onQuery($sSQL);
-    //echo "sql: " . $sSQL;
     $stmt = $xpdo->query($sSQL);
     if ($stmt) {
       return $stmt;
