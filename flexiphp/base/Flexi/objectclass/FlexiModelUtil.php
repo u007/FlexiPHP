@@ -482,13 +482,19 @@ class FlexiModelUtil
       $aName = is_array($mName) ? $mName: explode(",", $mName);
       foreach($aName as $sName) {
         $sResult .= empty($sResult) ? "":",";
-        $aSingleName = explode(".", $sName);
         
-        $sAliasName = "";
-        foreach($aSingleName as $sOneName) {
-          $sAliasName .= empty($sAliasName) ? "": ".";
-          $sAliasName .= "`" . mysql_escape_string($sOneName) . "`";
+        if (strpos($sName, "(")===false && strpos($sName, "`")===false) {
+          $aSingleName = explode(".", $sName);
+          $sAliasName = "";
+          foreach($aSingleName as $sOneName) {
+            $sAliasName .= empty($sAliasName) ? "": ".";
+            $sAliasName .= "`" . mysql_escape_string($sOneName) . "`";
+          }
+        } else {
+          //already covered and with `` or ()
+          $sAliasName = $sName;
         }
+        
         $sResult .= $sAliasName;
       }
       return $sResult;
@@ -1067,9 +1073,9 @@ class FlexiModelUtil
     return $aList;
   }
 
-  public static function getTableList() {
-    static $aCache = array();
-    if ($bCache && isset($aCache[$sName])) return $aCache[$sName];
+  public static function getTableList($bCache=true) {
+    static $aCache = null;
+    if ($bCache && ! is_null($aCache)) return $aCache;
     switch(FlexiConfig::$sDBType) {
       case "mysql":
         $sSQL = "show tables";
@@ -1086,7 +1092,7 @@ class FlexiModelUtil
       }
     }
 
-    if ($bCache) $aCache[$sName] = $aResult;
+    if ($bCache) $aCache = $aResult;
 
     return $aResult;
   }
