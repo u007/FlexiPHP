@@ -5,11 +5,16 @@ class FlexiBaseViewManager {
   protected $oObjectListManager = null;
   protected $sFieldPrefix = "field";
   protected $sListLinkCol = "id";
+  protected $sListName = "list";
   protected $aView = array();
   protected $aTabs = array();
   
   public function  __construct($aParam) {
     //parent::__construct($aParam);
+  }
+  
+  public function setListName($sName) {
+    $this->sListName = $sName;
   }
   
   public function setListFields($aList) {
@@ -196,6 +201,8 @@ class FlexiBaseViewManager {
       $oResultRow = $this->getDisplayRow($oRow);
       $oResultRow["_link"] = $aPrimary["link"];
       $oResultRow["_primary"] = $aPrimary["primary"];
+      //keep the original display value
+      $oResultRow[$this->sListLinkCol."_raw"] = $oResultRow[$this->sListLinkCol];
       $oResultRow[$this->sListLinkCol] = "<a href='javascript:' onClick='" . $aPrimary["link"].  "'>" . $oResultRow[$this->sListLinkCol] . "</a>";
       $aResult[] = $oResultRow;
     }
@@ -233,7 +240,11 @@ class FlexiBaseViewManager {
     $aResult = array();
     $oTable = $this->oObjectListManager->getObject();
     foreach($oRow as $sField => $sValue) {
-      $aResult[$sField] = $this->getFieldDisplay($oTable->aChild["field"][$sField], $oRow);
+      if (isset($oTable->aChild["field"][$sField])) {
+        $aResult[$sField] = $this->getFieldDisplay($oTable->aChild["field"][$sField], $oRow);
+      } else {
+        $aResult[$sField] = $sValue; //if field not declared, is added additional col, value should apear as it is
+      }
     }
     $this->onGetDisplayRow($aResult, $oRow);
     return $aResult;
