@@ -65,7 +65,51 @@ class FlexiLoginController extends FlexiBaseController
       return true;
     }
   }
+  
+  
+  public function doLogin() {
+    $sUserId      = $this->getPost("txtLogin");
+    $sPassword    = $this->getPost("txtPassword");
+    $sRemember    = $this->getRequest("rememberme", false);
+    $sContext    = $this->getRequest("context","");
+    
+    $aOption = array();
+    $aOption["rememberme"] = empty($sRemember) ? false: true;
+    $aOption["context"] = empty($sContext) ? null: $sContext;
+    //die("url: " . $sRedirect);
+    $oLogin = FlexiConfig::getLoginHandler();
+    
+    if (! $oLogin->existsUser($sUserId)) {
+      throw new Exception("Login failed");
+    }
 
+    //FlexiLogger::error(__METHOD__, "b4");
+    if (FlexiConfig::$bRequireEmailVerification && ! $oLogin->getIsVerified($sUserId)) {
+      $sMessage = flexiT("Sorry, please verify your email first","first");
+      throw new Exception($sMessage);
+    }
+    //FlexiLogger::error(__METHOD__, "after");
+    $bResult = $oLogin->doLogin($sUserId, $sPassword, $aOption);
+    
+    if ($bResult) {
+      return true;
+    } else {
+      throw new Exception("Login failed");
+    }
+    return false;
+  }
+  
+  public function methodAjaxLogin() {
+    $this->disableView();
+    try {
+      $this->doLogin();
+      echo $this->returnJSON(true, null, "Logged-in, please wait...");
+      return true;
+    } catch ( Exception $e) {
+      echo $this->returnJSON(false, null, $e->getMessage());
+      return false;
+    }
+  }
 
   public function methodLogin() {
     $sUserId      = $this->getPost("txtLogin");
