@@ -332,7 +332,7 @@ class FlexiFileUtil {
       if ($beginning) {
         rewind($handle);
       }
-      $text[$lines-$linecounter-1] = fgets($handle);
+      $text[$iLines-$linecounter-1] = fgets($handle);
       if ($beginning) break;
     }
     fclose ($handle);
