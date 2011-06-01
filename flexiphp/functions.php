@@ -60,7 +60,7 @@ function flexiURL($sURL, $bAjax = false)
     //echo "baseurl-12: " .$sBaseURL;
   } else {
     $sBaseURL = FlexiConfig::$sBaseURL;
-    //echo "not ajax: " . $sURL;
+    //echo "not ajax: " . $sBaseURL;
   }
   //if (FlexiConfig::$sFramework == "modx2") var_dump($sBaseURL);
   //var_dump(FlexiConfig::$aQueryString);
@@ -94,12 +94,15 @@ function flexiURL($sURL, $bAjax = false)
 		case "":
 			$sResult = $sBaseURL . (strpos($sBaseURL, "?")!==false ? "&" : "?") . $sURL;
 			break;
-			
+    
+    case "core":
+      $sResult = $sBaseURL . (strpos($sBaseURL, "?")!==false ? "&" : "?") . $sURL;
+			break;
+    
 		default:
 			parse_str($sURL, $aInfo);
 			$aInfo = array_merge(FlexiConfig::$aQueryString, $aInfo);
 			//var_dump($aInfo);
-			
 			$sResult = $sBaseURL;
 			$sQuery = "";
 			foreach($aInfo as $sKey => $sValue)
