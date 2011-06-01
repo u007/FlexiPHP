@@ -376,10 +376,10 @@ abstract class FlexiBaseController
 	{
 		if (! $this->permission($asMethod))
 		{
-			FlexiLogger::error(__METHOD__, "Permission denied: " . get_class($this) . ":" . $asMethod);
-      FlexiController::getInstance()->redirectURL(FlexiConfig::$sBaseURL . "?" .
-        FlexiConfig::getRequestModuleVarName(). "=FlexiLogin&" . FlexiConfig::getRequestMethodVarName() . "=denied");
-
+			//FlexiLogger::error(__METHOD__, "Permission denied: " . get_class($this) . ":" . $asMethod);
+      //FlexiController::getInstance()->redirectURL(FlexiConfig::$sBaseURL . "?" .
+      //  FlexiConfig::getRequestModuleVarName(). "=FlexiLogin&" . FlexiConfig::getRequestMethodVarName() . "=denied");
+      FlexiController::getInstance()->redirectURL(FlexiConfig::$sLoginURL);
       FlexiPlatformHandler::getPlatformHandler()->forceDie();
     }
     FlexiLogger::debug(__METHOD__, "Check permission pass: " . $asMethod);
