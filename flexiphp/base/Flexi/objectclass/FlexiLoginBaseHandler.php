@@ -10,7 +10,6 @@ abstract class FlexiLoginBaseHandler
 
   public function __construct() {
     //restore session
-    //var_dump($_SESSION);
     //echo "init flexilogin";
     $this->sLoggedInId = FlexiController::getInstance()->getSession("flexi.userid");
     $this->init();
@@ -44,7 +43,7 @@ abstract class FlexiLoginBaseHandler
     
     $bResult = $this->doFlexiAdminLogin($asLoginId, $asLoginPass);
     FlexiLogger::debug(__METHOD__, "FlexiAdminLogin: " . ($bResult ? "success" : "fail"));
-
+    
     if (!$bResult) {
       $bResult = $this->onLogin($asLoginId, $asLoginPass, $asConfig);
     }
@@ -164,7 +163,7 @@ abstract class FlexiLoginBaseHandler
 
     if ($asUserId == FlexiConfig::$sAdminUserId && $asPassword == FlexiConfig::$sAdminPassword) {
       FlexiController::getInstance()->setSession("flexi.userid", FlexiConfig::$iAdminId);
-      $this->sLoggedInId = $this->sAdminId;
+      $this->sLoggedInId = FlexiConfig::$iAdminId;
 
       $this->forceLogin(FlexiConfig::$iAdminId);
       return true;
@@ -173,9 +172,7 @@ abstract class FlexiLoginBaseHandler
   }
 
   public function isFlexiAdminLoggedIn() {
-    //var_dump($this->sLoggedInId);
-    //die();
-    return $this->sLoggedInId == $this->sAdminId;
+    return $this->sLoggedInId == FlexiConfig::$iAdminId;
   }
 
   /**
