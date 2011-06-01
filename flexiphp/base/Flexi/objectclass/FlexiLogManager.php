@@ -2,7 +2,7 @@
 
 class FlexiLogManager {
 
-  public function __construct($aParam) {
+  public function __construct($aParam=null) {
     
   }
   
