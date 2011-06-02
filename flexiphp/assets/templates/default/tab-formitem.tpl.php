@@ -19,6 +19,7 @@ extract($vars);
       <?=$aForm["input"]?>
     <? } ?>
   <? } ?>
+  <?=$this->render("tab-formitem-footer")?>
   </div>
   <div class="ctrlHolder">
     <label for="" > </label>

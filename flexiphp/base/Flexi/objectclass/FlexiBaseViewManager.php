@@ -9,7 +9,7 @@ class FlexiBaseViewManager {
   protected $aView = array();
   protected $aTabs = array();
   
-  public function  __construct($aParam) {
+  public function  __construct($aParam=array()) {
     //parent::__construct($aParam);
   }
   

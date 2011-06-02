@@ -52,7 +52,15 @@ abstract class FlexiBaseController
   public function regClientStartupScript($sPath, $sType="text/javascript") {
     $this->oView->addJS($sPath, $sType);
   }
-
+  
+  public function getViewManagerInstance($sName, $oObjectMgr) {
+    $sClass = $sName . "Manager";
+    $oViewMgr = new $sClass();
+    $oViewMgr->setView(new FlexiView());
+    $oViewMgr->setObjectListManager($oObjectMgr);
+    return $oViewMgr;
+  }
+  
   public function setViewManager($sName) {
     $this->oViewManager = $this->getService($sName);
     $this->oViewManager->setView($this->oView);
