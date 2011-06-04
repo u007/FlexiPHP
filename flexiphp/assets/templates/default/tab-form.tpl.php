@@ -94,7 +94,7 @@ function <?=$sViewDBFormPrefix?>showObjectForm(result) {
       var sHTML = "";
       var oField = data[c];
       if (oField.label+""!="") {
-        sHTML += "<div class=\"ctrlHolder\">\n" +
+        sHTML += "<div class=\"ctrlHolder <?=$sViewDBFormPrefix?>field" + oField.name + "\">\n" +
           oField.label + "\n" + oField.input + "\n</div>";
       } else {
         sHTML = oField.input + "\n";
@@ -107,3 +107,5 @@ function <?=$sViewDBFormPrefix?>showObjectForm(result) {
   <?=$this->render("onshowobject.tab-form") ?>
 }
 </script>
+
+<?=$this->render("tab-form-footer"); ?>
