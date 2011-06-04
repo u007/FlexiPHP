@@ -12,6 +12,8 @@ $sRequired = isset($vars["#required"]) ?
 
 $sExtendedURL = isset($vars["#extendedurl"]) ? $vars["#extendedurl"]: "";
 
+$bHasOptions = isset($vars["#options"]) ? count($vars["#options"]) > 0: false;
+
 ?><select name="<?=$vars["#name"]?>" 
 		<?=empty($vars["#id"]) ? "" : " id=\"" . $vars["#id"] . "\""?><?=$bDisabled ? " disabled=\"disabled\"" : ""?>
 		<?=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?><?
@@ -19,7 +21,7 @@ $sExtendedURL = isset($vars["#extendedurl"]) ? $vars["#extendedurl"]: "";
 		<? if (isset($vars["#attributes"])) { echo FlexiStringUtil::attributesToString($vars["#attributes"]); } ?>>
 	<? 
 	
-	if (isset($vars["#options"])) {
+	if ($bHasOptions) {
 		foreach($vars["#options"] as $sKey => $sOption) {
 			$sKeyValue = FlexiParser::parseHTMLInputValue($sKey);
 			
@@ -34,7 +36,26 @@ $sExtendedURL = isset($vars["#extendedurl"]) ? $vars["#extendedurl"]: "";
 		<option value="<?=$sKeyValue?>" <?=$bSelected? " selected" : "" ?>><?=FlexiParser::parseNoHTML($sOption)?></option>
 	<? 
 		}
-	} ?>
+	} else {
+    
+    if (!$bMultiple) {
+      if (!empty($mValue)) {
+      ?>
+      <option value="<?=$mValue?>"><?=$mValue?></option>
+      <?
+      }
+    } else {
+      //is multiple
+      foreach($mValue as $sOption) {
+        ?>
+        <option value="<?=$mValue?>"><?=$mValue?></option>
+        <?
+      }
+    }
+  }//set option accordingly
+  
+  
+  ?>
 	</select>
 <? if (!empty($sExtendedURL)) { 
   $iInnerWidth = empty($vars["#popupwidth"]) ? 600: $vars["#popupwidth"];
