@@ -70,7 +70,7 @@ class FlexiBaseObjectManager {
       "$" . "_tmp=\"" . $sWriteData . "\";\n" . 
       "";
     
-    if (!file_put_contents($sWriteFile, $sWriteData)) {
+    if (!@file_put_contents($sWriteFile, $sWriteData)) {
       throw new FlexiException("Unable to write: " . $sWriteFile, ERROR_WRITE);
     }
     return $sWriteFile;

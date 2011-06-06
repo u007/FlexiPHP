@@ -43,6 +43,8 @@
    "timestamp-int"  => "TimeStamp(Int)",
    "file-varchar"   => "File",
    "file-text"  => "File(Text)",
+   "image-varchar"   => "Image",
+   "image-text"  => "Image(Text)",
    "blob"       => "Blob",
    "bob-tiny"   => "Blob(Tiny)",
    "blob-medium"=> "Blob(Medium)",

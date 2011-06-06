@@ -216,7 +216,7 @@ class FlexiObjectListManager extends FlexiLogManager {
       foreach($aPrimary as $sCol) {
         $aKey[] = $oRow[$sCol];
       }
-      $aResult[implode(",", $aKey)] = $oRow[$sLabelCol];
+      $aResult[implode(",", $aKey).""] = $oRow[$sLabelCol];
     }
     return $aResult;
   }

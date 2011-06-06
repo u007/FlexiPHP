@@ -5,6 +5,26 @@
  * @author james
  */
 class FlexiImageUtil {
+  
+  
+  public static function imagePreview($aiWidth, $aiHeight, $sPath, $sNewPath = null) {
+    $aiWidth = (int)$aiWidth;
+    $aiHeight = (int)$aiHeight;
+    
+    if (! file_exists($sPath)) {
+      throw new Exception("File not found: " . $sPath);
+    }
+    
+    $sNewPath = empty($sNewPath) ? $sPath . "_" . md5_file($sPath). "_" . (empty($aiWidth) ? "": "w".$aiWidth) . 
+        (empty($aiHeight) ? "": "h".$aiHeight): $sNewPath;
+    
+    //not already cached
+    if (! file_exists($sNewPath)) {
+      $aSize = self::imageResize($aiWidth, $aiHeight, $sPath, $sNewPath);
+    }
+    
+    return $sNewPath;
+  }
   /**
    * Resize image to max width or height
    * @param int $width

@@ -196,6 +196,13 @@ class FlexiTableFieldObject extends FlexiObject {
           case "file-text":
             $sDBType = "text";
             break;
+          case "image-varchar":
+            $sDBType = "varchar";
+            if (empty($sPrecision)) $sPrecision = "255";
+            break;
+          case "image-text":
+            $sDBType = "text";
+            break;
           case "hidden":
             break;
           default:
@@ -232,6 +239,8 @@ class FlexiTableFieldObject extends FlexiObject {
     if ($name == "linkname" && empty($this->linkname)) {
       return $this->getName();
     }
+    //if ($name == "can") throw new Exception("ba");
+    
     return $this->$name;
   }
 

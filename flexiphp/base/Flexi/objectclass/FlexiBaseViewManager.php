@@ -9,8 +9,30 @@ class FlexiBaseViewManager {
   protected $aView = array();
   protected $aTabs = array();
   
+  protected $sInputPrefix = "";
+  protected $sInputSuffix = "";
+  
+  protected $iMaxImageWidth = 100;
+  
   public function  __construct($aParam=array()) {
     //parent::__construct($aParam);
+  }
+  
+  public function setImageMaxWidth($iWidth) {
+    $this->iMaxImageWidth = $iWidth;
+  }
+  
+  public function setFieldInputPrefix($sPrefix) {
+    $this->sInputPrefix = $sPrefix;
+  }
+  
+  public function setFieldInputSuffix($sSuffix) {
+    $this->sInputSuffix = $sSuffix;
+  }
+  
+  public function setFieldInputPrefixSuffix($sPrefix=null, $sSuffix=null) {
+    $this->sInputPrefix = $sPrefix;
+    $this->sInputSuffix = $sSuffix;
   }
   
   public function setListName($sName) {
@@ -117,6 +139,8 @@ class FlexiBaseViewManager {
   }
 
   public function setView(FlexiView &$oView, $sName="") {
+    $oView->addVar("#maximagewidth", $this->iMaxImageWidth);
+    //throw new Exception("setting view: " . $oView->getVar("#maximagewidth"));
     if (empty($sName)) {
       $this->oView = &$oView;
     }
@@ -124,7 +148,6 @@ class FlexiBaseViewManager {
       throw new Exception("View instance already exists: " . $sName);
     }
     $this->aView[$sName] = &$oView;
-
     $this->onSetView($sName);
   }
 
@@ -282,28 +305,34 @@ class FlexiBaseViewManager {
       $sField = $this->sFieldPrefix . $sName;
       if ($bDebug) echo __METHOD__ . ":Field:" . $sName . "<br/>\n";
       //ensure form has the field
-      if ($oField->type=="file-varchar" || $oField->type=="file-text") {
-        $sCond = "input".$sFormType;
-        //ensure this form field is updatable or insertable or is primary
-        if (($sFormType=="update" && $oField->primary) ||
-          in_array($oField->$sCond, array("edit","display","hidden"))
-        ){
-          $aValue = $_FILES[$sField];
-          $oForm[$sName] = $aValue;
-        }
-      } else {
-        if (isset($oRow[$sField])) {
-          $sCond = "input".$sFormType;
+      switch($oField->type) {
+        case "file-varchar":
+        case "file-text":
+        case "image-varchar":
+        case "image-text":
+           $sCond = "input".$sFormType;
           //ensure this form field is updatable or insertable or is primary
           if (($sFormType=="update" && $oField->primary) ||
             in_array($oField->$sCond, array("edit","display","hidden"))
           ){
-            $sValue = $oRow[$sField];
-            $oForm[$sName] = $sValue;
+            $aValue = $_FILES[$sField];
+            $oForm[$sName] = $aValue;
           }
-        }
-      }
-    }
+          break;
+        default:
+          
+          if (isset($oRow[$sField])) {
+            $sCond = "input".$sFormType;
+            //ensure this form field is updatable or insertable or is primary
+            if (($sFormType=="update" && $oField->primary) ||
+              in_array($oField->$sCond, array("edit","display","hidden"))
+            ){
+              $sValue = $oRow[$sField];
+              $oForm[$sName] = $sValue;
+            }
+          }
+      }//switch
+    }//foreach
     return $oForm;
   }
 
@@ -378,7 +407,7 @@ class FlexiBaseViewManager {
         $sLabel  = $this->renderFieldInputLabel($oField, $sType);
         
         $this->onAfterRenderFieldInput($sOutput, $sLabel, $oField, $oRow, $sType);
-        $aResult[$oField->sName] = array("label" => $sLabel, "input" => $sOutput);
+        $aResult[$oField->sName] = array("label" => $sLabel, "input" => $sOutput, "name" => $oField->getName());
       }
     }
     return $aResult;
@@ -424,7 +453,7 @@ class FlexiBaseViewManager {
   public function renderFieldInputForm(FlexiTableFieldObject $oField, $oRow, $sType) {
     $sInputName = "input" . $sType;
     $sFormInput = $oField->$sInputName;
-
+    //var_dump($oField->getName() . ": " . $this->oView->getVar("#maximagewidth"));
     $sOutput = ""; $bAddHidden = false;
     switch ($sFormInput) {
       case "edit":
@@ -514,6 +543,19 @@ class FlexiBaseViewManager {
         }
         $bAllowHTML = true;
         break;
+      case "image-varchar":
+      case "image-text":
+        if (!empty($mValue)) {
+          $sURL = FlexiFileUtil::getMediaURL($mValue);
+          $sThumbURL = FlexiFileUtil::getMediaURL($mValue, null, null, array("maxwidth" => $this->iMaxImageWidth));
+          $oField->allowtag = "a,img";
+          $mValue = "<a href='" . $sURL . "' target='_blank'>" . 
+            "<img src='" . $sThumbURL . "'/>" . 
+            "</a>";
+        }
+        $bAllowHTML = true;
+        break;
+      
       case "email":
         if (!empty($mValue)) {
           $oField->allowtag = "a";
@@ -536,8 +578,6 @@ class FlexiBaseViewManager {
     }
     return $mValue;
   }
-
-  
   
 
   /**
@@ -661,8 +701,11 @@ class FlexiBaseViewManager {
   
   public function getFieldInput(FlexiTableFieldObject $oField, $oRow) {
     $sName = $oField->getName();
+    $sPrefix = empty($this->sInputPrefix) ? "": $this->sInputPrefix;
+    $sSuffix = empty($this->sInputSuffix) ? "": $this->sInputSuffix;
+    
     $aResult = array(
-      "#name"           => $this->sFieldPrefix . $sName,
+      "#name"           => $this->sFieldPrefix . $sPrefix . $sName . $sSuffix,
       "#title"          => $oField->label,
       "#required"       => $oField->cannull==1? false: true,
       "#default_value"  => $oField->getPHPDefaultValue(),
@@ -716,6 +759,11 @@ class FlexiBaseViewManager {
       case "file-varchar":
       case "file-text":
         $aResult["#type"] = "file.raw";
+        break;
+      case "image-varchar":
+      case "image-text":
+        $aResult["#type"] = "image.raw";
+        $aResult["#maximagewidth"] = $this->iMaxImageWidth;
         break;
       case "hidden":
         $aResult["#type"] = "hidden.raw";
