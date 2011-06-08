@@ -210,12 +210,19 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aList = $this->doTableQuery($aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $aResult = array();
     $oObject = $this->getObject();
+    
     $aPrimary = $oObject->getPrimaryFields();
     foreach($aList as $oRow) {
       $aKey = array();
-      foreach($aPrimary as $sCol) {
-        $aKey[] = $oRow[$sCol];
+      if (empty($sValue)) {
+        //use primary
+        foreach($aPrimary as $sCol) {
+          $aKey[] = $oRow[$sCol];
+        }
+      } else {
+        $aKey[] = $oRow[$sValue];
       }
+      
       $aResult[implode(",", $aKey).""] = $oRow[$sLabelCol];
     }
     return $aResult;
