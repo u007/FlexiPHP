@@ -304,34 +304,39 @@ class FlexiBaseViewManager {
     foreach($oTable->aChild["field"] as $sName => & $oField) {
       $sField = $this->sFieldPrefix . $sName;
       if ($bDebug) echo __METHOD__ . ":Field:" . $sName . "<br/>\n";
-      //ensure form has the field
-      switch($oField->type) {
-        case "file-varchar":
-        case "file-text":
-        case "image-varchar":
-        case "image-text":
-           $sCond = "input".$sFormType;
-          //ensure this form field is updatable or insertable or is primary
-          if (($sFormType=="update" && $oField->primary) ||
-            in_array($oField->$sCond, array("edit","display","hidden"))
-          ){
-            $aValue = $_FILES[$sField];
-            $oForm[$sName] = $aValue;
-          }
-          break;
-        default:
-          
-          if (isset($oRow[$sField])) {
-            $sCond = "input".$sFormType;
+      
+      $sCond = "can" . $sFormType;
+      if ($oField->$sCond == 1) {
+        //ensure form has the field
+        switch($oField->type) {
+          case "file-varchar":
+          case "file-text":
+          case "image-varchar":
+          case "image-text":
+             $sCond = "input".$sFormType;
             //ensure this form field is updatable or insertable or is primary
             if (($sFormType=="update" && $oField->primary) ||
               in_array($oField->$sCond, array("edit","display","hidden"))
             ){
-              $sValue = $oRow[$sField];
-              $oForm[$sName] = $sValue;
+              $aValue = $_FILES[$sField];
+              $oForm[$sName] = $aValue;
             }
-          }
-      }//switch
+            break;
+          default:
+
+            if (isset($oRow[$sField])) {
+              $sCond = "input".$sFormType;
+              //ensure this form field is updatable or insertable or is primary
+              if (($sFormType=="update" && $oField->primary) ||
+                in_array($oField->$sCond, array("edit","display","hidden"))
+              ){
+                $sValue = $oRow[$sField];
+                $oForm[$sName] = $sValue;
+              }
+            }
+        }//switch
+      }//caninsert / canupdate
+      
     }//foreach
     return $oForm;
   }
@@ -755,7 +760,9 @@ class FlexiBaseViewManager {
       case "timestamp-int":
         $aResult["#type"] = "datetime.raw";
         break;
-
+      case "monthyear":
+        $aResult["#type"] = "datemonthyear.raw";
+        break;
       case "file-varchar":
       case "file-text":
         $aResult["#type"] = "file.raw";

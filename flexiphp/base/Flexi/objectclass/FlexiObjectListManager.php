@@ -303,7 +303,11 @@ class FlexiObjectListManager extends FlexiLogManager {
   }
 
   public function onNewRow(& $oRow, $aParam) {}
-
+  
+  public function getRows($aCond=array(), $aGroupBy=null, $aOrderby=null, $sSelect=null, $iLimit=null, $iOffset=0) {
+    $sTable = $this->oObject->getTableName();
+    return $this->doQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
+  }
   /**
    * Get a row by row value with primary fields
    * @param array $oRow

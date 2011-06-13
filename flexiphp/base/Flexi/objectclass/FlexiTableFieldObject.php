@@ -189,6 +189,9 @@ class FlexiTableFieldObject extends FlexiObject {
           case "timestamp-int":
             $sDBType = "int";
             if (empty($sPrecision)) $sPrecision = "11";
+          case "monthyear":
+            $sDBType = "varchar";
+            if (empty($sPrecision)) $sPrecision = "20";
           case "file-varchar":
             $sDBType = "varchar";
             if (empty($sPrecision)) $sPrecision = "255";
