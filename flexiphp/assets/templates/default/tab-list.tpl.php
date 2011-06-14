@@ -172,3 +172,5 @@ jQuery(document).ready(function() {
 })
 
 </script>
+
+<?=$this->render("tab-list-footer") ?>
