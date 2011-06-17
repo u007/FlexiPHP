@@ -5,7 +5,7 @@ extract($vars);
 ?>
 <? if (count($aList) > 0 ) { ?>
 
-<table id="tableList" class="tableGrid style1" style="width: 500px">
+<table id="tableList" class="tableGrid style1" style="width: 700px">
   <thead>
     <th>Name</th>
     <th>Table</th>
@@ -17,7 +17,7 @@ extract($vars);
 </table>
 
 <? } else { ?>
-<table id="tableList" class="tableGrid style1" style="width: 500px">
+<table id="tableList" class="tableGrid style1" style="width: 700px">
   <thead>
     <th>Name</th>
     <th>Table</th>

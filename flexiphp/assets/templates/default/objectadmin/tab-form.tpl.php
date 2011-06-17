@@ -91,7 +91,7 @@
 
   <div class="ctrlHolder">
     <span>Fields [ <a href="javascript:" onClick="newObjectField()">+Add</a> ]</span>
-    <div id="divFields" style="width: 880px">
+    <div id="divFields" style="width: 880px; height: 500px;">
       <table id="tableFields" style="width: 1800px" class="tableGrid style1" >
         <thead>
           <th width="25"></th>
