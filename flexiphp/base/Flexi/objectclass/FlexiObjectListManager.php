@@ -4,7 +4,8 @@ class FlexiObjectListManager extends FlexiLogManager {
   protected $oManager = null;
   protected $sRepoPath = "";
   protected $oObject = null;
-  
+  protected $oLastSavedRow = null;
+  protected $sLastSaveType = "";
   
   public function __construct($aParam=null) {
     parent::__construct($aParam);
@@ -95,13 +96,32 @@ class FlexiObjectListManager extends FlexiLogManager {
     }
     return $this->_storeObjectRow($oStore, $sType);
   }
-
+  
+  public function getStoredPrimaryValue() {
+    $oRow = $this->oLastSavedRow;
+    if (is_null($oRow)) throw new Exception("No stored row");
+    $oObject = $this->getObject();
+    $aPrimary = $oObject->getPrimaryFields();
+    $aResult = array();
+    foreach($aPrimary as $sName) {
+      $aResult[$sName] = isset($oRow[$sName]) ? $oRow[$sName] : "";
+      if ($this->sLastSaveType == "insert") {
+        if ($this->oObject->aChild["field"][$sName]->autonumber) {
+          $aResult[$sName] = FlexiModelUtil::getInstance()->getXPDOLastId();
+        }
+      }
+    }
+    return $aResult;
+  }
 
   public function _storeObjectRow($oRow, $sType) {
     $oObject = $this->getObject();
     $sTable = $oObject->getTableName();
     
     $aPrimary = $oObject->getPrimaryFields();
+    $this->oLastSavedRow = $oRow;
+    $this->sLastSaveType = $sType;
+    echo print_r($oRow,true);
     switch($sType) {
       case "insert":
         return FlexiModelUtil::getInstance()->insertXPDO($sTable, $oRow, $aPrimary);
