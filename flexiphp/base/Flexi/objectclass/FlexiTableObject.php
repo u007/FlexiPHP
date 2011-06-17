@@ -58,12 +58,12 @@ class FlexiTableObject extends FlexiObject {
         //check nulls
         $sFieldType   = $oField->type;
         $sDBType      = $oField->dbtype;
-        $sValue       = $orow[$sField];
-        $sLabel       = $oField->label;
         $sField       = $oField->getName();
+        $sValue       = isset($oRow[$sField]) ? $oRow[$sField]: null;
+        $sLabel       = $oField->label;
 
         if ($sType=="update" && $oField->primary && (!isset($oRow[$sField]) || strlen($oRow[$sField]."") < 1)) {
-          throw new Exception("Field " . $oField->label . " is primary therefore, required for update");// . print_r($oRow,true));
+          throw new Exception($this->getTableName() . ", Field " . $oField->label . " is primary therefore, required for update" . print_r($oRow,true));
         }
         
         if (! $oField->cannull) {
@@ -90,17 +90,21 @@ class FlexiTableObject extends FlexiObject {
           switch($sDBType) {
             case "tinyint":
             case "int":
-              if (!is_int($sValue)) { throw new Exception("Field " . $sLabel . " is not a number"); }
+              if (!is_numeric($sValue)) { throw new Exception("Field " . $sLabel . " is not a number: " . $sValue . "(" . gettype($sValue) . ")"); }
+              break;
             case "tinyint":
-              if ($sValue < -127 || $sValue > 127) { throw new Exception("Field " . $sLabel . " is invalid"); }
+              if ($sValue < -127 || $sValue > 127) { throw new Exception("Field " . $sLabel . " is invalid: " . $sValue); }
+              break;
             case "double":
             case "decimal":
               if (!is_numeric($sValue)) { throw new Exception("Field " . $sLabel . " is not a number"); }
+              break;
           }
           
           switch($sFieldType) {
             case "email":
               if (! FlexiStringUtil::isValidEmail($sValue)) { throw new Exception("Field " . $sLabel . " is not a valid email"); }
+              break;
           }
           
         } //end if
