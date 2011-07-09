@@ -291,7 +291,7 @@ ul.paging .active{
 
 ul.paging a:link,
 ul.paging a:visited {
-  color:#0e509e
+  color:#0e509e;
   display:block;
   float:left;
   padding:3px 6px;
