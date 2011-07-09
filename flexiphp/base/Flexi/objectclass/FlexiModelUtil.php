@@ -610,7 +610,7 @@ class FlexiModelUtil
       
       if ($bHasID) {
         $aWhere = self::parseSQLCondKeyValue($aPrimary, $oRow);
-        $sSQL = "SELECT " . self::getSQLName($aPrimarySQL) . " FROM " . $sTable . " WHERE ";
+        $sSQL = "SELECT " . self::getSQLName($aPrimary) . " FROM " . $sTable . " WHERE ";
         $sSQL .= $aWhere["sql"];
         $row = $this->getXPDOFetchOne($sSQL, $aWhere["param"]);
         if (!is_null($row)) {
@@ -619,8 +619,8 @@ class FlexiModelUtil
       }
     }
 
-    return $bUpdate ? $this->updateXPDO($oRow, $sTable, $aPrimary):
-             $this->insertXPDO($oRow, $sTable, $aPrimary);
+    return $bUpdate ? $this->updateXPDO($sTable, $oRow, $aPrimary):
+             $this->insertXPDO($sTable, $oRow, $aPrimary);
   }
 
   public function updateXPDO($sTable, $oRow, $mPrimary="id") {
@@ -974,6 +974,7 @@ class FlexiModelUtil
       case "mysql":
         if (is_array($mName)) {
           foreach($mName as & $sName) {
+            if (is_array($sName)) throw new Exception("Invalid name");
             $sName = "`" . mysql_escape_string($sName) . "`";
           }
           return implode(",", $mName);
