@@ -7,7 +7,8 @@ class FlexiService {
     if (isset(self::$aService[$sName]) && !is_null(self::$aService[$sName])) {
       return self::$aService[$sName];
     }
-
+    
+    if (!class_exists($sClass)) throw new Exception("Service class missing: " . $sClass);
     self::$aService[$sName] = new $sClass($aParam);
     return self::$aService[$sName];
   }
