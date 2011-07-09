@@ -68,8 +68,8 @@ class FlexiLoginController extends FlexiBaseController
   
   
   public function doLogin() {
-    $sUserId      = $this->getPost("txtLogin");
-    $sPassword    = $this->getPost("txtPassword");
+    $sUserId      = $this->getRequest("txtLogin");
+    $sPassword    = $this->getRequest("txtPassword");
     $sRemember    = $this->getRequest("rememberme", false);
     $sContext    = $this->getRequest("context","");
     
