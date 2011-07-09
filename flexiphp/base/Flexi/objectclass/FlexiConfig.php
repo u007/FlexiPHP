@@ -2,11 +2,13 @@
 
 class FlexiConfig
 {
+  
   //base dir of other framework
   public static $sRootDir = "";
   //base dir of flexiphp
 	public static $sBaseDir = "";
   
+  public static $sBaseFullURL = "";
   //base url with an empty workspace
 	public static $sBaseURL = "";
   //base url of the root dir
@@ -104,7 +106,7 @@ class FlexiConfig
     self::$sAssetsURL     = @$aConfig["assetsurl"];
     self::$sAssetsDir     = @$aConfig["assetsdir"];
     self::$sRepositoryDir = @$aConfig["repositorydir"];
-
+    
 		self::$sBaseURL			= $aConfig["baseurl"];
 		self::$aModuleURL		= $aConfig["moduleurl"];
 		
@@ -207,7 +209,11 @@ class FlexiConfig
 
     self::$sAssetsURL = empty(self::$sAssetsURL) ?
       self::$sBaseURLDir . "assets/" : self::$sAssetsURL;
-
+    
+    $sBaseRootURL = dirname(self::$sFlexiBaseURL);
+    self::$sBaseFullURL = (@$_SERVER['HTTPS'] == 'on' ? 'https' : 'http'). '://'. 
+      (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : "localhost") . ($sBaseRootURL=="/" ? $sBaseRootURL: $sBaseRootURL . "/");
+    
     self::$sAssetsDir = empty(self::$sAssetsDir) ?
       self::$sRootDir . "/assets/": self::$sAssetsDir;
 
