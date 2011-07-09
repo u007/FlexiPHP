@@ -226,7 +226,7 @@ class FlexiObjectListManager extends FlexiLogManager {
    * @param int $iLimit
    * @param int $iOffset 
    */
-  public function getOptionList($sLabelCol, $sValue=null, $aCond=array(), $aGroupBy=null, $aOrderby=null, $sSelect=null, $iLimit=null, $iOffset=0) {
+  public function getOptionList($sLabelCol, $sValueCol=null, $aCond=array(), $aGroupBy=null, $aOrderby=null, $sSelect=null, $iLimit=null, $iOffset=0) {
     $aList = $this->doTableQuery($aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $aResult = array();
     $oObject = $this->getObject();
@@ -234,13 +234,13 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aPrimary = $oObject->getPrimaryFields();
     foreach($aList as $oRow) {
       $aKey = array();
-      if (empty($sValue)) {
+      if (empty($sValueCol)) {
         //use primary
         foreach($aPrimary as $sCol) {
           $aKey[] = $oRow[$sCol];
         }
       } else {
-        $aKey[] = $oRow[$sValue];
+        $aKey[] = $oRow[$sValueCol];
       }
       
       $aResult[implode(",", $aKey).""] = $oRow[$sLabelCol];
