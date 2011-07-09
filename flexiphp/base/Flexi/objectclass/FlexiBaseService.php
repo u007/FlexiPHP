@@ -59,5 +59,5 @@ abstract class FlexiBaseService {
     return FlexiModelUtil::getInstance()->getRedbeanFetchOne($sSQL, $aParams);
   }
 
-  abstract public function init($aParam);
+  abstract public function init($aParam=array());
 }
