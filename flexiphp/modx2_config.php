@@ -25,7 +25,7 @@ $aFlexiSetting = array_merge($aFlexiSetting, array(
   )
 );
 
-
+global $bIsAdminModule;
 //$aFlexiSetting["baseurl"] .= substr($base_url,1) . "workspace.html";
 if (isset($bIsAdminModule) && $bIsAdminModule) {
   global $iActionId;
@@ -35,7 +35,6 @@ if (isset($bIsAdminModule) && $bIsAdminModule) {
 } else {
   $aFlexiSetting["baseurl"] .= "workspace.html";
 }
-
 $aFlexiSetting["url.login"] = $aFlexiSetting["baseurl"] . "login";
 
 ini_set("display_errors", "On");
