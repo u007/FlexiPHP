@@ -52,15 +52,15 @@ class FlexiDateUtil {
   }
   
   public static function getDisplaySQLDate($sSQLDate, $asFormat =null) {
-    $sDate = self::getDisplaySQLDateTime($sSQLDate, $asFormat);
-    $sDate = empty($sDate) ? $sDate: substr($sDate,0, 10);
+    $sFormat = empty($asFormat) ? self::getPHPDateTimeFormat(FlexiConfig::$sDisplayDateFormat) : $asFormat;
+    $sDate = self::getDisplaySQLDateTime($sSQLDate, $sFormat);
+    $sDate = empty($sDate) ? "": $sDate;
     return $sDate;
   }
 
   public static function getDisplaySQLDateTime($sSQLDate, $asFormat =null) {
-    $sFormat = empty($asFormat) ? FlexiConfig::$sDisplayDateFormat : $asFormat;
+    $sFormat = empty($asFormat) ? self::getPHPDateTimeFormat(FlexiConfig::$sDisplayDateTimeFormat) : $asFormat;
     $iTime = self::parseSQLDateToTime($sSQLDate);
-
     return date($sFormat, $iTime);
   }
 
