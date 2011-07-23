@@ -36,7 +36,7 @@ class FlexiService {
 
   public static function cleanField($sName) {
     if (FlexiConfig::$sDBType == "mysql") {
-      return "`" . mysql_escape_string($sName) . "`";
+      return "`" . FlexiModelUtil::dbCleanName($sName) . "`";
     }
     return $sName;
   }
