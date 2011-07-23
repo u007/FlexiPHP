@@ -542,21 +542,29 @@ class FlexiBaseViewManager {
       case "file-varchar":
       case "file-text":
         if (!empty($mValue)) {
-          $sURL = FlexiFileUtil::getMediaURL($mValue);
+          try {
+            $sURL = FlexiFileUtil::getMediaURL($mValue);
+            $mValue = "<a href='" . $sURL . "' target='_blank'>Open</a>";
+          } catch (Exception $e) {
+            $mValue = $e->getMessage();
+          }
           $oField->allowtag = "a";
-          $mValue = "<a href='" . $sURL . "' target='_blank'>Open</a>";
         }
         $bAllowHTML = true;
         break;
       case "image-varchar":
       case "image-text":
         if (!empty($mValue)) {
-          $sURL = FlexiFileUtil::getMediaURL($mValue);
-          $sThumbURL = FlexiFileUtil::getMediaURL($mValue, null, null, array("maxwidth" => $this->iMaxImageWidth));
+          try {
+            $sURL = FlexiFileUtil::getMediaURL($mValue);
+            $sThumbURL = FlexiFileUtil::getMediaURL($mValue, null, null, array("maxwidth" => $this->iMaxImageWidth));
+            $mValue = "<a href='" . $sURL . "' target='_blank'>" . 
+              "<img src='" . $sThumbURL . "'/>" . 
+              "</a>";
+          } catch (Exception $e) {
+            $mValue = $e->getMessage();
+          }
           $oField->allowtag = "a,img";
-          $mValue = "<a href='" . $sURL . "' target='_blank'>" . 
-            "<img src='" . $sThumbURL . "'/>" . 
-            "</a>";
         }
         $bAllowHTML = true;
         break;
