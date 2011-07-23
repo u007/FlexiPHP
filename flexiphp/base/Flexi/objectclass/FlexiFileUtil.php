@@ -54,7 +54,9 @@ class FlexiFileUtil {
   public static function getFullUploadPath($sSubPath="") {
     $sPath = self::getUploadPath($sSubPath);
     if (! is_dir($sPath)) {
-      mkdir($sPath, 0777, true);
+      if (! @mkdir($sPath, 0777, true)) {
+        throw new Exception("Unable to create: " . $sPath);
+      }
     }
     return $sPath;
   }
@@ -179,6 +181,10 @@ class FlexiFileUtil {
     return $aReturn;
   }
   
+  public static function getUploadedFile($sFormName) {
+    if (!self::getIsUploaded($sFormName)) { throw new Exception("No uploaded: " . $sFormName); }
+    return $_FILES[$sFormName]['tmp_name'];
+  }
   /**
    * Save upload file
    * @param String $sFormName
