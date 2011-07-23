@@ -475,6 +475,32 @@ class FlexiModelUtil
 		
 		return null;
 	}
+  
+  public static function dbCleanValue($sValue) {
+    $mResult = @mysql_real_escape_string($sValue);
+    if ($mResult===false) {
+      $mResult = mysql_real_escape_string($sValue, self::getDBInstance());
+      if ($mResult===false) dumpError("Unable to escpae due to missing connection");
+    }
+    return $mResult;
+  }
+  
+  public static function dbCleanName($mName) {
+		
+		return preg_replace("/[^a-zA-z0-9\s-_\+\&]*/s", "", $mName);
+		//below deprecated
+    $aClean = array(
+      "-" => "",
+      "#" => "",
+      "'" => "",
+      ";" => "",
+      "/g" => ""
+    );
+    $sResult = str_replace(array_keys($aClean), array_values($aClean), $mName);
+    $sResult = self::dbCleanValue($sResult);
+
+    return $sResult;
+  }
 
   public static function parseSQLName($mName) {
     if (FlexiConfig::$sDBType=="mysql") {
@@ -488,7 +514,7 @@ class FlexiModelUtil
           $sAliasName = "";
           foreach($aSingleName as $sOneName) {
             $sAliasName .= empty($sAliasName) ? "": ".";
-            $sAliasName .= "`" . mysql_escape_string($sOneName) . "`";
+            $sAliasName .= "`" . self::dbCleanName($sOneName) . "`";
           }
         } else {
           //already covered and with `` or ()
@@ -631,19 +657,18 @@ class FlexiModelUtil
     if ($bDebug) echo __METHOD__ . ": primary:" . print_r($aPrimary,true) . "\n<br/>";
     $aWhere = self::parseSQLCondKeyValue($aPrimary, $oRow);
     $sFields = "";
+    $aParam = $aWhere["param"];
     foreach($oRow as $sField => $sValue) {
+      $sFieldRaw = self::dbCleanName($sField);
+			$sFieldName = self::parseSQLName($sField);
       $sFields .= empty($sFields) ? "" : ",";
-      $sFields .= self::parseSQLName($sField) . "=";
-
-      if (is_null($sValue)) { $sFields .="null"; } else {
-        $sFields .=self::getSQLValue($sValue);
-      }
+      $sFields .= $sFieldName . "=:_update_" . $sFieldRaw;
+			$aParam[":_update_" . $sFieldRaw] = $oRow[$sField];
     }
     $sSQL = "UPDATE " . self::parseSQLName($sTable) . " SET " . $sFields . " WHERE " . $aWhere["sql"];
     if ($bDebug) echo __METHOD__ . ": sql:" . $sSQL . "\n<br/>";
     if ($bDebug) echo __METHOD__ . ": param:" . print_r($aWhere["param"],true) . "\n<br/>";
-
-    $this->getXPDOExecute($sSQL, $aWhere["param"]);
+    $this->getXPDOExecute($sSQL, $aParam);
     //if no exception, shall return true
     return true;
   }
@@ -653,22 +678,23 @@ class FlexiModelUtil
     //fields
     $aCols = array_keys($oRow);
     $sFields = "";
-
+		$sFieldValues = "";
+		$aParam = array();
+		
     if ($bDebug) echo __METHOD__ . ": " . print_r($oRow,true);
     foreach($aCols as $sField) {
+      $sFieldRaw = self::dbCleanName($sField);
+			$sFieldName = self::parseSQLName($sField);
       $sFields .= empty($sFields) ? "" : ",";
-      $sFields .= self::parseSQLName($sField);
-    }
-    //values
-    $aCols = array_values($oRow);
-    $sFieldValues = "";
-    foreach($aCols as $sField) {
+      $sFields .= $sFieldName;
+      
       $sFieldValues .= empty($sFieldValues) ? "" : ",";
-      $sFieldValues .= self::getSQLValue($sField);
+      $sFieldValues .= ":" . $sFieldRaw;
+      $aParam[":" . $sFieldRaw] = $oRow[$sField];
     }
     $sSQL = "INSERT INTO " . self::parseSQLName($sTable) . " (" . $sFields . ") VALUES (" . $sFieldValues . ")";
-    if ($bDebug) echo __METHOD__ . ": " . $sSQL;
-    return $this->getXPDOExecute($sSQL);
+    
+    return $this->getXPDOExecute($sSQL, $aParam);
   }
   /**
    * Execute sql
@@ -973,13 +999,14 @@ class FlexiModelUtil
     switch(FlexiConfig::$sDBType) {
       case "mysql":
         if (is_array($mName)) {
+          $aResult = array();
           foreach($mName as & $sName) {
             if (is_array($sName)) throw new Exception("Invalid name");
-            $sName = "`" . mysql_escape_string($sName) . "`";
+            $aResult[] = "`" . self::dbCleanName($sName) . "`";
           }
-          return implode(",", $mName);
+          return implode(",", $aResult);
         } else {
-          return "`" . mysql_escape_string($mName) . "`";
+          return "`" . self::dbCleanName($mName) . "`";
         }
     }
     return $sName;
@@ -1005,16 +1032,16 @@ class FlexiModelUtil
         //is not array
         return "'" . self::getSQLRaw($mValue) . "'";
     }
-    return $sName;
+    return $mValue;
   }
 
   public static function getSQLRaw($sValue) {
     switch(FlexiConfig::$sDBType) {
       case "mysql":
-        return mysql_escape_string($sValue);
+        return self::dbCleanValue($sValue);
 
     }
-    return $sName;
+    return $sValue;
   }
 
   public static function getDefaultSQL($mDefault, $bCanNull) {
