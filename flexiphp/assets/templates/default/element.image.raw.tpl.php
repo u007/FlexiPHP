@@ -12,15 +12,25 @@ if (empty($vars["#maximagewidth"])) {
   throw new Exception("w not set");
 }
 
-$sURL = !empty($mValue) ? FlexiFileUtil::getMediaURL($mValue): "";
-$sThumbURL = !empty($mValue) ? FlexiFileUtil::getMediaURL($mValue, null, null, array("maxwidth" => $vars["#maximagewidth"])): "";
+$sError = "";
+
+try {
+  $sURL = !empty($mValue) ? FlexiFileUtil::getMediaURL($mValue): "";
+  $sThumbURL = !empty($mValue) ? FlexiFileUtil::getMediaURL($mValue, null, null, array("maxwidth" => $vars["#maximagewidth"])): "";
+} catch (Exception $e) {
+  $sError = $e->getMessage();
+}
+
 
 ?>
 <?=isset($vars["#prefix"]) ? $vars["#prefix"] : ""; ?>
   <div class="fieldUploadDisplay">
   <?=empty($mValue)? "(No file uploaded)" : "" ?>
-  <? if(!empty($mValue)) { ?>
+  <? if(!empty($mValue) && empty($sError)) { ?>
   <br/><a href="<?=$sURL?>" target='_blank'><img src="<?=$sThumbURL?>" /></a>
+  <? } ?>
+  <? if (!empty($sError)) { ?>
+  <?=$sError?>
   <? } ?>
   </div>
 	<input type="file" name="<?=$vars["#name"]?>" <?=is_null($mValue) ? "" : " value=\"" . $mValue . "\""?><?=$sMaxLen?>
