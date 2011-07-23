@@ -61,6 +61,7 @@ class FlexiConfig
 	public static $sTimeZone	= "";
 	public static $sInputDateFormat = "";
   public static $sDisplayDateFormat = "dd-mm-yy";
+  public static $sDisplayDateTimeFormat = "dd-mm-yy hh:ii:ss";
   
   public static $sInputDateTimeFormat = "dd-mm-yy hh:ii:ss";
 	
