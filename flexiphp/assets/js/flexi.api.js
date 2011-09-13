@@ -171,7 +171,7 @@ function cleanupNotice(event) {
   }
   //fade half all old post
   var aDiv = jQuery(_sNoticeTarget + " div");
-  var targetDiv; var iPoint = 0.8;
+  var targetDiv;var iPoint = 0.8;
   for(var c=aDiv.length-1; c >= 0 ; c--) {
     targetDiv = jQuery(aDiv[c]);
     targetDiv.css("opacity", iPoint);
@@ -251,7 +251,7 @@ function doFillCombo(target, data, bRenderGroup) {
   }
 
   var bStartGroup = false;
-  var sOption = ""; var sLastGroup = "";
+  var sOption = "";var sLastGroup = "";
   for(var i=0; i < data.length; i++) {
 
     if (data[i].label) {
@@ -327,6 +327,32 @@ function cloneObject(target) {
     } else newObj[i] = target[i];
   }
   return newObj;
+}
+
+function doAjaxRenderMultiCheckList(sURL, sTarget, sCheckName, aData, onLoaded, bRenderGroup) {
+  doAjaxCall(sURL, aData, "GET", function(sResult) {
+    var aResult = eval("(" + sResult + ")");
+
+    if (aResult.status==1) {
+      var aData = aResult['return'];
+      doFillCheckList(sTarget, sCheckName, aData);
+      if (onLoaded) {
+        onLoaded();
+      }
+    }
+  });
+}
+
+function doFillCheckList(sTarget, sCheckName, aData) {
+  var oDiv = jQuery(sTarget);
+  var sId = "";
+  oDiv.html("");
+  for(var c=0; c < aData.length; c++) {
+    sId = sCheckName + "_" + (Math.random()*1000);
+    oDiv.append("<div><input type=\"checkbox\" value=\"" + aData[c].data + "\" " + 
+      "name=\"" + sCheckName + "[]\" id=\"" + sId + "\"/><label for=\"" + sId + "\">" + aData[c].label +
+      "</label><div style='clear: both'></div></div>")
+  }
 }
 
 function doAjaxRenderOptionList(sURL, sTarget, aData, onLoaded, bRenderGroup) {
