@@ -137,7 +137,7 @@ class FlexiFileUtil {
     if (!empty($sMovePath) && $sTempFile != $sMovePath) {
       $aReturn["path"] = $sMovePath;
       if (is_file($sMovePath)) { unlink($sMovePath); }
-      if(move_uploaded_file($sTempFile, $sMovePath)) {
+      if(@move_uploaded_file($sTempFile, $sMovePath)) {
         FlexiLogger::info(__METHOD__, "Moved file from: " . $sTempFile . " to " . $sMovePath);
         $aReturn["status"] = true;
       } else {
