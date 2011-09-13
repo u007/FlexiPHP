@@ -638,8 +638,10 @@ class FlexiModelUtil
         $aWhere = self::parseSQLCondKeyValue($aPrimary, $oRow);
         $sSQL = "SELECT " . self::getSQLName($aPrimary) . " FROM " . $sTable . " WHERE ";
         $sSQL .= $aWhere["sql"];
+        //echo $sSQL;
+        //var_dump($aWhere);
         $row = $this->getXPDOFetchOne($sSQL, $aWhere["param"]);
-        if (!is_null($row)) {
+        if ($row!==false) {
           $bUpdate = true;
         }
       }
