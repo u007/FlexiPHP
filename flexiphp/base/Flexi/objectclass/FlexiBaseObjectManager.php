@@ -24,7 +24,9 @@ class FlexiBaseObjectManager {
     if (empty($this->sLogPath)) throw new Exception("Log path not set");
     
     $sFile = $this->sLogPath . "/" . $sType . ".log";
-    file_put_contents($sFile, $sMsg . ".\n", FILE_APPEND);
+    if (@file_put_contents($sFile, $sMsg . ".\n", FILE_APPEND)===false) {
+      throw new Exception(__METHOD__ . ": Unable to write log: " . $sFile);
+    }
   }
   
   public function setLogPath($sPath) {
