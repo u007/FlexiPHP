@@ -302,7 +302,7 @@ class FlexiBaseViewManager {
     $oForm = array();
     $oTable = $this->oObjectListManager->getObject();
     foreach($oTable->aChild["field"] as $sName => & $oField) {
-      $sField = $this->sFieldPrefix . $sName;
+      $sField = $this->getFieldInputName($sName);
       if ($bDebug) echo __METHOD__ . ":Field:" . $sName . "<br/>\n";
       
       $sCond = "can" . $sFormType;
@@ -408,8 +408,9 @@ class FlexiBaseViewManager {
       //echo "check: " . $sCheck . ":" . $sName . "\n";
       if ($oField->$sCheck) {
         //echo "ok check\n";
-        $sOutput = $this->renderFieldInputForm($oField, $oRow, $sType);
-        $sLabel  = $this->renderFieldInputLabel($oField, $sType);
+        $aOutput = $this->renderFieldInputForm($oField, $oRow, $sType);
+        $sOutput = $aOutput["output"];
+        $sLabel  = $this->renderFieldInputLabel($oField, $sType, $aOutput["form"]);
         
         $this->onAfterRenderFieldInput($sOutput, $sLabel, $oField, $oRow, $sType);
         $aResult[$oField->sName] = array("label" => $sLabel, "input" => $sOutput, "name" => $oField->getName());
@@ -418,7 +419,7 @@ class FlexiBaseViewManager {
     return $aResult;
   }
 
-  public function renderFieldInputLabel(FlexiTableFieldObject $oField, $sType) {
+  public function renderFieldInputLabel(FlexiTableFieldObject $oField, $sType, $oForm) {
     $sLabel = $this->getFieldInputLabel($oField, $sType);
 
     $sInputName = "input" . $sType;
@@ -439,8 +440,9 @@ class FlexiBaseViewManager {
     if (is_null($sLabel)) return "";
     if (strlen($sLabel)==0) return "";
     if (! $bRender) return "";
+    $sId = empty($oForm["#id"]) ? "" : " for=\"" . $oForm["#id"] . "\"";
     //echo "render: " . $oField->getName() . ", type: " . $sType;
-    return "<label for=\"field" . $oField->getName() . "\">" . $sLabel . "</label>";
+    return "<label" . $sId . ">" . $sLabel . "</label>";
   }
 
   public function getFieldLabel(FlexiTableFieldObject $oField) {
@@ -488,7 +490,7 @@ class FlexiBaseViewManager {
       $sOutput .= $this->oView->renderMarkup($oForm, $oForm["#name"]);
     }
 
-    return $sOutput;
+    return array("output" => $sOutput, "form" => $oForm);
   }
 
   /**
@@ -712,13 +714,18 @@ class FlexiBaseViewManager {
     return array("tag" => $aResultTag, "attribute" => $aAttribute);
   }
   
-  public function getFieldInput(FlexiTableFieldObject $oField, $oRow) {
-    $sName = $oField->getName();
+  public function getFieldInputName($sName) {
     $sPrefix = empty($this->sInputPrefix) ? "": $this->sInputPrefix;
     $sSuffix = empty($this->sInputSuffix) ? "": $this->sInputSuffix;
+    return $this->sFieldPrefix . $sPrefix . $sName . $sSuffix;
+  }
+  
+  public function getFieldInput(FlexiTableFieldObject $oField, $oRow) {
+    $sName = $oField->getName();
     
     $aResult = array(
-      "#name"           => $this->sFieldPrefix . $sPrefix . $sName . $sSuffix,
+      "#name"           => $this->getFieldInputName($sName),
+      "#id"             => $this->getFieldInputName($sName) . "_" . FlexiStringUtil::createRandomPassword(8),
       "#title"          => $oField->label,
       "#required"       => $oField->cannull==1? false: true,
       "#default_value"  => $oField->getPHPDefaultValue(),
