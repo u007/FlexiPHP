@@ -462,6 +462,7 @@ class FlexiBaseViewManager {
     $sFormInput = $oField->$sInputName;
     //var_dump($oField->getName() . ": " . $this->oView->getVar("#maximagewidth"));
     $sOutput = ""; $bAddHidden = false;
+    $oForm = null;
     switch ($sFormInput) {
       case "edit":
         $oForm = $this->getFieldInput($oField, $oRow);
