@@ -216,7 +216,7 @@ class FlexiDateUtil {
       $iTime = strtotime($sStart);
       $iEndTime = empty($asEnd) ? time() : strtotime($asEnd);
 	  
-	  return $this->getDurationByTime($iTime, $iEndTime);
+	  return self::getDurationByTime($iTime, $iEndTime);
     } //if time is valid
     
     return $aResult;
