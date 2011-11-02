@@ -266,7 +266,10 @@ class FlexiModelUtil
     return array($sSchemaFile, $sModelDir);
   }
 
-
+  public function getNewXPDO() {
+    return new FlexiXPDO();
+  }
+  
   public function getXPDO() {
     
     if (is_null($this->xpdo)) {
@@ -274,13 +277,9 @@ class FlexiModelUtil
         global $modx;
         $this->xpdo = & $modx;
       } else {
-        $this->xpdo = new FlexiXPDO();
+        $this->xpdo = $this->getNewXPDO();
       }
     }
-    //$this->xpdo->setDebug(true);
-    //$this->xpdo->setLogLevel(xPDO :: LOG_LEVEL_DEBUG);
-    //$this->xpdo->setLogTarget(XPDO_CLI_MODE ? 'ECHO' : 'HTML');
-    //$this->xpdo->setLogTarget('ECHO');
 
     return $this->xpdo;
   }
@@ -532,7 +531,7 @@ class FlexiModelUtil
     $bDebug = false;
     $result = ""; $aParam = array();
     $aCond = explode(":", $sKey);
-
+    
     //default
     $sType = "and";
     $sOperator = "";
@@ -755,7 +754,7 @@ class FlexiModelUtil
   public static function parseSQLCondKeyValue($aKey, $oRow) {
     $aResult = array();
     foreach($aKey as $sField) {
-      $aResult[$sField] = $oRow[$sField];
+      $aResult[self::parseSQLName($sField)] = $oRow[$sField];
     }
     return self::parseSQLCond($aResult);
   }
