@@ -43,7 +43,7 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aResult = array();
     foreach($aCond as $sField => $sValue) {
       $oField = $oTable->getFieldByAlias($sField);
-      $aResult[$oField->getName()] = $sValue;
+      $aResult[FlexiModelUtil::getSQLName($oField->getName())] = $sValue;
     }
     return $aResult;
   }
@@ -339,7 +339,8 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aCond = array();
     foreach($aPrimary as $sPrimary) {
       if (!isset($oRow[$sPrimary])) throw new Exception("Primary field missing: " . $sPrimary);
-      $aCond[$sPrimary] = $oRow[$sPrimary];
+      //echo "cond: " . FlexiModelUtil::getSQLName($sPrimary) . "<Br/>\n";
+      $aCond[FlexiModelUtil::getSQLName($sPrimary)] = $oRow[$sPrimary];
     }
     $sSQL = $this->getQuery($sTable, $aCond);
     
@@ -360,7 +361,6 @@ class FlexiObjectListManager extends FlexiLogManager {
     $xpdo = FlexiModelUtil::getInstance()->getXPDO();
 
     //any auto condition changes here
-    
     //pass to event handler, throw exception to stop process
     //$this->onQueryParam($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $sSQL = "";
