@@ -2,6 +2,7 @@
 
 class FlexiStringUtil
 {
+  private static $iSeed = 1;
 
   public static function cleanName($sValue) {
     return preg_replace('/[^a-zA-Z0-9_\s]/',"", $sValue);
@@ -89,12 +90,14 @@ class FlexiStringUtil
 	}
 
   public static function createRandomChars($charcount, $chars) {
-    srand((double)microtime()*1000000);
+    
 		$i = 0;
 		$pass = '' ;
     if (strlen($chars) < 1) { return ""; }
 		while ($i < $charcount) {
-      $num = rand(0, strlen($chars)-1);
+      self::$iSeed += 1;
+      mt_srand((double)microtime()*1000000 + self::$iSeed);
+      $num = mt_rand(0, strlen($chars)-1);
 			$tmp = substr($chars, $num, 1);
 			$pass = $pass . $tmp;
 			$i++;
