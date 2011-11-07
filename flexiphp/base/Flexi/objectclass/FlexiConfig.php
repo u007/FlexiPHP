@@ -3,6 +3,7 @@
 class FlexiConfig
 {
   
+  public static $sLoginHandlerClass = "";
   //base dir of other framework
   public static $sRootDir = "";
   //base dir of flexiphp
@@ -169,6 +170,8 @@ class FlexiConfig
 
     self::$bIsAdminPath = isset($aConfig["bIsAdminPath"]) ? $aConfig["bIsAdminPath"] : self::$bIsAdminPath;
     
+    self::$sLoginHandlerClass = isset($aConfig["loginhandler"]) ? $aConfig["loginhandler"] : self::$sLoginHandlerClass;
+    
 		if (!empty(self::$sTimeZone))
 		{
 			date_default_timezone_set(self::$sTimeZone);
@@ -268,30 +271,36 @@ class FlexiConfig
 		FlexiModelUtil::getInstance()->setDBSetting(self::$sDBType, self::$sDBHost, self::$iDBPort, self::$sDBUser, self::$sDBPass, self::$sDBName);
 		if (!empty(self::$sDBType)) { FlexiModelUtil::getDBInstance(); }
     
-		switch(self::$sFramework)
-		{
-			case "drupal":
-				//TODO
-				break;
-			case "modx":
-				self::setLoginHandler(new FlexiModXLoginHandler());
-				break;
-      case "modx2":
-				self::setLoginHandler(new FlexiModX2LoginHandler());
-				break;
-      case "iscript":
-        self::setLoginHandler(new FlexiIScriptLoginHandler());
-				break;
-			case "joomla":
-				//TODO
-				break;
-      case "":
-        self::setLoginHandler(new FlexiLoginHandler());
-        break;
-			default:
-        $sClass = "Flexi" . ucfirst(self::$sFramework) . "LoginHandler";
-				self::setLoginHandler(new $sClass());
-		}
+    if (is_null(self::$oLoginHandler)) {
+      if (! empty(self::$sLoginHandlerClass)) {
+        self::setLoginHandler(new self::$sLoginHandlerClass());
+      } else {
+        switch(self::$sFramework)
+        {
+          case "drupal":
+            //TODO
+            break;
+          case "modx":
+            self::setLoginHandler(new FlexiModXLoginHandler());
+            break;
+          case "modx2":
+            self::setLoginHandler(new FlexiModX2LoginHandler());
+            break;
+          case "iscript":
+            self::setLoginHandler(new FlexiIScriptLoginHandler());
+            break;
+          case "joomla":
+            //TODO
+            break;
+          case "":
+            self::setLoginHandler(new FlexiLoginHandler());
+            break;
+          default:
+            $sClass = "Flexi" . ucfirst(self::$sFramework) . "LoginHandler";
+            self::setLoginHandler(new $sClass());
+        }//switch
+      }
+    }//end if
 		
 	}
 	
