@@ -96,10 +96,10 @@ class FlexiBaseViewManager {
    * @return boolean
    */
   public function onBeforeRenderFieldInput(FlexiTableFieldObject &$oField, $sType) { return true; }
-  public function onRenderFieldInput(& $aField, FlexiTableFieldObject &$oField, $oRow, $sType) {}
+  public function onRenderFieldInput(& $oForm, FlexiTableFieldObject &$oField, $oRow, $sType) {}
   public function onAfterRenderFieldInput(& $sOutput, &$sLabel, FlexiTableFieldObject & $oField, $oRow, $sType) {}
   public function onAfterRenderFieldDisplay(& $sOutput, &$sLabel, FlexiTableFieldObject & $oField, $oRow) {}
-  
+  public function onGetFieldDisplay(FlexiTableFieldObject &$oField, &$oRow, &$mValue) {}
   /**
    * Render a view template of a child/other view
    *  and assign to main view as a variable
@@ -481,12 +481,13 @@ class FlexiBaseViewManager {
       case "none":
         break;
     }
-    //var_dump($oRow);
+    //echo "name: " . $sInputName . ":[" . $sFormInput . "]";
+    //var_dump($sOutput);
+    //echo "<br/>\n";
     if ($bAddHidden) {
       $oFieldConfig = clone($oField);
       $oFieldConfig->type = "hidden";
       $oForm = $this->getFieldInput($oFieldConfig, $oRow);
-      //var_dump($oForm);
       $this->onRenderFieldInput($oForm, $oField, $oRow, $sType);
       $sOutput .= $this->oView->renderMarkup($oForm, $oForm["#name"]);
     }
@@ -502,8 +503,9 @@ class FlexiBaseViewManager {
    */
   public function getFieldDisplay(FlexiTableFieldObject $oField, $oRow) {
     $sName = $oField->getName();
+    
     $mValue = $oRow[$sName];
-
+    
     $bAllowHTML = $oField->allowhtml;
     switch($oField->type) {
       case "select-text":
@@ -592,6 +594,9 @@ class FlexiBaseViewManager {
     } else {
       $mValue = strip_tags($mValue);
     }
+    
+    $this->onGetFieldDisplay($oField, $oRow, $mValue);
+    
     return $mValue;
   }
   
@@ -790,6 +795,10 @@ class FlexiBaseViewManager {
         break;
       case "hidden":
         $aResult["#type"] = "hidden.raw";
+        break;
+      
+      case "html-tiny":
+        $aResult["#type"] = "html.raw";
         break;
       default:
         throw new Exception("Unsupported type: " . $oField->type);
