@@ -32,6 +32,8 @@ class FlexiTableFieldObject extends FlexiObject {
   protected $rawvalue = null;
   protected $aCachedOption = array();
   
+  protected $savepath = null;
+  
   public function __construct($sName) {
     parent::__construct($sName, "FlexiTableField");
     $this->label = $sName;
@@ -328,7 +330,7 @@ class FlexiTableFieldObject extends FlexiObject {
       "sName", "type", "label", "dbtype", "precision", "default", "cannull", "autonumber",
       "unique", "oldname", "oldtype", "primary", "caninsert", "canupdate", "inputinsert", 
       "inputupdate", "canlist", "allowhtml", "allowtag", "formsize", "linkname", "options",
-      "unsigned");
+      "unsigned", "savepath");
   }
 }
 
