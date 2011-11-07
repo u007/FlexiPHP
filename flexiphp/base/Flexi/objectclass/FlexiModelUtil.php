@@ -721,8 +721,10 @@ class FlexiModelUtil
     $bDebug = false;
     $xpdo = $this->getXPDO();
     if ($bDebug) echo __METHOD__ . ": " . $sSQL . "<br/>\n";
+    if ($bDebug) echo __METHOD__ . ": " . print_r($aParam,true) . "<br/>\n";
     $sResultSQL = $xpdo->parseBindings($sSQL, $aParam);
     //echo "sql: " . $sResultSQL;
+    if ($bDebug) echo __METHOD__ . ": result: " . $sResultSQL . "<br/>\n";
     $stmt = $xpdo->query($sResultSQL);
     if ($stmt) {
       $aResult = $stmt->fetch(PDO::FETCH_ASSOC);
