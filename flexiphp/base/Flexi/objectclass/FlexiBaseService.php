@@ -60,4 +60,10 @@ abstract class FlexiBaseService {
   }
 
   abstract public function init($aParam=array());
+  
+  public static function getInstance() {
+    $sClass = get_called_class();
+    $sName = substr($sClass, 0, -7);
+    return FlexiService::getService($sName, $sClass);
+  }
 }

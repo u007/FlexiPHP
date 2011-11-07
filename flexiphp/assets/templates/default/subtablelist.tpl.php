@@ -1,6 +1,5 @@
 <?php
 extract($vars);
-
 $bCanDelete = empty($bCanDelete)? false: true;
 $bCanEdit   = empty($bCanEdit)? false: true;
 ?>

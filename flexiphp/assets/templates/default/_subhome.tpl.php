@@ -1,6 +1,5 @@
 <?php
 extract($vars);
-
 //var_dump($vars["bCanEdit"]);
 $aTabs = $vars["#tabs"];
 $bCanDelete = empty($bCanDelete)? false: true;
