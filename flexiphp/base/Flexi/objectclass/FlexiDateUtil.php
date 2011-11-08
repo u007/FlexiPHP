@@ -318,5 +318,38 @@ class FlexiDateUtil {
   public static function getPHPDateTimeFormat($sFormat) {
     return str_replace(array("dd","mm","yy","hh","ii","ss"), array("d","m","Y","H","i","s"), $sFormat);
   }
+  
+  /**
+   * Get the GMT time of a time in specific timezone
+   * @param type $timezone
+   * @param type $datetime 
+   */
+  public static function getGMTTimeFromTimeZone($timezone, $datetime) {
+    $iDateTime = strtotime($datetime);
+    $iOffset = self::getGMTTimeDiffHour($timezone);
+    //+ to -ve, and the opposite
+    $iOffset = $iOffset < 0.00 ? abs($iOffset) : -$iOffset;
+    //echo "Raw: " . $datetime . ", Time: " . $iDateTime . ", offset: " . $iOffset;
+    return strtotime($iOffset . " hour", $iDateTime);
+  }
+  
+  /**
+   * Get the time in a particular timezone
+   * @param String $timezone
+   * @param String $gmttime sql datetime @ GMT
+   */
+  public static function getTimeInTimeZone($timezone, $gmtdatetime) {
+    $iDateTime = strtotime($gmtdatetime);
+    $iOffset = self::getGMTTimeDiffHour($timezone);
+    return strtotime($iOffset . " hour", $iDateTime);
+  }
+  
+  public static function getGMTTimeDiffHour($timezone) {
+    $oTimeZone = new DateTimeZone($timezone);
+    $oDateTime = new DateTime("now", $oTimeZone);
+    $iOffset = $oTimeZone->getOffset($oDateTime);
+    //echo "offset: " . ($iOffset/60/60) . "hours<Br/>\n";
+    return $iOffset/60/60;
+  }
 
 }
