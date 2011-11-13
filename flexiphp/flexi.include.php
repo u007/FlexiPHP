@@ -12,11 +12,11 @@ spl_autoload_register(array("FlexiConfig","autoLoad"));
 
 require_once(FlexiConfig::$sBaseDir ."/base/Flexi/controller.php");
 FlexiController::$iLogLevel = FlexiConfig::$iLogLevel;
-FlexiConfig::finalize();
 //setting up DB Module
 $oFlexiModelUtil = FlexiModelUtil::getInstance();
 $oFlexiModelUtil->setDBSetting(FlexiConfig::$sDBType, FlexiConfig::$sDBHost,
 	FlexiConfig::$iDBPort, FlexiConfig::$sDBUser, FlexiConfig::$sDBPass, FlexiConfig::$sDBName);
+FlexiConfig::finalize();
 
 //initialising main controller
 $oFlexi = FlexiController::getInstance();
