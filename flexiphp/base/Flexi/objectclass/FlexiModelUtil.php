@@ -486,7 +486,7 @@ class FlexiModelUtil
   
   public static function dbCleanName($mName) {
 		
-		return preg_replace("/[^a-zA-z0-9\s-_\+\&]*/s", "", $mName);
+		return preg_replace("/[^a-zA-z0-9\s-_\+\&\.]*/s", "", $mName);
 		//below deprecated
     $aClean = array(
       "-" => "",
@@ -1005,11 +1005,16 @@ class FlexiModelUtil
           $aResult = array();
           foreach($mName as & $sName) {
             if (is_array($sName)) throw new Exception("Invalid name");
-            $aResult[] = "`" . self::dbCleanName($sName) . "`";
+            $aResult[] = self::getSQLName($sName);
           }
           return implode(",", $aResult);
         } else {
-          return "`" . self::dbCleanName($mName) . "`";
+          $aName = explode(".", $mName);
+          $aResult = array();
+          foreach($aName as & $sName) {
+            $aResult[] = "`" . self::dbCleanName($sName) . "`";
+          }
+          return implode(".", $aResult);
         }
     }
     return $sName;
