@@ -14,6 +14,10 @@ class FlexiObjectListManager extends FlexiLogManager {
     $this->setLogPath(FlexiConfig::$sAssetsDir . "_logs");
   }
   
+  public function getTableAlias() {
+    return $this->sTableAlias;
+  }
+  
   public function setPath($sPath) {
     $this->sRepoPath = $sPath;
   }
@@ -30,6 +34,7 @@ class FlexiObjectListManager extends FlexiLogManager {
 
     $aCond = is_array($oCond)? $oCond: get_object_vars($oCond);
     $aCond = $this->loadConditionByAlias($aCond);
+    $aCond = $this->getObjectCond($aCond);
     $aWhere = FlexiModelUtil::parseSQLCond($aCond);
     if (empty($aWhere["sql"])) throw new Exception("No condition specified");
     //var_dump($aCond);
@@ -404,6 +409,8 @@ class FlexiObjectListManager extends FlexiLogManager {
       $sSQL = $sSelect . " FROM " . $sFromQuery;
     }
     $aParam = array();
+    
+    $aCond = $this->getObjectCond($aCond);
     $aWhere = FlexiModelUtil::parseSQLCond($aCond);
 
     if (!empty($aWhere["sql"])) {
@@ -454,6 +461,15 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $aResult;
   }
+  
+  /**
+   * Change all direct field condition to table_alias.fieldname
+   * @param array key=>value
+   */
+  public function getObjectCond($aCond) {
+    return $aCond; //not used
+  }
+  
   /**
    * Get query count
    * @param String $sTable
