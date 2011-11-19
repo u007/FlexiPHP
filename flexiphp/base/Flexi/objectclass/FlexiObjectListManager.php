@@ -6,6 +6,7 @@ class FlexiObjectListManager extends FlexiLogManager {
   protected $oObject = null;
   protected $oLastSavedRow = null;
   protected $sLastSaveType = "";
+  protected $sTableAlias = "";
   
   public function __construct($aParam=null) {
     parent::__construct($aParam);
@@ -250,13 +251,13 @@ class FlexiObjectListManager extends FlexiLogManager {
   }
   
   public function doTableQuery(& $aCond=array(), & $aGroupBy=null, & $aOrderby=null, & $sSelect=null, & $iLimit=null, & $iOffset=0) {
-    $sTable = $this->oObject->getTableName();
-    return $this->doQuery($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
+    //$sTable = $this->oObject->getTableName();
+    return $this->doQuery("", $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
   }
 
   public function doTableCountQuery(& $aCond=array(), & $aGroupBy=null) {
-    $sTable = $this->oObject->getTableName();
-    return $this->doQueryCount($sTable, $aCond, $aGroupBy);
+    //$sTable = $this->oObject->getTableName();
+    return $this->doQueryCount("", $aCond, $aGroupBy);
   }
   /**
    * Load a single row data of object
@@ -298,9 +299,10 @@ class FlexiObjectListManager extends FlexiLogManager {
    */
   public function getPrimaryFields() {
     $oObject = $this->oObject;
-    return $oObject->getPrimaryFields();
+    $aFields = $oObject->getPrimaryFields();
+    
+    return $aFields;
   }
-
   /**
    * get all fields can list
    * @return array
@@ -308,6 +310,28 @@ class FlexiObjectListManager extends FlexiLogManager {
   public function getListFields() {
     $oObject = $this->oObject;
     return $oObject->getListFields();
+  }
+  
+  public function getQueryListFields() {
+    $aFields = $this->getListFields();
+    if (!empty($this->sTableAlias)) {
+      for($c=0; $c < count($aFields); $c++) {
+        $aFields[$c] = (!empty($this->sTableAlias) ? $this->sTableAlias . ".": "") . 
+              $aFields[$c];
+      }
+    }
+    return $aFields;
+  }
+  
+  public function getQueryPrimaryFields() {
+    $aFields = $this->getPrimaryFields();
+    if (!empty($this->sTableAlias)) {
+      for($c=0; $c < count($aFields); $c++) {
+        $aFields[$c] = (!empty($this->sTableAlias) ? $this->sTableAlias . ".": "") . 
+              $aFields[$c];
+      }
+    }
+    return $aFields;
   }
   /**
    * Get active object schema
@@ -341,12 +365,20 @@ class FlexiObjectListManager extends FlexiLogManager {
     foreach($aPrimary as $sPrimary) {
       if (!isset($oRow[$sPrimary])) throw new Exception("Primary field missing: " . $sPrimary);
       //echo "cond: " . FlexiModelUtil::getSQLName($sPrimary) . "<Br/>\n";
-      $aCond[FlexiModelUtil::getSQLName($sPrimary)] = $oRow[$sPrimary];
+      $sName = (!empty($this->sTableAlias) ? $this->sTableAlias . ".": "") . 
+              FlexiModelUtil::getSQLName($sPrimary);
+      $aCond[$sName] = $oRow[$sPrimary];
     }
     $sSQL = $this->getQuery($sTable, $aCond);
     
     return FlexiModelUtil::getInstance()->getXPDOFetchOne($sSQL);
   }
+  
+  public function getFromQuerySyntax($sTable="") {
+    $sTable = empty($sTable) ? FlexiModelUtil::getSQLName($oObject->getTableName()): $sTable;
+    return $sTable;
+  }
+  
   /**
    * Pass in parameter to get query SQL
    * @param String $sTable
@@ -360,18 +392,16 @@ class FlexiObjectListManager extends FlexiLogManager {
   public function getQuery($sTable="", $aCond=array(), $aGroupBy=null, $aOrderby=null, $sSelect=null, $iLimit=null, $iOffset=0) {
     $bDebug = false;
     $xpdo = FlexiModelUtil::getInstance()->getXPDO();
-
+    
+    $sFromQuery = $this->getFromQuerySyntax($sTable);
     //any auto condition changes here
     //pass to event handler, throw exception to stop process
     //$this->onQueryParam($sTable, $aCond, $aGroupBy, $aOrderby, $sSelect, $iLimit, $iOffset);
     $sSQL = "";
     if (empty($sSelect)) {
-      $sSQL = "SELECT * FROM " . $sTable;
+      $sSQL = "SELECT * FROM " . $sFromQuery;
     } else {
-      $sSQL = $sSelect;
-      if (!empty($sTable)) {
-        $sSQL .= " FROM " . FlexiModelUtil::getSQLName($sTable);
-      }
+      $sSQL = $sSelect . " FROM " . $sFromQuery;
     }
     $aParam = array();
     $aWhere = FlexiModelUtil::parseSQLCond($aCond);
