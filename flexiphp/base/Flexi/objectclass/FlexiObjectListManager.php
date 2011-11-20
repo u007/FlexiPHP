@@ -380,7 +380,7 @@ class FlexiObjectListManager extends FlexiLogManager {
   }
   
   public function getFromQuerySyntax($sTable="") {
-    $sTable = empty($sTable) ? FlexiModelUtil::getSQLName($oObject->getTableName()): $sTable;
+    $sTable = empty($sTable) ? FlexiModelUtil::getSQLName($this->oObject->getTableName()): $sTable;
     return $sTable;
   }
   
