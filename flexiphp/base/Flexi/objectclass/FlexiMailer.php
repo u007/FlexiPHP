@@ -101,7 +101,10 @@ class FlexiMailer {
     $mail->Send();
     //echo $e->errorMessage();
 	}
-	
+	/**
+	 * @param $bNew boolean
+	 * @return FlexiMailer
+	 */
 	public static function getInstance($bNew = false) {
 		if (self::$oInstance == null || $bNew) {
 			self::$oInstance = new FlexiMailer();

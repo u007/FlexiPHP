@@ -127,7 +127,6 @@ class FlexiObjectListManager extends FlexiLogManager {
     $aPrimary = $oObject->getPrimaryFields();
     $this->oLastSavedRow = $oRow;
     $this->sLastSaveType = $sType;
-    //echo print_r($oRow,true);
     switch($sType) {
       case "insert":
         return FlexiModelUtil::getInstance()->insertXPDO($sTable, $oRow, $aPrimary);

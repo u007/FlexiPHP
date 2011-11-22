@@ -31,5 +31,64 @@ class FlexiXPDO extends XPDO {
     }
     return true;
   }
+  
+  /**
+  * Parses parameter bindings in SQL prepared statements.
+  *
+  * @param string $sql A SQL prepared statement to parse bindings in.
+  * @param array $bindings An array of parameter bindings to use for the replacements.
+  * @return string The SQL with the binding placeholders replaced.
+  */
+  public function parseInsertOrUpdateBindings($sql, $bindings) {
+    if (!empty($sql) && !empty($bindings)) {
+      reset($bindings);
+      $bound = array();
+      while (list ($k, $param)= each($bindings)) {
+        if (!is_array($param)) {
+          $v= $param;
+          $type= $this->getPDOType($param);
+          $bindings[$k]= array(
+              'value' => $v,
+              'type' => $type
+          );
+        } else {
+          $v= $param['value'];
+          $type= $param['type'];
+        }
+        if (!$v) {
+          switch ($type) {
+            case PDO::PARAM_INT:
+              $v= '0';
+              break;
+            case PDO::PARAM_BOOL:
+              $v= '0';
+              break;
+            default:
+              break;
+          }
+        }
+        
+        if (!is_int($k) || substr($k, 0, 1) === ':') {
+            $pattern= '/' . $k . '\b/';
+            if ($type > 0) {
+              $v= $this->quote($v, $type);
+              $v = str_replace("\\\\$", "\\$", $v);
+            } else {
+              $v= 'NULL';
+            }
+          $bound[$pattern] = $v;
+        } else {
+          $parse= create_function('$d,$v,$t', 'return $t > 0 ? $d->quote($v, $t) : \'NULL\';');
+          $sql= preg_replace("/(\?)/e", '$parse($this,$bindings[$k][\'value\'],$type);', $sql, 1);
+        }
+      }
+      
+      if (!empty($bound)) {
+         $sql= preg_replace(array_keys($bound), array_values($bound), $sql);
+      }
+      //echo "<br/>\nSQL: " . $sql;
+    }
+    return $sql;
+  }
 
 }

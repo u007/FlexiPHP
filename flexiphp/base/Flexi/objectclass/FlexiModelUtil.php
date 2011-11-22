@@ -650,11 +650,9 @@ class FlexiModelUtil
              $this->insertXPDO($sTable, $oRow, $aPrimary);
   }
 
-  public function updateXPDO($sTable, $oRow, $mPrimary="id") {
+  public function updateXPDO($sTable, $oRow, $mPrimary="id", $bEscapeValue=true) {
     $bDebug =  false;
-    
     $aPrimary = !is_array($mPrimary) ? explode(",", $mPrimary."") : $mPrimary;
-
     if ($bDebug) echo __METHOD__ . ": primary:" . print_r($aPrimary,true) . "\n<br/>";
     $aWhere = self::parseSQLCondKeyValue($aPrimary, $oRow);
     $sFields = "";
@@ -664,17 +662,35 @@ class FlexiModelUtil
 			$sFieldName = self::parseSQLName($sField);
       $sFields .= empty($sFields) ? "" : ",";
       $sFields .= $sFieldName . "=:_update_" . $sFieldRaw;
-			$aParam[":_update_" . $sFieldRaw] = $oRow[$sField];
+			
+			$sUpdateValue = $oRow[$sField];
+			if ($bEscapeValue) {
+				$aEscape = array(
+					"$" => "\\$",
+				);
+				//$sUpdateValue = preg_quote($sUpdateValue, "/");
+				$sUpdateValue = str_replace(array_keys($aEscape), array_values($aEscape), $sUpdateValue);
+			}
+			$aParam[":_update_" . $sFieldRaw] = $sUpdateValue;
+			if ($bDebug) echo __METHOD__ . ": " . $sFieldRaw . "=" . $sUpdateValue . "<Br/>\n";
     }
     $sSQL = "UPDATE " . self::parseSQLName($sTable) . " SET " . $sFields . " WHERE " . $aWhere["sql"];
     if ($bDebug) echo __METHOD__ . ": sql:" . $sSQL . "\n<br/>";
-    if ($bDebug) echo __METHOD__ . ": param:" . print_r($aWhere["param"],true) . "\n<br/>";
-    $this->getXPDOExecute($sSQL, $aParam);
-    //if no exception, shall return true
-    return true;
+    if ($bDebug) echo __METHOD__ . ": param:" . print_r($aParam,true) . "\n<br/>";
+		
+		$xpdo = $this->getXPDO();
+		$sResultSQL = $xpdo->parseInsertOrUpdateBindings($sSQL, $aParam);
+    if ($bDebug) echo __METHOD__ . ": SQL: " . $sResultSQL . "<br/>\n";
+    //echo "sql: " . $sResultSQL;
+    $mResult = $xpdo->exec($sResultSQL);
+    if ($mResult===false) {
+      $aError = $xpdo->errorInfo();
+      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+    }
+    return $mResult;
   }
 
-  public function insertXPDO($sTable, $oRow, $aPrimary=array()) {
+  public function insertXPDO($sTable, $oRow, $aPrimary=array(), $bEscapeValue=true) {
     $bDebug = false;
     //fields
     $aCols = array_keys($oRow);
@@ -691,11 +707,27 @@ class FlexiModelUtil
       
       $sFieldValues .= empty($sFieldValues) ? "" : ",";
       $sFieldValues .= ":" . $sFieldRaw;
-      $aParam[":" . $sFieldRaw] = $oRow[$sField];
+			
+			$sInsertValue = $oRow[$sField];
+			if ($bEscapeValue) {
+				$aEscape = array(
+					"$" => "\\$",
+				);
+				$sInsertValue = str_replace(array_keys($aEscape), array_values($aEscape), $sInsertValue);
+			}
+      $aParam[":" . $sFieldRaw] = $sInsertValue;
     }
     $sSQL = "INSERT INTO " . self::parseSQLName($sTable) . " (" . $sFields . ") VALUES (" . $sFieldValues . ")";
-    
-    return $this->getXPDOExecute($sSQL, $aParam);
+    $xpdo = $this->getXPDO();
+		$sResultSQL = $xpdo->parseInsertOrUpdateBindings($sSQL, $aParam);
+    if ($bDebug) echo __METHOD__ . ": SQL: " . $sResultSQL . "<br/>\n";
+    //echo "sql: " . $sResultSQL;
+    $mResult = $xpdo->exec($sResultSQL);
+    if ($mResult===false) {
+      $aError = $xpdo->errorInfo();
+      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+    }
+    return $mResult;
   }
   /**
    * Execute sql
@@ -707,7 +739,7 @@ class FlexiModelUtil
     $bDebug = false;
     $xpdo = $this->getXPDO();
     $sResultSQL = $xpdo->parseBindings($sSQL, $aParam);
-    if ($bDebug) echo __METHOD__ . ": " . $sResultSQL . "<br/>\n";
+    if ($bDebug) echo __METHOD__ . ": SQL: " . $sResultSQL . "<br/>\n";
     //echo "sql: " . $sResultSQL;
     $mResult = $xpdo->exec($sResultSQL);
     if ($mResult===false) {
