@@ -1,6 +1,5 @@
 <?php
 
-
 function flexiURL($sURL, $bAjax = false)
 {
   if (!is_string($sURL)) throw new Exception("URL is not string: " . serialize ($sURL));

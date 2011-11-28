@@ -249,7 +249,7 @@ function dbExecute($sSQL, $aParam=array(), $pdo=null) {
   //echo "sql: " . $sResultSQL;
   $mResult = $pdo->exec($sResultSQL);
   if ($mResult===false) {
-    $aError = $xpdo->errorInfo();
+    $aError = $pdo->errorInfo();
     throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
   }
   return $mResult;
