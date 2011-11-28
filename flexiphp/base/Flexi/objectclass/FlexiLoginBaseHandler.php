@@ -24,7 +24,7 @@ abstract class FlexiLoginBaseHandler
 	 * @param array('key'=>'value')
 	 * @return boolean
 	 */
-  public function getUserType() {
+  public function getLoggedInUserType() {
     return self::$sUserType;
   }
 	abstract public function onLogin(& $asLoginId, & $asLoginPass, & $asConfig=array());
