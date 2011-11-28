@@ -486,7 +486,7 @@ class FlexiModelUtil
   
   public static function dbCleanName($mName) {
 		
-		return preg_replace("/[^a-zA-z0-9\s-_\+\&\.]*/s", "", $mName);
+		return preg_replace("/[^a-zA-z0-9\s-_\+\&\.\*]*/s", "", $mName);
 		//below deprecated
     $aClean = array(
       "-" => "",
@@ -513,13 +513,13 @@ class FlexiModelUtil
           $sAliasName = "";
           foreach($aSingleName as $sOneName) {
             $sAliasName .= empty($sAliasName) ? "": ".";
-            $sAliasName .= "`" . self::dbCleanName($sOneName) . "`";
+						//no delimiter for *
+            $sAliasName .= $sOneName == "*" ? $sOneName: "`" . self::dbCleanName($sOneName) . "`";
           }
         } else {
           //already covered and with `` or ()
           $sAliasName = $sName;
         }
-        
         $sResult .= $sAliasName;
       }
       return $sResult;
