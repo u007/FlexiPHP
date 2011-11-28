@@ -1,6 +1,10 @@
 <?php
 
 abstract class FlexiBaseService {
+  //use for back port for php5.2 or lower  
+  static $i = 0;
+  static $fl = null;
+
   protected $oActiveController = null;
 
   public function __construct(& $controller, $aParam=array()) {
@@ -61,8 +65,33 @@ abstract class FlexiBaseService {
 
   abstract public function init($aParam=array());
   
+  public static function getClassName() {
+    if (function_exists("get_called_class")) {
+      return get_called_class();
+    }
+    
+    return self::get_called_class();
+  }
+  
+  public static function get_called_class() {
+    $bt = debug_backtrace();
+    if( self::$fl == $bt[2]['file'].$bt[2]['line'] ) {
+      self::$i++;
+    } else {
+      self::$i = 0;
+      self::$fl = $bt[2]['file'].$bt[2]['line'];
+    }
+    $lines = file($bt[2]['file']);
+    preg_match_all(
+      '/([a-zA-Z0-9\_]+)::'.$bt[2]['function'].'/',
+      $lines[$bt[2]['line']-1],
+      $matches
+    );
+    return $matches[1][0];
+  }
+  
   public static function getInstance() {
-    $sClass = get_called_class();
+    $sClass = self::getClassName();
     $sName = substr($sClass, 0, -7);
     return FlexiService::getService($sName, $sClass);
   }
