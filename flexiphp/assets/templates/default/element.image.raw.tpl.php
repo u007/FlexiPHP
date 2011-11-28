@@ -15,8 +15,9 @@ if (empty($vars["#maximagewidth"])) {
 $sError = "";
 
 try {
-  $sURL = !empty($mValue) ? FlexiFileUtil::getMediaURL($mValue): "";
-  $sThumbURL = !empty($mValue) ? FlexiFileUtil::getMediaURL($mValue, null, null, array("maxwidth" => $vars["#maximagewidth"])): "";
+	$sPath = (empty($vars["#savepath"])? "": $vars["#savepath"] . "/") . $mValue;
+  $sURL = !empty($mValue) ? FlexiFileUtil::getMediaURL($sPath): "";
+  $sThumbURL = !empty($mValue) ? FlexiFileUtil::getMediaURL($sPath, null, null, array("maxwidth" => $vars["#maximagewidth"])): "";
 } catch (Exception $e) {
   $sError = $e->getMessage();
 }

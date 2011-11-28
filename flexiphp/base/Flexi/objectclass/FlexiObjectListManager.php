@@ -7,6 +7,7 @@ class FlexiObjectListManager extends FlexiLogManager {
   protected $oLastSavedRow = null;
   protected $sLastSaveType = "";
   protected $sTableAlias = "";
+  protected $aParam = array();
   
   public function __construct($aParam=null) {
     parent::__construct($aParam);
@@ -79,7 +80,7 @@ class FlexiObjectListManager extends FlexiLogManager {
       throw new Exception("Validation failed");
     }
     if ($bDebug) echo __METHOD__ . ": data: " . print_r($oRow,true) . "\n<br/>";
-
+    
     $oObject = $this->getObject();
     $aPrimary = $oObject->getPrimaryFields();
     $oStore = array();
@@ -88,7 +89,8 @@ class FlexiObjectListManager extends FlexiLogManager {
     
     foreach($oObject->aChild["field"] as $sField => $oField) {
       if ($bDebug) echo __METHOD__ . ": field: " . $sField . "\n<br/>";
-      if ($oField->type == "file-varchar" || $oField->type=="file-text") {
+      if ($oField->type == "file-varchar" || $oField->type=="file-text" ||
+          $oField->type=="image-varchar" || $oField->type=="image-text") {
         $this->doUploadField($oField, $oStore, $oRow, $oCurrentRow);
       } else {
         if (isset($oRow[$sField])) {
@@ -155,7 +157,10 @@ class FlexiObjectListManager extends FlexiLogManager {
     
     if ($oField->allowhtml) {
     } else {
-      $mValue = strip_tags($mValue);
+      //upload form return an array
+      if (! is_array($mValue)) {
+        $mValue = strip_tags($mValue);
+      }
     }
     return $mValue;
   }
@@ -169,9 +174,10 @@ class FlexiObjectListManager extends FlexiLogManager {
    */
   public function doUploadField(FlexiTableFieldObject $oField, & $oStore, & $oForm, $oCurrentRow) {
     $sName = $oField->getName();
-    $sSavePath = is_null($oField->savepath) ? "media/libraries": $oField->savepath;
-    $sSavePath = FlexiFileUtil::getFullUploadPath($sSavePath);
-
+    
+    $sSavePath = is_null($oField->savepath) ?
+      FlexiFileUtil::getFullUploadPath("media/libraries"): $oField->savepath;
+    
     $sNewFile = "media." . time();
     //var_dump($oRow[$sName]);
     $aStatus = FlexiFileUtil::storeUploadFile($oForm[$sName], $sSavePath, $sNewFile. ".");
@@ -182,9 +188,16 @@ class FlexiObjectListManager extends FlexiLogManager {
       if (! empty($oCurrentRow[$sName])) {
         unlink(FlexiFileUtil::getBasePath() . "/" . $oCurrentRow[$sName]);
       }
+      if ($oField->isUploadImage() && !empty($oField->maxwidth) || !empty($oField->maxheight)) {
+        FlexiImageUtil::imageResize($oField->maxwidth, $oField->maxheight, $aStatus["path"]);
+      }
+      //if savepath not declared, full path from root is saved
+      //  if declared, only save filename
+      //  "" => use base root path
+      $sFullRelativeBasePath = empty($oField->savepath) ? "": realpath($oField->savepath);
       //resize image based on max width, height
       //FlexiImageUtil::imageResize(345, 287, $aStatus["path"]);
-      $oStore[$sName]    = FlexiFileUtil::getRelativePathFromBase($aStatus["path"]);
+      $oStore[$sName]    = FlexiFileUtil::getRelativePathFrom($aStatus["path"], $sFullRelativeBasePath);
     } else {
       //No file
     }
@@ -262,6 +275,17 @@ class FlexiObjectListManager extends FlexiLogManager {
   public function doTableCountQuery(& $aCond=array(), & $aGroupBy=null) {
     //$sTable = $this->oObject->getTableName();
     return $this->doQueryCount("", $aCond, $aGroupBy);
+  }
+  
+  public function getParam($sName) {
+    if (isset($this->aParam[$sName])) {
+      return $this->aParam[$sName];
+    }
+    return null;
+  }
+  
+  public function setParams($aParam) {
+    $this->aParam = $aParam;
   }
   /**
    * Load a single row data of object
@@ -347,6 +371,7 @@ class FlexiObjectListManager extends FlexiLogManager {
   
   public function getNewObjectRow($aParam=array()) {
     $oRow = & $this->oObject->getNewRow();
+    $this->aParam = $aParam;
     $this->onNewRow($oRow, $aParam);
     return $oRow;
   }

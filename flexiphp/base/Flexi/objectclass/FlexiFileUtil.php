@@ -14,6 +14,7 @@ class FlexiFileUtil {
     } else {
       $sTempPath = $asPath;
     }
+    $sTempPath = str_replace("//", "/", $sTempPath);
     $sPath = realpath($sTempPath);
     if ($sPath===false) throw new Exception("File missing: " . $sTempPath);
     //echo "path: " . $sPath;
@@ -27,7 +28,18 @@ class FlexiFileUtil {
     $sURL = $oControl->url(array("p"=>$sFilePath), "GetFile", "media", true);
     return $sURL;
   }
-
+  
+  public static function getRelativePathFrom($asPath, $asBasePath="") {
+    $sPath = realpath($asPath);
+    if (empty($asBasePath)) {
+      $sBasePath = self::getBasePath() . "/";
+    } else {
+      $sBasePath = substr($asBasePath, -1) == "/" ? $asBasePath: $asBasePath . "/";
+    }
+    //echo "real path: " . $sPath . ", base: " . $sBasePath;
+    return str_replace($sBasePath, "", $sPath);
+  }
+  //deprecated soon
   public static function getRelativePathFromBase($asPath) {
     $sPath = realpath($asPath);
     $sBasePath = self::getBasePath();

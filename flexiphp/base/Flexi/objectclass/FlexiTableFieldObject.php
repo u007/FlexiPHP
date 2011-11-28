@@ -33,6 +33,8 @@ class FlexiTableFieldObject extends FlexiObject {
   protected $aCachedOption = array();
   
   protected $savepath = null;
+  protected $maxwidth = null;
+  protected $maxheight = null;
   
   public function __construct($sName) {
     parent::__construct($sName, "FlexiTableField");
@@ -231,6 +233,26 @@ class FlexiTableFieldObject extends FlexiObject {
     if ($name == "options") {
       $this->loadOptions();
     }
+  }
+  
+  public function isUploadFile() {
+    switch($this->type) {
+      case "file-varchar":
+      case "file-text":
+      case "image-varchar":
+      case "image-text":
+        return true;
+    }
+    return false;
+  }
+  
+  public function isUploadImage() {
+    switch($this->type) {
+      case "image-varchar":
+      case "image-text":
+        return true;
+    }
+    return false;
   }
 
   /**

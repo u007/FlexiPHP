@@ -548,7 +548,8 @@ class FlexiBaseViewManager {
       case "file-text":
         if (!empty($mValue)) {
           try {
-            $sURL = FlexiFileUtil::getMediaURL($mValue);
+            $sPath = (empty($oField->savepath)? "": $oField->savepath . "/") . $mValue;
+            $sURL = FlexiFileUtil::getMediaURL($sPath);
             $mValue = "<a href='" . $sURL . "' target='_blank'>Open</a>";
           } catch (Exception $e) {
             $mValue = $e->getMessage();
@@ -561,8 +562,10 @@ class FlexiBaseViewManager {
       case "image-text":
         if (!empty($mValue)) {
           try {
-            $sURL = FlexiFileUtil::getMediaURL($mValue);
-            $sThumbURL = FlexiFileUtil::getMediaURL($mValue, null, null, array("maxwidth" => $this->iMaxImageWidth));
+            $sPath = (empty($oField->savepath)? "": $oField->savepath . "/") . $mValue;
+            //echo "path: " . $sPath;
+            $sURL = FlexiFileUtil::getMediaURL($sPath);
+            $sThumbURL = FlexiFileUtil::getMediaURL($sPath, null, null, array("maxwidth" => $this->iMaxImageWidth));
             $mValue = "<a href='" . $sURL . "' target='_blank'>" . 
               "<img src='" . $sThumbURL . "'/>" . 
               "</a>";
@@ -787,11 +790,13 @@ class FlexiBaseViewManager {
       case "file-varchar":
       case "file-text":
         $aResult["#type"] = "file.raw";
+        $aResult["#savepath"] = $oField->savepath;
         break;
       case "image-varchar":
       case "image-text":
         $aResult["#type"] = "image.raw";
         $aResult["#maximagewidth"] = $this->iMaxImageWidth;
+        $aResult["#savepath"] = $oField->savepath;
         break;
       case "hidden":
         $aResult["#type"] = "hidden.raw";
