@@ -174,7 +174,7 @@ class FlexiObjectListManager extends FlexiLogManager {
    */
   public function doUploadField(FlexiTableFieldObject $oField, & $oStore, & $oForm, $oCurrentRow) {
     $sName = $oField->getName();
-    
+    if (!isset($oForm[$sName])) return;
     $sSavePath = is_null($oField->savepath) ?
       FlexiFileUtil::getFullUploadPath("media/libraries"): $oField->savepath;
     
