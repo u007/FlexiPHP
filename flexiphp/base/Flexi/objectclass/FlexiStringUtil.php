@@ -82,6 +82,21 @@ class FlexiStringUtil
     $aList[] = $sPass;
     return $sPass;
   }
+	
+	public static function createRandomAlphaNumeric($charcount = 6) {
+    static $aList = array();
+    $sPass = trim(self::_createRandomAlphaNumeric($charcount));
+    while(array_search($sPass, $aList) !== false) {
+      $sPass = trim(self::_createRandomAlphaNumeric($charcount));
+    }
+    $aList[] = $sPass;
+    return $sPass;
+  }
+	
+	public static function _createRandomAlphaNumeric($charcount = 6) {
+		$chars = "abcdefghijkmnopqrstuvwxyz023456789";
+		return self::createRandomChars($charcount, $chars);
+	}
 
 	public static function _createRandomPassword($charcount = 6)
 	{

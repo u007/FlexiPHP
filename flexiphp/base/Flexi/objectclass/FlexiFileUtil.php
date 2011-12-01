@@ -29,6 +29,11 @@ class FlexiFileUtil {
     return $sURL;
   }
   
+  public static function getFullPathFrom($asPath, $sRelativePath="") {
+    $sBasePath = empty($sRelativePath) ? self::getBasePath: $sRelativePath;
+    return $sBasePath . "/" . $asPath;
+  }
+  
   public static function getRelativePathFrom($asPath, $asBasePath="") {
     $sPath = realpath($asPath);
     if (empty($asBasePath)) {

@@ -307,19 +307,31 @@ class FlexiBaseViewManager {
       
       $sCond = "can" . $sFormType;
       if ($oField->$sCond == 1) {
+        $sCond = "input".$sFormType;
         //ensure form has the field
         switch($oField->type) {
           case "file-varchar":
           case "file-text":
           case "image-varchar":
           case "image-text":
-             $sCond = "input".$sFormType;
             //ensure this form field is updatable or insertable or is primary
             if (($sFormType=="update" && $oField->primary) ||
               in_array($oField->$sCond, array("edit","display","hidden"))
             ){
               $aValue = $_FILES[$sField];
               $oForm[$sName] = $aValue;
+            }
+            break;
+          case "multiimage-text":
+            if (($sFormType=="update" && $oField->primary) ||
+              in_array($oField->$sCond, array("edit","display","hidden"))
+            ){
+              for($c=1; $c <= $oField->uploadcount; $c++) {
+                $sField = $this->getFieldInputName($sName . "_" . $c);
+                //echo "field: " . $sField;
+                $aValue = $_FILES[$sField];
+                $oForm[$sName . "_" . $c] = $aValue;
+              }
             }
             break;
           default:
@@ -577,6 +589,30 @@ class FlexiBaseViewManager {
         $bAllowHTML = true;
         break;
       
+      case "multiimage-text":
+        if (!empty($mValue)) {
+          $mValue = "";
+          $aPath = explode($oField->uploadseparator, $oRow[$sName]);
+          $sBasePath = (empty($oField->savepath)? "": $oField->savepath . "/");
+          foreach($aPath as $sPath) {
+            $sPath = trim($sPath);
+            try {
+              if (! empty($sPath)) {
+                $sPath = $sBasePath . $sPath;
+                $sURL = FlexiFileUtil::getMediaURL($sPath);
+                $sThumbURL = FlexiFileUtil::getMediaURL($sPath, null, null, array("maxwidth" => $this->iMaxImageWidth));
+                  $mValue .= "<a href='" . $sURL . "' target='_blank'>" . 
+                    "<img src='" . $sThumbURL . "'/>" . 
+                    "</a>";
+              }
+            } catch (Exception $e) {
+              $mValue .= $e->getMessage();
+            }
+          }//foreach
+          $oField->allowtag = "a,img";
+        }
+        $bAllowHTML = true;
+        break;
       case "email":
         if (!empty($mValue)) {
           $oField->allowtag = "a";
@@ -797,6 +833,13 @@ class FlexiBaseViewManager {
         $aResult["#type"] = "image.raw";
         $aResult["#maximagewidth"] = $this->iMaxImageWidth;
         $aResult["#savepath"] = $oField->savepath;
+        break;
+      case "multiimage-text":
+        $aResult["#type"] = "multiimage.raw";
+        $aResult["#maximagewidth"] = $this->iMaxImageWidth;
+        $aResult["#savepath"] = $oField->savepath;
+        $aResult["#uploadcount"] = $oField->uploadcount;
+        $aResult["#uploadseparator"] = $oField->uploadseparator;
         break;
       case "hidden":
         $aResult["#type"] = "hidden.raw";

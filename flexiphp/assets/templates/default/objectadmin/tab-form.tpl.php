@@ -45,6 +45,7 @@
    "file-text"  => "File(Text)",
    "image-varchar"   => "Image",
    "image-text"  => "Image(Text)",
+   "multiimage-text" => "Multi-Image(Text)",
    "blob"       => "Blob",
    "bob-tiny"   => "Blob(Tiny)",
    "blob-medium"=> "Blob(Medium)",

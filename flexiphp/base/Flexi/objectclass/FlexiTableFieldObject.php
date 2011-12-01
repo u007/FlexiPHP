@@ -36,6 +36,9 @@ class FlexiTableFieldObject extends FlexiObject {
   protected $maxwidth = null;
   protected $maxheight = null;
   
+  public $uploadcount = 2;
+  public $uploadseparator = ","; 
+  
   public function __construct($sName) {
     parent::__construct($sName, "FlexiTableField");
     $this->label = $sName;
@@ -210,6 +213,9 @@ class FlexiTableFieldObject extends FlexiObject {
           case "image-text":
             $sDBType = "text";
             break;
+          case "multiimage-text":
+            $sDBType = "text";
+            break;
           case "hidden":
             break;
           default:
@@ -241,6 +247,7 @@ class FlexiTableFieldObject extends FlexiObject {
       case "file-text":
       case "image-varchar":
       case "image-text":
+      case "multiimage-text":
         return true;
     }
     return false;
@@ -250,6 +257,7 @@ class FlexiTableFieldObject extends FlexiObject {
     switch($this->type) {
       case "image-varchar":
       case "image-text":
+      case "multiimage-text":
         return true;
     }
     return false;
