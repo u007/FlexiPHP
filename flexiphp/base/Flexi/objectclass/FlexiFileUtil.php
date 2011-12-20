@@ -37,11 +37,14 @@ class FlexiFileUtil {
   
   public static function getRelativePathFrom($asPath, $asBasePath="") {
     $sPath = realpath($asPath);
+    $sPath = str_replace("\\", "/", $sPath);
     if (empty($asBasePath)) {
       $sBasePath = self::getBasePath() . "/";
     } else {
       $sBasePath = substr($asBasePath, -1) == "/" ? $asBasePath: $asBasePath . "/";
     }
+    //fix issue with mispath \\ with /
+    $sBasePath = str_replace("\\", "/", $sBasePath);
     //echo "real path: " . $sPath . ", base: " . $sBasePath;
     return str_replace($sBasePath, "", $sPath);
   }

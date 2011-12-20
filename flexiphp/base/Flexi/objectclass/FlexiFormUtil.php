@@ -86,7 +86,9 @@ class FlexiFormUtil {
       
       //replace photo if already exists
       if ($bReplace && !empty($sOldPath)) {
-        $sOldFile = substr($sOldPath,0,1) == "/" ? $sOldPath : FlexiFileUtil::getBasePath() . "/" . $sOldPath;
+        //fix windows path issue
+        $sOldFile = substr($sOldPath,0,1) == "/" || substr($sOldPath,1,2) == ":\\" ? 
+          $sOldPath : FlexiFileUtil::getBasePath() . "/" . $sOldPath;
         @unlink($sOldFile);
       }
       $aStatus = FlexiFileUtil::doUploadFile($sFieldName, $sSavePath, $sSaveName . ".");

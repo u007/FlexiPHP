@@ -102,19 +102,19 @@ class FlexiConfig
     //if ($aConfig["framework"] == "modx2") var_dump($aConfig["get"]);
 		self::$iStartTime     = $aConfig["starttime"];
 		self::$sPageTitle     = $aConfig["title"];
-		self::$sBaseDir       = $aConfig["basedir"];
-    self::$sRootDir       = $aConfig["rootdir"];
+		self::$sBaseDir       = empty($aConfig["basedir"]) ? "": str_replace("\\", "/", $aConfig["basedir"]);
+    self::$sRootDir       = empty($aConfig["rootdir"]) ? "": str_replace("\\", "/", $aConfig["rootdir"]);
     self::$sFlexiBaseURL  = @$aConfig["rooturl"];
     self::$sAssetsURL     = @$aConfig["assetsurl"];
-    self::$sAssetsDir     = @$aConfig["assetsdir"];
-    self::$sRepositoryDir = @$aConfig["repositorydir"];
+    self::$sAssetsDir     = empty($aConfig["assetsdir"]) ? "": str_replace("\\", "/", $aConfig["assetsdir"]);
+    self::$sRepositoryDir = empty($aConfig["repositorydir"]) ? "": str_replace("\\", "/", $aConfig["repositorydir"]);
     
 		self::$sBaseURL			= $aConfig["baseurl"];
 		self::$aModuleURL		= $aConfig["moduleurl"];
 		
 		self::$iLogLevel 		= $aConfig["loglevel"];
 		self::$sFramework 	= $aConfig["framework"];
-		self::$sTemplateDir = $aConfig["template"];
+		self::$sTemplateDir = empty($aConfig["template"]) ? "": str_replace("\\", "/", $aConfig["template"]);
 		
 		self::$aPost 				= $aConfig["post"];
 		self::$aGet 				= $aConfig["get"];
