@@ -804,6 +804,7 @@ class FlexiBaseViewManager {
       case "select-mediumint":
       case "select-enum":
       case "select-int":
+      case "select-char":
         $aResult["#type"] = "select.raw";
         $aResult["#options"] = $oField->getOptions();
         break;

@@ -34,6 +34,9 @@ class FlexiController
 	}
 
   public static function getCurrentController() {
+    if (is_null(self::$oActiveControl)) {
+      self::$oActiveControl = self::getControllerInstance("default", null, null);
+    }
     return self::$oActiveControl;
   }
 

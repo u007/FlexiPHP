@@ -1,11 +1,56 @@
 <?php
 /* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Form util to perform form related action
+ * @author James @ mercstudio
  */
-
 class FlexiFormUtil {
-
+	
+	
+	public static function getMaxUploadFileSize($maxuploadsize=null) {
+		$iMaxUpload = (int)$maxuploadsize;
+    if (empty($iMaxUpload)) {
+      if (FlexiConfig::$sFramework=="modx") {
+        global $modx;
+        $iMaxUpload = $modx->config["upload_maxsize"];
+      } else if (FlexiConfig::$sFramework=="modx2") {
+        global $modx;
+        $iMaxUpload = $modx->context->getOption('upload_maxsize',false);
+      } else {
+				$iMaxUpload = 1024*1024*10;//todo: use flexiconfig variable
+			}
+    }
+		return $iMaxUpload;
+	}
+	
+	public static function checkUploadImage($sFieldName, $maxuploadsize=null, $aExtension=array()) {
+		$aExtend = count($aExtension) <= 0? array("jpg","jpeg","pjpeg","pjpg","png"): $aExtension;
+		return self::checkUpload($sFieldName, $aExtend, $maxuploadsize);
+	}
+	/**
+	 * @param string $sFieldName
+	 * @param int $maxuploadsize
+	 * @return boolean true: uploaded, false: not uploaded
+	 * 	May throw Exception on error
+	*/
+	public static function checkUpload($sFieldName, $aExtension=array(), $maxuploadsize=null) {
+		$iMaxUpload = self::getMaxUploadFileSize($maxuploadsize);
+		if (FlexiFileUtil::getIsUploaded($sFieldName)) {
+      $iSize = FlexiFileUtil::getUploadedFileSize($sFieldName);
+      if ($iSize > $iMaxUpload) {
+        $sNotice = flexiT("File Upload exceed permitted size", "first") . ": " . $iSize . " / " . $iMaxUpload;
+        throw new FlexiException($sNotice, ERROR_FILESIZE);
+      }
+      $sExtension = strtolower(trim(FlexiFileUtil::getUploadedFileExtension($sFieldName)));
+      if (!in_array($sExtension, $aExtension)) {
+        $sNotice = flexiT("File type not permitted", "first") . ", " 
+                  . flexiT("you have uploaded") . ": " . $sExtension;
+        throw new FlexiException($sNotice, ERROR_FILETYPE);
+      }
+			return true;
+		}
+		return false; //no upload file
+	}
+	
   public static function processUploadPhoto($sFieldName, $sSavePath, $sSaveName, $iMaxWidth=null, $iMaxHeight=null, $aiMaxUpload=null, $bReplace=true, $sOldPath=null) {
     $aExtension = array("jpg","jpeg","pjpeg","pjpg","png");
     $result = self::processUpload($sFieldName, $sSavePath, $aExtension, $sSaveName, $aiMaxUpload, $bReplace, $sOldPath);
@@ -24,17 +69,8 @@ class FlexiFormUtil {
   }
   
   public static function processUpload($sFieldName, $sSavePath, $aExtension, $sSaveName, $aiMaxUpload=null, $bReplace=true, $sOldPath=null) {
-    $iMaxUpload = empty($aiMaxUpload) ? 1024*1024*10: $aiMaxUpload;
-    if (empty($aiMaxUpload)) {
-      if (FlexiConfig::$sFramework=="modx") {
-        global $modx;
-        $iMaxUpload = $modx->config["upload_maxsize"];
-      } else if (FlexiConfig::$sFramework=="modx2") {
-        global $modx;
-        $iMaxUpload = $modx->context->getOption('upload_maxsize',false);
-      }
-    }
-
+    $iMaxUpload = self::getMaxUploadFileSize($aiMaxUpload);
+		
     if (FlexiFileUtil::getIsUploaded($sFieldName)) {
       $iSize = FlexiFileUtil::getUploadedFileSize($sFieldName);
       if ($iSize > $iMaxUpload) {
@@ -50,7 +86,8 @@ class FlexiFormUtil {
       
       //replace photo if already exists
       if ($bReplace && !empty($sOldPath)) {
-        unlink(FlexiFileUtil::getBasePath() . "/" . $sOldPath);
+        $sOldFile = substr($sOldPath,0,1) == "/" ? $sOldPath : FlexiFileUtil::getBasePath() . "/" . $sOldPath;
+        @unlink($sOldFile);
       }
       $aStatus = FlexiFileUtil::doUploadFile($sFieldName, $sSavePath, $sSaveName . ".");
       //

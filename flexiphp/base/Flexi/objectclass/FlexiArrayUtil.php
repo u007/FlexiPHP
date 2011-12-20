@@ -3,6 +3,18 @@
 class FlexiArrayUtil
 {
 	
+  public static function clonePartialKey($aList, $aKey) {
+    $aResult = array();
+    foreach($aList as $oRow) {
+      $oNewRow = array();
+      foreach($aKey as $sKey) {
+        $oNewRow[$sKey] = $oRow[$sKey];
+      }
+      $aResult[] = $oNewRow;
+    }//foreach list
+    return $aResult;
+  }
+  
 	public static function cloneArray($aValue)
 	{
 		if (!is_array($aValue))

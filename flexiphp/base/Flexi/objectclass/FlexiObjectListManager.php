@@ -192,28 +192,30 @@ class FlexiObjectListManager extends FlexiLogManager {
       //var_dump($oForm);
       for($c = 1; $c <= $oField->uploadcount; $c++) {
         
-        $sNewFile = "media." . FlexiStringUtil::createRandomAlphaNumeric() . "_" . time();
-        $aStatus = FlexiFileUtil::storeUploadFile($oForm[$sName . "_". $c], $sSavePath, $sNewFile. ".");
-        $this->onGetUploadFileName($sSaveDir, $sNewFile);
-        
-        if ($aStatus["status"]) {
-          //replace photo if already exists
-          if (! empty($aCurrentFile[$c-1])) {
-            unlink(FlexiFileUtil::getFullPathFrom($aCurrentFile[$c-1], $sFullRelativeBasePath));
-          }
-          if ($oField->isUploadImage() && !empty($oField->maxwidth) || !empty($oField->maxheight)) {
-            FlexiImageUtil::imageResize($oField->maxwidth, $oField->maxheight, $aStatus["path"]);
-          }
-          //if savepath not declared, full path from root is saved
-          //  if declared, only save filename
-          //  "" => use base root path
+        if (isset($oForm[$sName . "_". $c])) {
+          $sNewFile = "media." . FlexiStringUtil::createRandomAlphaNumeric() . "_" . time();
+          $aStatus = FlexiFileUtil::storeUploadFile($oForm[$sName . "_". $c], $sSavePath, $sNewFile. ".");
+          $this->onGetUploadFileName($sSaveDir, $sNewFile);
           
-          //resize image based on max width, height
-          //FlexiImageUtil::imageResize(345, 287, $aStatus["path"]);
-          $aResultFile[$c-1] = FlexiFileUtil::getRelativePathFrom($aStatus["path"], $sFullRelativeBasePath);
-        } else {
-          //No file
-          $aResultFile[$c-1] = $aCurrentFile[$c-1] ;
+          if ($aStatus["status"]) {
+            //replace photo if already exists
+            if (! empty($aCurrentFile[$c-1])) {
+              unlink(FlexiFileUtil::getFullPathFrom($aCurrentFile[$c-1], $sFullRelativeBasePath));
+            }
+            if ($oField->isUploadImage() && !empty($oField->maxwidth) || !empty($oField->maxheight)) {
+              FlexiImageUtil::imageResize($oField->maxwidth, $oField->maxheight, $aStatus["path"]);
+            }
+            //if savepath not declared, full path from root is saved
+            //  if declared, only save filename
+            //  "" => use base root path
+            
+            //resize image based on max width, height
+            //FlexiImageUtil::imageResize(345, 287, $aStatus["path"]);
+            $aResultFile[$c-1] = FlexiFileUtil::getRelativePathFrom($aStatus["path"], $sFullRelativeBasePath);
+          } else {
+            //No file
+            $aResultFile[$c-1] = $aCurrentFile[$c-1] ;
+          }
         }
       }//for each file
       

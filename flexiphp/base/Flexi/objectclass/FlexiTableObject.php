@@ -79,10 +79,10 @@ class FlexiTableObject extends FlexiObject {
                 break;
               default:
                 //we need it!
-                throw new Exception("Field " . $oField->label . " is required");
+                throw new Exception("Field " . $oField->label . "(" . $this->getTableName() . ":" . $oField->getName() . ") is required");
             }
           } else if (strlen($oRow[$sField]."") < 1) {
-            throw new Exception("Field " . $oField->label . " is required");
+            throw new Exception("Field " . $oField->label . "(" . $this->getTableName() . ":" . $oField->getName() . ") is required");
           }
         }
 

@@ -9,6 +9,7 @@ class FlexiFileUtil {
   public static $aLocks = array();
 
   public static function getMediaURL($asPath, $sRole="", $sName="", $aParam = array()) {
+    if (empty($asPath)) return "";
     if ($asPath[0] != "/" && substr($asPath,0,3) != "c:\\") {
       $sTempPath = FlexiConfig::$sRootDir . "/" . $asPath;
     } else {
@@ -30,7 +31,7 @@ class FlexiFileUtil {
   }
   
   public static function getFullPathFrom($asPath, $sRelativePath="") {
-    $sBasePath = empty($sRelativePath) ? self::getBasePath: $sRelativePath;
+    $sBasePath = empty($sRelativePath) ? self::getBasePath(): $sRelativePath;
     return $sBasePath . "/" . $asPath;
   }
   
@@ -78,6 +79,7 @@ class FlexiFileUtil {
     return $sPath;
   }
   public static function getIsUploaded($sFormName) {
+    if (!isset($_FILES[$sFormName])) return false;
     $sTempFile = $_FILES[$sFormName]['tmp_name'];
     if (empty($sTempFile)) { return false; }
     //check for cracking
@@ -114,7 +116,7 @@ class FlexiFileUtil {
       $sNotice = flexiT("File Upload exceed permitted size", "first") . ": " . $iSize . " / " . $iMaxUploadSize;
       return array("status" => false, "msg" => $sNotice);
     }
-    $sExtension = strtolower(trim(FlexiFileUtil::getUploadedFileExtension("txtPhoto")));
+    $sExtension = strtolower(trim(FlexiFileUtil::getUploadedFileExtension($sFormName)));
     if (!empty($sAllowedExtension)) {
       $sAllowed = "";
       switch($sAllowedExtension) {

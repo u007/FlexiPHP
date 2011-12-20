@@ -237,7 +237,7 @@ function flexiGetClassPath($sClass) {
   
   //if (FlexiConfig::$sFramework == "modx2")
   //  echo "checking: " . FlexiConfig::$sBaseDir . "/../" . FlexiConfig::$sModulePath . "\r\n<br/>";
-//  if (FlexiConfig::$sFramework == "modx2")
+  //  if (FlexiConfig::$sFramework == "modx2")
   //echo "module path: " . FlexiConfig::$sModulePath . "\r\n<br/>";
   if (is_dir(FlexiConfig::$sModulePath))
 	{
