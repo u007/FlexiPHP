@@ -10,7 +10,7 @@ class FlexiFileUtil {
 
   public static function getMediaURL($asPath, $sRole="", $sName="", $aParam = array()) {
     if (empty($asPath)) return "";
-    if ($asPath[0] != "/" && substr($asPath,0,3) != "c:\\") {
+    if ($asPath[0] != "/" && substr($asPath,1,2) != ":\\") {
       $sTempPath = FlexiConfig::$sRootDir . "/" . $asPath;
     } else {
       $sTempPath = $asPath;
