@@ -161,8 +161,17 @@ class FlexiObjectListManager extends FlexiLogManager {
       //upload form return an array
       if (! is_array($mValue)) {
         $mValue = strip_tags($mValue);
+      } else {
+        for($c=0; $c < count($mValue); $c++) {
+          $mValue[$c] = strip_tags($mValue[$c]);
+        }
       }
     }
+    
+    if (!empty($mValue) && is_array($mValue)) {
+      $mValue = implode($oField->uploadseparator, $mValue);
+    }
+    
     return $mValue;
   }
 

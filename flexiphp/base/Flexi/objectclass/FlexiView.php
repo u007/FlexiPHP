@@ -184,11 +184,13 @@ class FlexiView extends FlexiBaseView
       
 			if (isset($aValue["#value"]) && !$bIsTextArea)
 			{
+				//echo $asName . ": using value";
 				$mValue = $aValue["#value"];
 				$aValue["#value"] = FlexiParser::parseHTMLInputValue($mValue);
 			}
 			if (isset($aValue["#default_value"]) && !$bIsTextArea)
 			{
+				//echo $asName . ": using default";
 				$mValue = $aValue["#default_value"];
 				$aValue["#default_value"] = FlexiParser::parseHTMLInputValue($mValue);
 			}

@@ -51,9 +51,28 @@ class FlexiTableFieldObject extends FlexiObject {
   public function getPHPDefaultValue() {
     $bDebug = false;
     if (!is_null($this->default) && strlen($this->default) != 0) {
-      $sScript = "return " . $this->default . ";";
+      $mValue = $this->default;
+      switch ($this->type) {
+        case "check-var":
+        case "check-varchar":
+        case "check-text":
+          $mValue = eval("return " . $mValue . ';');
+          $mValue = explode($this->uploadseparator, $mValue);
+          $sScript = "return unserialize('" . str_replace("'", "\\'", serialize($mValue)) . "');";
+          break;
+        default:
+          $sScript = "return " . $this->default . ";";
+      }
     } else {
-      $sScript = "return '';";
+      switch ($this->type) {
+        case "check-var":
+        case "check-varchar":
+        case "check-text":
+          $sScript = "return array();";
+          break;
+        default:
+          $sScript = "return '';";
+      }
     }
 
     if ($bDebug) echo "script: " . $sScript . "<br/>\n";
@@ -84,6 +103,17 @@ class FlexiTableFieldObject extends FlexiObject {
           case "email":
             $sDBType = "varchar";
             if (empty($sPrecision)) $sPrecision = "255";
+            break;
+          case "check-char":
+            $sDBType = "char";
+            if (empty($sPrecision)) $sPrecision = "1";
+            break;
+          case "check-varchar":
+            $sDBType = "varchar";
+            if (empty($sPrecision)) $sPrecision = "100";
+            break;
+          case "check-text":
+            $sDBType = "text";
             break;
           case "select-char":
             $sDBType = "char";
@@ -233,7 +263,8 @@ class FlexiTableFieldObject extends FlexiObject {
         break;
     } //switch field name
     
-
+    //if ($name == "type")
+    //  echo "field: " . $this->getName() . ": " . $this->dbtype . "<br/>\n";
     $this->$name = $value;
 
     if ($name == "options") {

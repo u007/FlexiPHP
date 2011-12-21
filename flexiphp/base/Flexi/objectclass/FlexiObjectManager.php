@@ -99,7 +99,21 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
                 //throw new Exception ("Unsupported select for type: " . $sDBType);
             }
             break;
-          
+          case "check-text":
+          case "check-varchar":
+          case "check-char":
+            switch($sDBType) {
+              case "text":
+              case "varchar":
+              case "char":
+                $sType = "check-" . $sDBType;
+                break;
+              default:
+                $sType = $sDefaultType;
+                $this->doLog("Field: " . $sFieldName . ",unsupported select for type: " . $sDBType . ", using: " . $sType);
+                //throw new Exception ("Unsupported select for type: " . $sDBType);
+            }
+            break;
           case "html":
           case "html-tiny":
           case "html-medium":

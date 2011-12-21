@@ -475,6 +475,7 @@ class FlexiBaseViewManager {
     //var_dump($oField->getName() . ": " . $this->oView->getVar("#maximagewidth"));
     $sOutput = ""; $bAddHidden = false;
     $oForm = null;
+    
     switch ($sFormInput) {
       case "edit":
         $oForm = $this->getFieldInput($oField, $oRow);
@@ -778,6 +779,7 @@ class FlexiBaseViewManager {
       "#insert"         => $oField->caninsert,
       "#update"         => $oField->canupdate,
     );
+    
     switch($oField->type) {
       case "string":
       case "int":
@@ -807,6 +809,13 @@ class FlexiBaseViewManager {
       case "select-char":
         $aResult["#type"] = "select.raw";
         $aResult["#options"] = $oField->getOptions();
+        break;
+      case "check-char":
+      case "check-varchar":
+      case "check-text":
+        $aResult["#type"] = "checkboxes.raw";
+        $aResult["#options"] = $oField->getOptions();
+        $aResult["#multiple"] = true;
         break;
       case "json":
         $aResult["#type"] = "textarea.raw";
@@ -885,8 +894,13 @@ class FlexiBaseViewManager {
           } else {
             $sValue = date("Y-m-d H:i:s", $sValue);
           }
+          breal;
+        case "check-char":
+        case "check-varchar":
+        case "check-text":
+          $sValue = empty($sValue) ? array(): explode($oField->uploadseparator, $sValue);
+          break;
       }//switch
-      
       $aResult["#value"] = $sValue;
     }
 
