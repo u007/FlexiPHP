@@ -79,6 +79,7 @@ abstract class FlexiRemoteClient {
 		$context = stream_context_create($opts);
     FlexiLogger::debug(__METHOD__, "Processing URL: " . $sURL);
     $sResult = file_get_contents($sURL, false, $context);
+		if ($sResult === false || empty($sResult)) throw new Exception("Remote returned empty or false");
 		$this->mResult = FlexiCryptUtil::b64Decrypt($sResult, $this->sRemoteKey);
     //echo "<hr/>";
     //var_dump($this->mResult);

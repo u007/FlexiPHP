@@ -58,7 +58,7 @@ abstract class FlexiRemoteServer {
       //throw new Exception("Token: " . $this->sServiceToken);
       //if ($this->sServiceMethod!="login") throw new Exception("Token: " . $this->sServiceToken);
       FlexiConfig::getLoginHandler()->doLoginByToken($this->sServiceToken);
-      if ($this->sServiceMethod!="login") throw new Exception("Logged in as: " . FlexiConfig::getLoginHandler()->getLoggedInUserId());
+      //if ($this->sServiceMethod!="login") throw new Exception("Logged in as: " . FlexiConfig::getLoginHandler()->getLoggedInUserId());
       FlexiLogger::debug(__METHOD__, "Logged in as: " . FlexiConfig::getLoginHandler()->getLoggedInUserId());
       $this->mRequestData   = array();
       
@@ -67,13 +67,12 @@ abstract class FlexiRemoteServer {
       }
       
       $mResult = FlexiController::getInstance()->runService($this->sServiceModule, $this->sServiceMethod, $this->mRequestData);
-      if ($this->sServiceMethod!="login") throw new Exception(print_r($mResult,true));
       unset($mResult["control"]);
       FlexiLogger::debug(__METHOD__, "Done service: " . $this->sServiceModule . "::" . $this->sServiceMethod);
       
       echo $this->returnResult($mResult);
     } catch (Exception $e) {
-      echo $this->returnResult(array("status" => false, "return" => $e, "msg" => $e->getMessage()));
+      echo $this->returnResult(array("status" => false, "return" => null, "msg" => $e->getMessage()));
     }
   }
 

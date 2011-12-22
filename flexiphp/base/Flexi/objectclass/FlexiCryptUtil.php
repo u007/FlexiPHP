@@ -40,6 +40,7 @@ class FlexiCryptUtil {
   }
 
   public static function decrypt($sData, $asKey=null) {
+    if (empty($sData)) throw new Exception("Empty data");
     $sKey = empty($asKey) ? FlexiConfig::$sEncryptionKey : $asKey;
 
     $blowfish = new Crypt_Blowfish($sKey);

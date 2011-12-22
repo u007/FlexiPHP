@@ -46,8 +46,11 @@ class FlexiBaseRemoteController extends FlexiBaseController {
     if (strtolower($asMethod) == "login") {
       return true;
     }
-
-    return parent::checkPermission($asMethod);
+    
+    if (! $this->permission($asMethod)) {
+      throw new Exception("Invalid permission: " . $asMethod);
+    }
+    return true;
   }
 
   
