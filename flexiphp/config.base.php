@@ -55,3 +55,5 @@ $aFlexiSetting = array_merge(array(
 	"logfile"		=> getcwd() . "/flexiphp.log",
 	"starttime" => microtime())
   , $aFlexiSetting);
+
+?>

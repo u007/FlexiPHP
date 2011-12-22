@@ -7,6 +7,7 @@ abstract class FlexiLoginBaseHandler
   
   protected $sLoggedInId = null;
   public static $sUserType = "";
+  public $sUserToken = "";
 
   public function __construct() {
     //restore session
@@ -150,7 +151,7 @@ abstract class FlexiLoginBaseHandler
             array(":token" => $sToken));
 
     if ($oToken != null && $oToken !== false) {
-      FlexiConfig::getLoginHandler()->forceLogin($oToken["userid"]);
+      $this->forceLogin($oToken["userid"]);
     } else {
       FlexiLogger::error(__METHOD__, "Invalid token: " . $sToken);
     }

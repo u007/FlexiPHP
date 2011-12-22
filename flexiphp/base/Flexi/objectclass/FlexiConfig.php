@@ -109,6 +109,7 @@ class FlexiConfig
     self::$sAssetsDir     = empty($aConfig["assetsdir"]) ? "": str_replace("\\", "/", $aConfig["assetsdir"]);
     self::$sRepositoryDir = empty($aConfig["repositorydir"]) ? "": str_replace("\\", "/", $aConfig["repositorydir"]);
     
+		//if (empty($aConfig["assetsdir"])) throw new Exception("empty assets dir!");
 		self::$sBaseURL			= $aConfig["baseurl"];
 		self::$aModuleURL		= $aConfig["moduleurl"];
 		

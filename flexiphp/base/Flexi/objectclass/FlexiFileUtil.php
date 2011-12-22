@@ -173,6 +173,7 @@ class FlexiFileUtil {
     $sTempFile = $oFile["tmp_name"];
     if (empty($oFile["tmp_name"])) return false;
     $aInfo = pathinfo($oFile["name"]);
+    if (is_string($oFile)) throw new Exception("Invalid file: " . $oFile);
     $sNewFile = $sMovePath . "/" . $sPrefix .
       ($iRandomNameSize > 0 ? FlexiStringUtil::createRandomPassword($iRandomNameSize): "") . $sSuffix .
       "." . $aInfo["extension"];

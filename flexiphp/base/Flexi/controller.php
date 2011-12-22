@@ -213,13 +213,13 @@ class FlexiController
 		$sMethodName = str_replace(" ", "", $sMethodName);
 
     FlexiLogger::debug(__METHOD__, "module: " . $sModule . ", method: " . $sMethod);
-
+		//throw new Exception("About to run: " . $sModule . ", method: " . $sMethodName);
     $oClass = & self::getControllerInstance($sModule, null, $sMethodName, null);
     self::$oActiveControl = $oClass;
 
     if (is_null($oClass)) {
-      FlexiLogger::error(__METHOD__, "module: " . $sModule . " does not exists");
-      return array("status" => false, "return" => false, "control" => & $oClass);
+			FlexiLogger::error(__METHOD__, "module: " . $sModule . " does not exists");
+			throw new Exception("Unknown module: " . $sModule);
     }
     FlexiLogger::debug(__METHOD__, "calling runService");
     //render view as "body" var
@@ -342,12 +342,12 @@ class FlexiController
       FlexiLogger::debug(__METHOD__, "Checking sModulePath: " . $sModulePath);
 			require_once($sModulePath . "/controller.php");
 		}
-
     
 		if (! class_exists($sClassName))
 		{
       //echo "not found: " . $sClassName;
 			FlexiLogger::error(__METHOD__, "module: " . $sControl . " is missing.");
+			throw new Exception("No such class: " . $sClassName);
 			return;
 		}
 		

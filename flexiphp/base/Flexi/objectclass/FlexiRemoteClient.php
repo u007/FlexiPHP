@@ -1,8 +1,4 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  * Description of FlexiRemoteClient
@@ -12,17 +8,25 @@
 abstract class FlexiRemoteClient {
   protected $mData = array();
   public $mResult = null;
-  protected $sRemoteClientName = "FlexiRemoteClient v1.1";
+  protected $sRemoteClientName = "FlexiRemoteClient v1.2";
   protected $sRemoteKey = "";
   protected $sToken = "";
+  protected $sRemoteURL = "";
   
   public function __construct($sRemoteKey) {
     $this->sRemoteKey = $sRemoteKey;
     $this->init($sRemoteKey);
   }
-
+  
+  public function setRemoteURL($sURL) {
+    $this->sRemoteURL = $sURL;
+  }
+  
   function init($sRemoteKey) {}
 
+  public function getToken() {
+    return $this->sToken;
+  }
   public function setContent($mData) {
     $this->mData = $mData;
   }
@@ -37,7 +41,14 @@ abstract class FlexiRemoteClient {
 			"Cache-Control:	max-age=0"
 		), $this->_getHeaders());
   }
-
+  
+  public function doRequest($module="", $method="", $params=array()) {
+    $this->mData = $params;
+    if (empty($this->sRemoteURL)) throw new Exception("Remote url not set");
+    $this->callRemote($this->sRemoteURL, $module, $method);
+    return $this->getResult();
+  }
+  
   /**
    * Do call to remote url
    * @param String $asURL
@@ -66,10 +77,8 @@ abstract class FlexiRemoteClient {
     FlexiLogger::debug(__METHOD__, "Content: " . $opts["http"]["content"]);
 
 		$context = stream_context_create($opts);
-    FlexiLogger::debug(__METHOD__, "Processing URL: " . $asURL);
-
+    FlexiLogger::debug(__METHOD__, "Processing URL: " . $sURL);
     $sResult = file_get_contents($sURL, false, $context);
-    //var_dump($sResult);
 		$this->mResult = FlexiCryptUtil::b64Decrypt($sResult, $this->sRemoteKey);
     //echo "<hr/>";
     //var_dump($this->mResult);
@@ -126,18 +135,24 @@ abstract class FlexiRemoteClient {
   abstract public function getContent($sData);
   
   
-  public function doGetLoginToken($sUserName, $sPassword, $asURL = "http://localhost/remote.php") {
+  public function doGetLoginToken($sUserName, $sPassword, $sModule="FlexiRemoteServer", $sMethod="login") {
+    $sURL = empty($asURL) ? $this->sRemoteURL: $asURL;
     $this->setContent(array("username" => $sUserName, "password" => $sPassword));
-    $bResult = $this->callRemote($asURL, "FlexiRemoteServer", "login");
-
+    $bResult = $this->callRemote($sURL, $sModule, $sMethod);
+		
     if ($bResult) {
       $mResult = $this->getResultReturned();
+      //echo "returned result: " ;
       //var_dump($mResult);
       if ($mResult->login_status) {
         $this->sToken = $mResult->token;
         return $this->sToken;
       }
-    }
+    } else {
+      $oResult = $this->getResult();
+			throw new Exception("Login failed: " . $sUserName . ", err: " . $oResult->msg);
+      
+		}
     return null;
   }
   
