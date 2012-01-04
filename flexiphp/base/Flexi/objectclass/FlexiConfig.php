@@ -96,6 +96,8 @@ class FlexiConfig
   public static $bRequireEmailVerification = true;
 
   public static $sEncryptionKey = "ABFGEBD2231DEDA";
+	
+	public static $bEnableDoctrine = false;
 
 	public static function configure($aConfig)
 	{
@@ -132,6 +134,8 @@ class FlexiConfig
 		self::$sDBPass 			= $aConfig["dbpass"];
 		self::$sDBName 			= $aConfig["dbname"];
 		self::$sDBPrefix 		= $aConfig["dbprefix"];
+		
+		self::$bEnableDoctrine = $aConfig["doctrine"];
 
     self::$sTinyMCEExternalLink = empty($aConfg["tinymce.externallink"]) ?
       "": $aConfg["tinymce.externallink"];
@@ -231,10 +235,12 @@ class FlexiConfig
 		
 		self::$sLogFile			= $aConfig["logfile"];
 		//setting delimiter to true for queries
-		Doctrine_Manager::getInstance()->setAttribute(Doctrine_Core::ATTR_QUOTE_IDENTIFIER, true);
-		Doctrine_Manager::getInstance()->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
-		Doctrine_Manager::getInstance()->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
-		Doctrine_Manager::getInstance()->setAttribute(Doctrine_Core::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
+		if (self::$bEnableDoctrine) {
+			Doctrine_Manager::getInstance()->setAttribute(Doctrine_Core::ATTR_QUOTE_IDENTIFIER, true);
+			Doctrine_Manager::getInstance()->setAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE, true);
+			Doctrine_Manager::getInstance()->setAttribute(Doctrine_Core::ATTR_AUTOLOAD_TABLE_CLASSES, true);
+			Doctrine_Manager::getInstance()->setAttribute(Doctrine_Core::ATTR_VALIDATE, Doctrine::VALIDATE_ALL);
+		}
 	}
   
   public static function getBaseURLDir() {
@@ -270,7 +276,8 @@ class FlexiConfig
 	{
 		//initialise db
 		FlexiModelUtil::getInstance()->setDBSetting(self::$sDBType, self::$sDBHost, self::$iDBPort, self::$sDBUser, self::$sDBPass, self::$sDBName);
-		if (!empty(self::$sDBType)) { FlexiModelUtil::getDBInstance(); }
+		
+		if (self::$bEnableDoctrine && !empty(self::$sDBType)) { FlexiModelUtil::getDBInstance(); }
     
     if (is_null(self::$oLoginHandler)) {
       if (! empty(self::$sLoginHandlerClass)) {
