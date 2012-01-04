@@ -58,6 +58,7 @@ abstract class FlexiRemoteClient {
    */
   public function callRemote($asURL = "http://localhost", $asModule = "", $asMethod = "") {
     FlexiLogger::debug(__METHOD__, "Calling URL: " . $asURL);
+    $bDebug = false;
     $sURL = $asURL;
     $sModule = empty($asModule) ? "default" : $asModule;
     $sMethod = empty($asMethod) ? "default" : $asMethod;
@@ -82,10 +83,16 @@ abstract class FlexiRemoteClient {
 		if ($sResult === false || empty($sResult)) throw new Exception("Remote returned empty or false");
 		$this->mResult = FlexiCryptUtil::b64Decrypt($sResult, $this->sRemoteKey);
     //echo "<hr/>";
+    if ($bDebug) echo "\r\n" . __METHOD__ . ": " . $sResult . "<Br/>\r\n";
     //var_dump($this->mResult);
+    if (empty($this->mResult)) {
+      throw new Exception("Unknown result: " . $sResult);
+    }
     
     FlexiLogger::debug(__METHOD__, "Result raw: " . $this->mResult);
     $aResult = $this->getResult();
+    if (empty($aResult)) throw new Exception("Remote returned malformed result: " . $sResult);
+    
     return $aResult->status;
   }
 
@@ -144,15 +151,15 @@ abstract class FlexiRemoteClient {
     if ($bResult) {
       $mResult = $this->getResultReturned();
       //echo "returned result: " ;
-      //var_dump($mResult);
       if ($mResult->login_status) {
         $this->sToken = $mResult->token;
         return $this->sToken;
+      } else {
+        throw new Exception("Login failed");
       }
     } else {
       $oResult = $this->getResult();
 			throw new Exception("Login failed: " . $sUserName . ", err: " . $oResult->msg);
-      
 		}
     return null;
   }

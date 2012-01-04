@@ -28,7 +28,7 @@ abstract class FlexiRemoteServer {
   }
 
   public function returnResult($mData) {
-    FlexiLogger::info(__METHOD__, "Returning: " . serialize($mData));
+    //FlexiLogger::info(__METHOD__, "Returning: " . serialize($mData));
     $result = $this->_returnResult($mData);
 
     if (empty($result)) { return $result; }
