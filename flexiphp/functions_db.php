@@ -80,15 +80,15 @@ function dbCleanValue($sValue) {
  * @return String
  */
 function dbCleanName($sName) {
-  $sResult = preg_replace("/[^0-9a-zA-Z\-\+\_\s]/", "", $sName);
-  return $sResult;
+  return FlexiModelUtil::dbCleanName($sName);
 }
 
-function parseDBSQLCond(& $sValue) {
+function parseDBSQLCond(& $sValue, $pdo=null) {
+  $pdo = is_null($pdo) ? FlexiModelUtil::getInstance()->getXPDO(): $pdo;
   if (is_array($sValue)) {
     throw new Exception("Value cannot be an array, " . print_r($sValue,true));
   }
-  $sValue = "'" . dbCleanValue($sValue) . "'";
+  return $pdo->quote($sValue);
 }
 
 /**
@@ -161,32 +161,43 @@ function dbInsert($oRow, $sTable, $idField="id", $pdo=null) {
   }
   $sSQL = "INSERT INTO " . FlexiModelUtil::parseSQLName($sTable) . " (" . $sFields . ") VALUES (" . $sFieldValues . ")";
   
-  return dbExecute($sSQL, $aParam, $pdo);
+  $oStatement = $pdo->prepare($sSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+  $mResult = $oStatement->execute($aParam);
+  if ($mResult===false) {
+    $aError = $oStatement->errorInfo();
+    throw new Exception("Query failed: " . $aError[2] . ":".$sSQL);
+  }
+  return $mResult;
 }
 
-function dbUpdate($oRow, $sTable, $aPrimary="id", $pdo=null) {
+function dbUpdate($oRow, $sTable, $mPrimary="id", $pdo=null) {
   $pdo = is_null($pdo) ? FlexiModelUtil::getInstance()->getXPDO(): $pdo;
   
   $bDebug =  false;
   $aPrimary = !is_array($mPrimary) ? explode(",", $mPrimary."") : $mPrimary;
-
+  
   if ($bDebug) echo __METHOD__ . ": primary:" . print_r($aPrimary,true) . "\n<br/>";
-  $aWhere = self::parseSQLCondKeyValue($aPrimary, $oRow);
+  $aWhere = FlexiModelUtil::parseSQLCondKeyValue($aPrimary, $oRow);
   $sFields = "";
   $aParam = $aWhere["param"];
   foreach($oRow as $sField => $sValue) {
-    $sFieldRaw = self::dbCleanName($sField);
-    $sFieldName = self::parseSQLName($sField);
+    $sFieldRaw = dbCleanName($sField);
+    $sFieldName = FlexiModelUtil::parseSQLName($sField);
     $sFields .= empty($sFields) ? "" : ",";
     $sFields .= $sFieldName . "=:_update_" . $sFieldRaw;
     $aParam[":_update_" . $sFieldRaw] = $oRow[$sField];
   }
-  $sSQL = "UPDATE " . self::parseSQLName($sTable) . " SET " . $sFields . " WHERE " . $aWhere["sql"];
+  $sSQL = "UPDATE " . FlexiModelUtil::parseSQLName($sTable) . " SET " . $sFields . " WHERE " . $aWhere["sql"];
   if ($bDebug) echo __METHOD__ . ": sql:" . $sSQL . "\n<br/>";
   if ($bDebug) echo __METHOD__ . ": param:" . print_r($aWhere["param"],true) . "\n<br/>";
-  dbExecute($sSQL, $aParam, $pdo);
-  //if no exception, shall return true
-  return true;
+  
+  $oStatement = $pdo->prepare($sSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+  $mResult = $oStatement->execute($aParam);
+  if ($mResult===false) {
+    $aError = $oStatement->errorInfo();
+    throw new Exception("Query failed: " . $aError[2] . ":".$sSQL);
+  }
+  return $mResult;
 }
 
 function dbFetchAll($sSQL, $aParam=array(), $pdo=null) {

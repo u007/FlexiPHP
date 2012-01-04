@@ -51,7 +51,7 @@ $aFlexiSetting = array_merge(array(
 	"dbpass" 		=> "",
 	"dbname" 		=> "",
 	"dbprefix" 	=> "",
-	
+	"doctrine"	=> false,
 	"logfile"		=> getcwd() . "/flexiphp.log",
 	"starttime" => microtime())
   , $aFlexiSetting);

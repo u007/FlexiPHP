@@ -2,7 +2,9 @@
 global $aFlexiSetting;
 
 require_once($aFlexiSetting["basedir"] . "/lib/Doctrine/Doctrine.php");
-spl_autoload_register(array('Doctrine', 'autoload'));
+if ($aFlexiSetting["doctrine"]) {
+	spl_autoload_register(array('Doctrine', 'autoload'));
+}
 require_once($aFlexiSetting["basedir"] ."/base/Flexi/objectclass/FlexiConfig.php");
 FlexiConfig::configure($aFlexiSetting);
 
@@ -17,7 +19,6 @@ $oFlexiModelUtil = FlexiModelUtil::getInstance();
 $oFlexiModelUtil->setDBSetting(FlexiConfig::$sDBType, FlexiConfig::$sDBHost,
 	FlexiConfig::$iDBPort, FlexiConfig::$sDBUser, FlexiConfig::$sDBPass, FlexiConfig::$sDBName);
 FlexiConfig::finalize();
-
 //initialising main controller
 $oFlexi = FlexiController::getInstance();
 

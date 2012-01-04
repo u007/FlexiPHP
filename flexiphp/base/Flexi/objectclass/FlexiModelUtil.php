@@ -298,7 +298,9 @@ class FlexiModelUtil
 	
 	public function getNewDB()
 	{
+    throw new Exception("Deprecated db");
 		$aSetting = $this->aSetting;
+    
 		//$manager = Doctrine_Manager::getInstance();
 		//var_dump($this->sDSN);
 		return Doctrine_Manager::connection($this->sDSN);
@@ -485,20 +487,7 @@ class FlexiModelUtil
   }
   
   public static function dbCleanName($mName) {
-		
 		return preg_replace("/[^a-zA-z0-9\s-_\+\&\.\*]*/s", "", $mName);
-		//below deprecated
-    $aClean = array(
-      "-" => "",
-      "#" => "",
-      "'" => "",
-      ";" => "",
-      "/g" => ""
-    );
-    $sResult = str_replace(array_keys($aClean), array_values($aClean), $mName);
-    $sResult = self::dbCleanValue($sResult);
-
-    return $sResult;
   }
 
   public static function parseSQLName($mName) {
@@ -679,13 +668,11 @@ class FlexiModelUtil
     if ($bDebug) echo __METHOD__ . ": param:" . print_r($aParam,true) . "\n<br/>";
 		
 		$xpdo = $this->getXPDO();
-		$sResultSQL = $xpdo->parseInsertOrUpdateBindings($sSQL, $aParam);
-    if ($bDebug) echo __METHOD__ . ": SQL: " . $sResultSQL . "<br/>\n";
-    //echo "sql: " . $sResultSQL;
-    $mResult = $xpdo->exec($sResultSQL);
+    $oStatement = $xpdo->prepare($sSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+    $mResult = $oStatement->execute($aParam);
     if ($mResult===false) {
-      $aError = $xpdo->errorInfo();
-      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+      $aError = $oStatement->errorInfo();
+      throw new Exception("Query failed: " . $aError[2] . ":".$sSQL);
     }
     return $mResult;
   }
@@ -709,23 +696,15 @@ class FlexiModelUtil
       $sFieldValues .= ":" . $sFieldRaw;
 			
 			$sInsertValue = $oRow[$sField];
-			if ($bEscapeValue) {
-				$aEscape = array(
-					"$" => "\\$",
-				);
-				$sInsertValue = str_replace(array_keys($aEscape), array_values($aEscape), $sInsertValue);
-			}
       $aParam[":" . $sFieldRaw] = $sInsertValue;
     }
     $sSQL = "INSERT INTO " . self::parseSQLName($sTable) . " (" . $sFields . ") VALUES (" . $sFieldValues . ")";
     $xpdo = $this->getXPDO();
-		$sResultSQL = $xpdo->parseInsertOrUpdateBindings($sSQL, $aParam);
-    if ($bDebug) echo __METHOD__ . ": SQL: " . $sResultSQL . "<br/>\n";
-    //echo "sql: " . $sResultSQL;
-    $mResult = $xpdo->exec($sResultSQL);
+    $oStatement = $xpdo->prepare($sSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+    $mResult = $oStatement->execute($aParam);
     if ($mResult===false) {
-      $aError = $xpdo->errorInfo();
-      throw new Exception("Query failed: " . $aError[2] . ":".$sResultSQL);
+      $aError = $oStatement->errorInfo();
+      throw new Exception("Query failed: " . $aError[2] . ":".$sSQL);
     }
     return $mResult;
   }
@@ -1063,14 +1042,15 @@ class FlexiModelUtil
     switch(FlexiConfig::$sDBType) {
       case "mysql":
         if (is_array($mValue)) {
+          $xpdo = self::getInstance()->getXPDO();
           $aResult = array();
           foreach($mValue as $sValue) {
-            $aResult[] = "'" . self::getSQLRaw($sValue) . "'";
+            $aResult[] = $xpdo->quote(self::getSQLRaw($sValue));
           }
           return implode(",", $aResult);
         }
         //is not array
-        return "'" . self::getSQLRaw($mValue) . "'";
+        return $xpdo->quote(self::getSQLRaw($mValue));
     }
     return $mValue;
   }
@@ -1078,8 +1058,9 @@ class FlexiModelUtil
   public static function getSQLRaw($sValue) {
     switch(FlexiConfig::$sDBType) {
       case "mysql":
-        return self::dbCleanValue($sValue);
-
+        return $sValue;//return as it is
+        //return self::dbCleanValue($sValue);
+        break;
     }
     return $sValue;
   }
