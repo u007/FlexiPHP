@@ -231,30 +231,51 @@ class FlexiObjectListManager extends FlexiLogManager {
       $oStore[$sName] = implode($oField->uploadseparator, $aResultFile);
       
     } else {
-      
-      if (!isset($oForm[$sName])) return;
-      $sNewFile = "media." . FlexiStringUtil::createRandomAlphaNumeric() . "_" . time();
-      //var_dump($oRow[$sName]);
-      $aStatus = FlexiFileUtil::storeUploadFile($oForm[$sName], $sSavePath, $sNewFile. ".");
-      $this->onGetUploadFileName($sSaveDir, $sNewFile);
-      
-      if ($aStatus["status"]) {
-        //replace photo if already exists
-        if (! empty($oCurrentRow[$sName])) {
-          unlink(FlexiFileUtil::getBasePath() . "/" . $oCurrentRow[$sName]);
+      //single file upload
+      if (! isset($oForm[$sName])) return;
+      //isupload form, presume
+      if (is_array($oForm[$sName])) {
+        $sNewFile = "media." . FlexiStringUtil::createRandomAlphaNumeric() . "_" . time();
+        //var_dump($oRow[$sName]);
+        $aStatus = FlexiFileUtil::storeUploadFile($oForm[$sName], $sSavePath, $sNewFile. ".");
+        $this->onGetUploadFileName($sSaveDir, $sNewFile);
+
+        if ($aStatus["status"]) {
+          //replace photo if already exists
+          if (! empty($oCurrentRow[$sName])) {
+            $sOldPath = FlexiFileUtil::getRelativePathFrom($oCurrentRow[$sName], $sFullRelativeBasePath);
+            unlink($sOldPath);
+          }
+          if ($oField->isUploadImage() && !empty($oField->maxwidth) || !empty($oField->maxheight)) {
+            FlexiImageUtil::imageResize($oField->maxwidth, $oField->maxheight, $aStatus["path"]);
+          }
+          //if savepath not declared, full path from root is saved
+          //  if declared, only save filename
+          //  "" => use base root path
+          //resize image based on max width, height
+          //FlexiImageUtil::imageResize(345, 287, $aStatus["path"]);
+          $oStore[$sName]    = FlexiFileUtil::getRelativePathFrom($aStatus["path"], $sFullRelativeBasePath);
+        } else {
+          //No file
         }
-        if ($oField->isUploadImage() && !empty($oField->maxwidth) || !empty($oField->maxheight)) {
-          FlexiImageUtil::imageResize($oField->maxwidth, $oField->maxheight, $aStatus["path"]);
+      } else if (is_string($oForm[$sName])) {
+        //could be manually saved or from old path
+        $sNewFile = $oForm[$sName];
+        //delete old file if different from new file
+        if (! empty($oCurrentRow[$sName]) && !empty($sNewFile)) {
+          $sOldPath = FlexiFileUtil::getFullPathFrom($oCurrentRow[$sName], $sFullRelativeBasePath);
+          $sNewPath = FlexiFileUtil::getFullPathFrom($sNewFile, $sFullRelativeBasePath);
+          
+          $sOldPathReal = realpath($sOldPath);
+          if (!empty($sOldPathReal) && $sOldPathReal != realpath($sNewPath)) {
+            unlink($sOldPathReal);
+          }
         }
-        //if savepath not declared, full path from root is saved
-        //  if declared, only save filename
-        //  "" => use base root path
-        //resize image based on max width, height
-        //FlexiImageUtil::imageResize(345, 287, $aStatus["path"]);
-        $oStore[$sName]    = FlexiFileUtil::getRelativePathFrom($aStatus["path"], $sFullRelativeBasePath);
+        $oStore[$sName]    = FlexiFileUtil::getRelativePathFrom($sNewFile, $sFullRelativeBasePath);
       } else {
-        //No file
-      }
+        throw new Exception("Invalid upload value: " . $oForm[$sName]);
+      }//else error
+      
     }//if single file
   }
   //overide to replace save dir and file name
