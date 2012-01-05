@@ -151,7 +151,9 @@ abstract class FlexiLoginBaseHandler
             array(":token" => $sToken));
 
     if ($oToken != null && $oToken !== false) {
-      $this->forceLogin($oToken["userid"]);
+      if (! $this->forceLogin($oToken["userid"])) {
+        throw new Exception("Unable to force login: " . $oToken["userid"]);
+      }
     } else {
       FlexiLogger::error(__METHOD__, "Invalid token: " . $sToken);
     }
@@ -164,12 +166,21 @@ abstract class FlexiLoginBaseHandler
 
     if ($asUserId == FlexiConfig::$sAdminUserId && $asPassword == FlexiConfig::$sAdminPassword) {
       FlexiController::getInstance()->setSession("flexi.userid", FlexiConfig::$iAdminId);
-      $this->sLoggedInId = FlexiConfig::$iAdminId;
-
-      $this->forceLogin(FlexiConfig::$iAdminId);
+      $this->doForceLogin(FlexiConfig::$iAdminId);
       return true;
     }
     return false;
+  }
+  /**
+   * Use this to ensure token is used instead of bypassed by forcelogin by token
+   * @param mixed $asUserId
+   * @return bool 
+   */
+  public function doForceLogin($asUserId) {
+    if (! $this->forceLogin($asUserId)) {
+      throw new Exception("Unable to force login: " . $asUserId);
+    }
+    return true;
   }
 
   public function isFlexiAdminLoggedIn() {

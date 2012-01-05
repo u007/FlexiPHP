@@ -165,7 +165,7 @@ function dbInsert($oRow, $sTable, $idField="id", $pdo=null) {
   $mResult = $oStatement->execute($aParam);
   if ($mResult===false) {
     $aError = $oStatement->errorInfo();
-    throw new Exception("Query failed: " . $aError[2] . ":".$sSQL);
+    throw new Exception("Query failed: " . $aError[2] . ":".$sSQL . ":" . print_r($aParam,true));
   }
   return $mResult;
 }
@@ -195,7 +195,7 @@ function dbUpdate($oRow, $sTable, $mPrimary="id", $pdo=null) {
   $mResult = $oStatement->execute($aParam);
   if ($mResult===false) {
     $aError = $oStatement->errorInfo();
-    throw new Exception("Query failed: " . $aError[2] . ":".$sSQL);
+    throw new Exception("Query failed: " . $aError[2] . ":".$sSQL . ":" . print_r($aParam,true));
   }
   return $mResult;
 }
