@@ -1,5 +1,22 @@
 <?php
 
+function flexiSetHelper($sName, $sClass) {
+	if (empty($sName) || empty($sClass)) throw new Exception("Invalid name / class");
+	FlexiConfig::$aHelperClass[$sName] = $sClass;
+}
+
+function flexiGetHelper($sName, $bNew=false) {
+	static $aHelper = array();
+	if (! isset($aHelper[$sName]) || $bNew) {
+		$sClass = $sName;
+		if (isset(FlexiConfig::$aHelperClass[$sName])) {
+			$sClass = FlexiConfig::$aHelperClass[$sName];
+		}
+		$aHelper[$sName] = new $sClass;
+	}
+	return $aHelper[$sName];
+}
+
 function flexiURL($sURL, $bAjax = false)
 {
   if (!is_string($sURL)) throw new Exception("URL is not string: " . serialize ($sURL));

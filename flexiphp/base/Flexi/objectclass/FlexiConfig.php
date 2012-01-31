@@ -98,6 +98,8 @@ class FlexiConfig
   public static $sEncryptionKey = "ABFGEBD2231DEDA";
 	
 	public static $bEnableDoctrine = false;
+	
+	public static $aHelperClass = array();
 
 	public static function configure($aConfig)
 	{
