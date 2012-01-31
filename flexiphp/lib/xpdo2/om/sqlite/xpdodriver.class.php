@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2006-2010 by  Jason Coward <xpdo@opengeek.com>
+ * Copyright 2010-2012 by MODX, LLC.
  *
  * This file is part of xPDO.
  *
@@ -41,6 +41,9 @@ require_once (dirname(dirname(__FILE__)) . '/xpdodriver.class.php');
  * @subpackage om.sqlite
  */
 class xPDODriver_sqlite extends xPDODriver {
+    public $quoteChar = "'";
+    public $escapeOpenChar = '"';
+    public $escapeCloseChar = '"';
     public $_currentTimestamps= array(
         "CURRENT_TIMESTAMP"
     );
@@ -54,9 +57,9 @@ class xPDODriver_sqlite extends xPDODriver {
     /**
      * Get a sqlite xPDODriver instance.
      *
-     * @param object $xpdo A reference to a specific xPDO instance.
+     * @param xPDO &$xpdo A reference to a specific xPDO instance.
      */
-    function __construct(& $xpdo) {
+    function __construct(xPDO &$xpdo) {
         parent :: __construct($xpdo);
         $this->dbtypes['integer']= array('/INT/i');
         $this->dbtypes['string']= array('/CHAR/i','/CLOB/i','/TEXT/i', '/ENUM/i');

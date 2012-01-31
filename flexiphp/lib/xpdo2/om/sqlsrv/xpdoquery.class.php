@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2006-2010 by  Jason Coward <xpdo@opengeek.com>
+ * Copyright 2010-2012 by MODX, LLC.
  *
  * This file is part of xPDO.
  *
@@ -44,7 +44,7 @@ class xPDOQuery_sqlsrv extends xPDOQuery {
         $result= array ();
         $pk= $this->xpdo->getPK($this->_class);
         $pktype= $this->xpdo->getPKType($this->_class);
-        $fieldMeta= $this->xpdo->getFieldMeta($this->_class);
+        $fieldMeta= $this->xpdo->getFieldMeta($this->_class, true);
         $command= strtoupper($this->query['command']);
         $alias= $command == 'SELECT' ? $this->_class : $this->xpdo->getTableName($this->_class, false);
         $alias= trim($alias, $this->xpdo->_escapeCharOpen . $this->xpdo->_escapeCharClose);
@@ -240,7 +240,9 @@ class xPDOQuery_sqlsrv extends xPDOQuery {
             }
             $sql.= ' ';
         }
-        $sql.= 'FROM ';
+        if ($command != 'UPDATE') {
+            $sql.= 'FROM ';
+        }
         $tables= array ();
         foreach ($this->query['from']['tables'] as $table) {
             if ($command != 'SELECT') {
@@ -258,6 +260,24 @@ class xPDOQuery_sqlsrv extends xPDOQuery {
                     $sql.= $this->buildConditionalClause($join['conditions']);
                     $sql.= ' ';
                 }
+            }
+        }
+        if ($command == 'UPDATE') {
+            if (!empty($this->query['set'])) {
+                reset($this->query['set']);
+                $clauses = array();
+                while (list($setKey, $setVal) = each($this->query['set'])) {
+                    $value = $setVal['value'];
+                    $type = $setVal['type'];
+                    if ($value !== null && in_array($type, array(PDO::PARAM_INT, PDO::PARAM_STR))) {
+                        $value = $this->xpdo->quote($value, $type);
+                    }
+                    $clauses[] = $this->xpdo->escape($setKey) . ' = ' . $value;
+                }
+                if (!empty($clauses)) {
+                    $sql.= 'SET ' . implode(', ', $clauses);
+                }
+                unset($clauses);
             }
         }
         if (!empty ($this->query['where'])) {

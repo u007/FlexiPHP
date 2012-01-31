@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2006, 2007, 2008, 2009, 2010 by Jason Coward <xpdo@opengeek.com>
+ * Copyright 2010-2012 by MODX, LLC.
  *
  * This file is part of xPDO.
  *
@@ -114,7 +114,7 @@ class xPDOZip {
                     }
                 }
             } elseif (is_file($source)) {
-                $file = basename($file);
+                $file = basename($source);
                 if ($this->_archive->addFile($source, $target . $file)) {
                     $results[$target . $file] = "Successfully packed {$target}{$file} from {$source}";
                 } else {
