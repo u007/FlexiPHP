@@ -28,6 +28,15 @@ class FlexiMailer {
 
     $this->setFrom(FlexiConfig::$sSupportEmail);
 	}
+  
+  public function setCharset($charset = "utf-8") {
+    $this->oMailer->CharSet = $charset;
+  }
+  
+  public function AddEmbeddedImage($file, $cidname, $name="") {
+    $sName = empty($name) ? basename($file): $name;
+    return $this->oMailer->AddEmbeddedImage($file, $cidname, $sName);
+  }
 
   public function reset() {
     $this->resetRecipient();
@@ -45,16 +54,46 @@ class FlexiMailer {
     $this->oMailer->SetFrom($sEmail, $sName);
   }
 
-  public function addRecipient($sEmail, $sName = "") {
-    $this->oMailer->AddAddress($sEmail, $sName);
+  public function addRecipient($email, $name = "") {
+    $aEmail = explode(",", $email);
+    $aName = explode(",", $name);
+    
+    for($c = 0; $c < count($aEmail); $c++) {
+      $sEmail = $aEmail[$c];
+      if (isset($aName[$c])) {
+        $this->oMailer->AddAddress($sEmail, $aName[$c]);
+      } else {
+        $this->oMailer->AddAddress($sEmail);
+      }
+    }
   }
 
-  public function addCC($sEmail, $sName = "") {
-    $this->oMailer->AddCC($sEmail, $sName);
+  public function addCC($email, $name = "") {
+    $aEmail = explode(",", $email);
+    $aName = explode(",", $name);
+    
+    for($c = 0; $c < count($aEmail); $c++) {
+      $sEmail = $aEmail[$c];
+      if (isset($aName[$c])) {
+        $this->oMailer->AddCC($sEmail, $aName[$c]);
+      } else {
+        $this->oMailer->AddCC($sEmail);
+      }
+    }
   }
   
-  public function addBCC($sEmail, $sName = "") {
-    $this->oMailer->AddBCC($sEmail, $sName);
+  public function addBCC($email, $name = "") {
+    $aEmail = explode(",", $email);
+    $aName = explode(",", $name);
+    
+    for($c = 0; $c < count($aEmail); $c++) {
+      $sEmail = $aEmail[$c];
+      if (isset($aName[$c])) {
+        $this->oMailer->AddBCC($sEmail, $aName[$c]);
+      } else {
+        $this->oMailer->AddBCC($sEmail);
+      }
+    }
   }
 
   public function setReplyTo($sEmail, $sName="") {
@@ -98,7 +137,7 @@ class FlexiMailer {
       $mail->IsHTML(true); // send as HTML
     }
 
-    $mail->Send();
+    return $mail->Send();
     //echo $e->errorMessage();
 	}
 	/**
