@@ -124,6 +124,7 @@ class FlexiObjectListManager extends FlexiLogManager {
   }
 
   public function _storeObjectRow($oRow, $sType) {
+    $bDebug = false;
     $oObject = $this->getObject();
     $sTable = $oObject->getTableName();
     
@@ -132,9 +133,11 @@ class FlexiObjectListManager extends FlexiLogManager {
     $this->sLastSaveType = $sType;
     switch($sType) {
       case "insert":
+        if ($bDebug) echo __METHOD__ . ": Insert " . $sTable . ": " . print_r($oRow,true) . "<Br/>\n";
         return FlexiModelUtil::getInstance()->insertXPDO($sTable, $oRow, $aPrimary);
         break;
       case "update":
+        if ($bDebug) echo __METHOD__ . ": Update " . $sTable . ": " . print_r($oRow,true) . "<Br/>\n";
         return FlexiModelUtil::getInstance()->updateXPDO($sTable, $oRow, $aPrimary);
         break;
       default:
