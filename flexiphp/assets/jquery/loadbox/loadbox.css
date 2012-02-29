@@ -1,0 +1,9 @@
+
+.loading, .loading.black {
+	background: url("fb-black.gif") center center no-repeat;
+}
+
+.loading.white {
+	background: url("fb-white.gif") center center no-repeat;
+}
+

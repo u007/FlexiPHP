@@ -1,0 +1,7 @@
+
+.tooltip {
+	background: url("white_big.png") repeat scroll 0 0 transparent;
+	color: #000000;
+	display: none;
+	padding: 25px;
+}
