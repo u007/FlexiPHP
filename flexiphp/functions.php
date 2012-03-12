@@ -406,14 +406,15 @@ function flexiDirListGetDirInfo($sPath, $bCached = true) {
   return $aList[$sPath];
 }
 
-function hex2bin($hexdata) {
-  $bindata="";
+if (! function_exists("hex2bin")) {
+	function hex2bin($hexdata) {
+		$bindata="";
+		for ($i=0;$i<strlen($hexdata);$i+=2) {
+			$bindata.=chr(hexdec(substr($hexdata,$i,2)));
+		}
 
-  for ($i=0;$i<strlen($hexdata);$i+=2) {
-    $bindata.=chr(hexdec(substr($hexdata,$i,2)));
-  }
-
-  return $bindata;
+		return $bindata;
+	}
 }
 
 if (! function_exists("http_parse_headers")) {
