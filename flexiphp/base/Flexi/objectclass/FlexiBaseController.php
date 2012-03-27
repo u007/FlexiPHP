@@ -245,10 +245,11 @@ abstract class FlexiBaseController
    * @return boolean
    */
   public function runControl($asMethod, $asModule = null) {
-    //echo "Caling: " .$asModule . ", view: " . $this->sRenderViewName;
+    //echo "Caling: " .$asMethod . " of " . $asModule . ", view: " . $this->sRenderViewName;
     $bResult = $this->_runControl($asMethod, $asModule, $this->sRenderViewName);
     //disable view for this caller
-    $this->setRenderViewName("");
+    //$this->setRenderViewName("");
+    $this->setViewName("");
     return $bResult;
   }
 
@@ -326,6 +327,7 @@ abstract class FlexiBaseController
 
 		$this->setViewName($asMethod);
     //Flexilogger::info(__METHOD__, "Setting Render view var name: " . $asRenderViewName);
+    //echo "setting render view: " . $asRenderViewName . "<Br/>\n";
     $this->setRenderViewName($asRenderViewName);
     
     //Flexilogger::info(__METHOD__, "Checking permission: " . $asMethod);
@@ -364,10 +366,15 @@ abstract class FlexiBaseController
 		if (is_null($bReturn)) { throw new FlexiException("No return after for: " . $sModuleName . "::" . $sMethod, ERROR_RETURNVALUE); }
 		$this->afterControl($asMethod, $bReturn);
     
+    //echo "getting view var: " . $asRenderViewName . "<Br/>\n";
     if (!empty($this->sRenderViewName)) {
-      //echo "viewvarname: " . $this->sRenderViewName;
       //Flexilogger::info(__METHOD__, "Rendering View: " . $this->sRenderViewName . ":" . $this->sViewName . " method:" . $asMethod);
-      $this->oView->addVar($this->sRenderViewName, $this->renderView());
+      //echo __METHOD__ . "Rendering View: " . $this->sRenderViewName . ", tpl: " . $this->sViewName . ", method:" . $asMethod . "<br/>\n";
+      //only render if view name exists
+      if (! empty($this->sViewName)) {
+        $this->oView->addVar($this->sRenderViewName, $this->renderView());
+      }
+      
     } else {
       Flexilogger::debug(__METHOD__, "No view to render: " . $this->sRenderViewName);
     }
@@ -777,7 +784,6 @@ abstract class FlexiBaseController
         //FlexiController::appendOutput("is render layout: " . $this->sLayoutTemplate);
         FlexiController::appendOutput($this->oView->render($this->sLayoutTemplate, null, $this->sModulePath));
       } else {
-        //echo "ouput: " . $this->sLayoutTemplate . " from: " . $this->sModulePath;
         echo $this->oView->render($this->sLayoutTemplate, null, $this->sModulePath);
       }
 		}
