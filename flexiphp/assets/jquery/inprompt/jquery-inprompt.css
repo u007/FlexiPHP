@@ -1,0 +1,27 @@
+
+
+div.jqinprompt button.defaultbutton {
+    background-color: #BF5E26;
+}
+
+div.jqinpromptbuttons {
+  text-align: right;
+}
+
+div.jqinpromptbuttons button {
+    margin: 0 1px;
+}
+
+div.jqinprompt button {
+    background-color: #2F6073;
+    border: 1px solid #F4F4F4;
+    color: #FFFFFF;
+    font-weight: bold;
+    margin: 0 2px;
+    padding: 3px 3px;
+}
+
+div.jqinprompt h3 {
+  font-size: 12px;
+  margin: 0;
+}
