@@ -100,7 +100,7 @@ class Crypt_Blowfish_PHP extends Crypt_Blowfish
      */
     function _init()
     {
-        require_once 'Crypt/Blowfish/DefaultKey.php';
+        require_once dirname(__FILE__) . '/DefaultKey.php';
         $defaults = new Crypt_Blowfish_DefaultKey();
         $this->_P = $defaults->P;
         $this->_S = $defaults->S;
