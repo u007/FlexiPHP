@@ -20,6 +20,8 @@ Select zendmodel_grt.py
 (restart workbench to have it working)
 
 Create or reverse engineer your existing database.
+Save your workbench model .mwb file into a directory.
+Copy "templates" directory into the same directory as .mwb (as directory).
 Look into ERR diagram model.
 Plugins > Utilities > Generate Zend Models
 
