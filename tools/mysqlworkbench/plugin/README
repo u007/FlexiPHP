@@ -1,0 +1,30 @@
+--------------------
+Project: FlexiPHP > Tools > MySQLWorkbench Plugin > Zend Generator
+--------------------
+Version: 1.0
+Released: Aug 14, 2012
+Since: Aug 14, 2012
+Author: James Tan <james@mercstudio.com>
+
+A flexible Zend Framework CRUD generator based on template.
+You my customize your template based on your own model framework
+
+Requires:
+Python 2.6 or above
+Mako template for python
+
+Installation:
+In MySQL Workbench:
+Scripting > Install Plugin/Module
+Select zendmodel_grt.py
+(restart workbench to have it working)
+
+Create or reverse engineer your existing database.
+Look into ERR diagram model.
+Plugins > Utilities > Generate Zend Models
+
+
+Enjoy ;)
+
+Official Documentation:
+[TODO]
