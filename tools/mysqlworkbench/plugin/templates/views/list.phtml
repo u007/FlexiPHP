@@ -1,0 +1,62 @@
+<?php
+
+
+$sController = Zend_Controller_Front::getInstance()->getRequest()->getControllerName();
+
+$sAddURL = $this->moduleUrl(
+  array('controller' => $sController,'action' => 'save'), 'default', true);
+$sDelURL = $this->moduleUrl(
+  array('controller' => $sController,'action' => 'delete'), 'default', true);
+
+
+$aLinkURLParam = array('controller' => $sController,'action' => 'save');
+$aParam = Zend_Controller_Front::getInstance()->getRequest()->getParams();
+$aParam["action"] = "operation";
+unset($aParam["operation"]);
+
+?>
+<?=$this->layout()->render("core/admin-list-toolbar"); ?>
+<form id="<?=$this->wrapperid?>_tableform" method="POST" action="<?=$this->moduleUrl($aParam);?>">
+  <input type="hidden" name="operation" value="" />
+<table id="<?=$this->wrapperid?>_table" width="100%" cellspacing="0" cellpadding="0" class="sTable2">
+    <thead>
+    <th width="40"><input type="checkbox" onClick="toogleCheckAll(this, '#<?=$this->wrapperid?>_table')"/></th>
+    <th width="">Name</th>
+% for col in aFields:
+<%
+sFormField = col.name.title()
+%>
+<th>
+${sFormField}
+</th>
+% endfor
+    <th></th>
+    </thead>
+    <tbody>
+  <?php
+  $cnt = 0;
+  foreach ($this->entries as $entry):
+    //var_dump($entry->toValueObject());
+    % for col in aPrimary:
+    $aLinkURLParam["${col}"] = (int)$entry->${col};
+    % endfor
+    $sLinkURL = $this->moduleUrl($aLinkURLParam, "default", true);
+    ?>
+    <tr class="<?= (($cnt+=1) % 2 == 0 ) ? "even" : "" ?>">
+      <td><input type="checkbox" name="check[<?=$cnt?>]" value="<?=$entry->id?>"/></td>
+% for col in aFields:
+<%
+sFormField = col.name.title()
+%>
+<td>
+<?php echo $this->escape($entry->${col.name}) ?>
+</td>
+% endfor
+      <td><button class="edit" type="button" onClick="<?=$this->wrapperid?>DoEdit(<?=$entry->id?>)"></button></td>
+    </tr>
+    <? endforeach; ?>
+    </tbody>
+  </table>
+  <?=$this->layout()->render("core/paging") ?>
+</form>
+<?=$this->layout()->render("core/admin-list-footer") ?>

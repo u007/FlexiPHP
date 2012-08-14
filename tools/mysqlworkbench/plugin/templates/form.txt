@@ -1,0 +1,53 @@
+<%page enable_loop="True"/><?php
+
+class Default_Form_Edu_${classname} extends EntStudio_Form {
+	protected $aModelMap = array(
+	% for col in aFields:
+		<%
+		sFormField = col.name.title()
+		%>"txt${sFormField}" => "${col.name}"
+		% if loop.index < len(aFields)-1: 
+		, 
+		% endif
+	% endfor
+	);
+	
+	public function init() {
+		$sFormType = $this->sFormType;
+		$this->setMethod('post');
+		$this->setAttrib('class', 'form_default form_${tablename}');
+		$this->setAttrib('id', 'form_${tablename}');
+		
+		$iSize = 30;
+		
+	% for col in aFields:
+	<%
+	sFormField = col.name.title()
+	%>
+		$this->addElement('text', 'txt${sFormField}', array(
+			'label' => '${sFormField}',
+			'required' => false,
+			'filters' => array('StringTrim'),
+			'validators' => array(
+				array('validator' => 'StringLength')
+			)
+		));
+	% endfor
+		
+		// Add the submit button
+		$this->addElement("button", "btnSubmit", array(
+			"ignore" => true,
+			"decorators" => array("ViewHelper"),
+			"attribs" => array("class" => "first"),
+			"type" => "submit",
+			"label" => "Save",
+		));
+		
+		$this->addElement("button", "btnCancel", array(
+			"ignore" => true, "decorators" => array("ViewHelper"),
+			"type" => "button",
+			"label" => "Cancel",
+		));
+  }
+}
+

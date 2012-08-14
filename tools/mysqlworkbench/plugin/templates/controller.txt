@@ -1,0 +1,111 @@
+<%page enable_loop="True"/><?php
+
+class Admin_${classname}Controller extends Admin_MemberBaseController {
+
+  public function init() {
+    parent::init();
+    $this->setConfig("content_title", "${classname}");
+    //set unique wrapperid
+    $this->setupWrapper("${classname}_");
+    //$layout = $this->_helper->layout(); or $this->_helper->getHelper('Layout')->getLayoutInstance();
+    //Zend_Layout::getMvcInstance(); from anywhere
+  }
+
+  public function preDispatch() {
+    parent::preDispatch();
+    EntStudio_Core::setConfig("sidebar_active", "lesson");
+    $view = $this->view;
+  }
+  
+  public function listAction() {
+    $mapper = EntStudio_Core::getModelMapper("Edu_${classname}");
+    $iDefaultRecordsPerPage = 20;
+    $iPage = $this->getRequestConfig("page", 1);
+    $iLimit = $this->getRequestConfig("limit", $iDefaultRecordsPerPage);
+    $aOrder = $this->getRequestOrderBy(array("id asc"));
+    $iOffset = $iLimit * ($iPage - 1);
+    
+    //pagintor not view? inside setuppaging
+    $aFilter = array(
+      //array("condition" => "status=1", "value" => "")
+    );
+    
+    $mapper->setupQuery($aFilter, $aOrder, $iLimit, $iOffset);
+    $pager = $mapper->setupPaging($iLimit, $iPage);
+
+    $this->view->entries = $mapper->getAllRows();
+    // set page number from request
+
+    $this->view->paginator = $pager;
+  }
+  
+  public function deleteAction() {
+    $request = $this->getRequest();
+    
+    $aCheck = $request->getParam("check");
+    try {
+      
+      if (count($aCheck) < 1) throw new Exception("Please select record(s) to delete");
+      $mapper = EntStudio_Core::getModelMapper("Edu_${classname}");
+      foreach($aCheck as $sIndex => $iId) {
+        $mapper->delete($iId);
+      }
+      $this->addNotice("Record(s) has been deleted");
+      return $this->_forward('list');
+    } catch (Exception $e) {
+      $this->view->error = $e;
+    }
+  }
+  
+  public function saveAction() {
+    $request = $this->getRequest();
+    //resolve to Application_Form_Category class
+    $form = EntStudio_Core::getForm("Edu_${classname}");
+    //$this->_getParam(key);
+    $iId = $request->getParam("id");
+    
+    try {
+      $mapper = EntStudio_Core::getModelMapper("Edu_${classname}");
+      $record = EntStudio_Core::getModel("Edu_${classname}");
+			  
+      if (!empty($iId)) {
+        $form->setFormType("update");
+        $record = $mapper->getObjectById($iId);
+        //var_dump($record->toValueObject());
+        if (empty($record->id)) {
+          throw new Exception("Invalid id: " . $iId);
+        }
+        $form->populateDataFromModel($record, array());
+        $form->getElement("txtId")->setValue($iId);
+      } else {
+        $form->setFormType("insert");
+        $record = EntStudio_Core::getModel("Edu_${classname}");
+      }
+      
+      $oAdmin = EntStudio_Session::getUser("admin");
+      $this->view->form = $form;
+			
+      if ($this->getRequest()->isPost()) {
+        $iId = $form->getValue("txtId");
+        if (!empty($iId))
+          $form->setFormType("update");
+        
+        if ($form->isValid($request->getPost())) {
+          //replace with form value;
+          
+          $record->populateDataFromForm($form);
+          $mapper->save($record);
+          
+          $this->addNotice("Record has been saved", "success");
+          $this->_forward("saved");
+        }
+      }
+      
+    } catch (Exception $e) {
+      $this->addNotice($e->getMessage(), "error");
+      $this->view->error = $e;
+    }
+  }
+
+}
+

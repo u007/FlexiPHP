@@ -33,6 +33,8 @@ def doGenerateZendModel(model):
 		if os.path.exists(sPath + "/output/forms") is False:
 			os.makedirs(sPath + "/output/forms")
 		
+		
+
 		for table in schema.tables:
 			
 			aPrimary = []
@@ -45,8 +47,17 @@ def doGenerateZendModel(model):
 			sTableName = table.name
 			sClassName = sTableName.title()
 			sClassName = sClassName.replace(" ", "")
+			sControllerPath = sPath + "/output/controllers/" + sClassName
+			sViewPath = sPath + "/output/views/" + sClassName.lower()
 			
 			print "Setting table: " + sTableName
+			
+			if os.path.exists(sControllerPath) is False:
+				os.makedirs(sControllerPath)
+			
+			if os.path.exists(sViewPath) is False:
+				os.makedirs(sViewPath)
+			
 			sField = ""
 			for col in table.columns:
 				sField += "" if sField == "" else ","
@@ -78,5 +89,38 @@ def doGenerateZendModel(model):
 			f = open(sPath + "/output/forms/" + sClassName + ".php", 'w')
 			f.write(sOutput)
 			f.close()
+			
+			mycontroller = Template(filename=sImportDir+"controller.txt")
+			sOutput = mycontroller.render(classname=sClassName, tablename=sTableName, primary=sPrimary, 
+				aFields=table.columns, fields=sField, aPrimary=aPrimary)
+			f = open(sControllerPath + "/" + sClassName + "Controller.php", 'w')
+			f.write(sOutput)
+			f.close()
+			
+			myview = Template(filename=sImportDir+"views/home.phtml")
+			sOutput = myview.render(classname=sClassName, tablename=sTableName, primary=sPrimary, 
+				aFields=table.columns, fields=sField, aPrimary=aPrimary)
+			f = open(sViewPath + "/home.phtml", 'w')
+			f.write(sOutput)
+			f.close()
+			myview = Template(filename=sImportDir+"views/list.phtml")
+			sOutput = myview.render(classname=sClassName, tablename=sTableName, primary=sPrimary, 
+				aFields=table.columns, fields=sField, aPrimary=aPrimary)
+			f = open(sViewPath + "/list.phtml", 'w')
+			f.write(sOutput)
+			f.close()
+			myview = Template(filename=sImportDir+"views/save.phtml")
+			sOutput = myview.render(classname=sClassName, tablename=sTableName, primary=sPrimary, 
+				aFields=table.columns, fields=sField, aPrimary=aPrimary)
+			f = open(sViewPath + "/save.phtml", 'w')
+			f.write(sOutput)
+			f.close()
+			myview = Template(filename=sImportDir+"views/saved.phtml")
+			sOutput = myview.render(classname=sClassName, tablename=sTableName, primary=sPrimary, 
+				aFields=table.columns, fields=sField, aPrimary=aPrimary)
+			f = open(sViewPath + "/saved.phtml", 'w')
+			f.write(sOutput)
+			f.close()
+
 			
 	return 0

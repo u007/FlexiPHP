@@ -1,0 +1,16 @@
+<?php
+$aSaveURLParam = Zend_Controller_Front::getInstance()->getRequest()->getParams();
+$aSaveURLParam["action"] = "save";
+$aSaveURLParam["_wrapid"] = $this->wrapperid;
+$aSaveURLParam["_ajax"] = 1;
+?>
+<?=$this->layout()->render("core/admin-home"); ?>
+<script type="text/javascript">
+//custom id
+function <?=$this->wrapperid?>DoEdit(id) {
+  var config = <?=json_encode($aSaveURLParam)?>;
+  config.id=id;
+  var sURL = zendURL(config);
+  openAjaxTarget("#<?=$this->wrapperid?>wrapper", sURL);
+}
+</script>

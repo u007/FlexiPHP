@@ -1,0 +1,10 @@
+<?php
+
+class Default_Model_DbTable_Edu_${classname} extends EntStudio_Db_Table_Abstract
+{
+  protected $_name = '${tablename}';
+  protected $_primary = array(${primary});
+  protected $_registryname = "DBAdapter_default";
+  
+}
+

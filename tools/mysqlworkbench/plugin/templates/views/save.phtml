@@ -1,0 +1,53 @@
+<?php
+
+$sFormId = $this->wrapperid . "_saveform";
+$this->form->setAttrib("id", $sFormId);
+$this->form->setFormIsAjax(EntStudio_Core::getConfig("is_ajax"));
+
+
+$this->form->getElement("btnCancel")->setAttrib("onClick", $this->wrapperid . "DoList()");
+
+?>
+<style>
+#<?=$this->wrapperid?>_saveform.form_default label {
+  width: 120px;
+}
+
+#<?=$this->wrapperid?>_saveform.form_default button.first {
+  margin-left: 140px;
+}
+</style>
+<?=$this->layout()->render("ajax-notification"); ?>
+<div id="<?=$this->wrapperid?>_tabs" class="tabs vertical">
+  <ul>
+    <li><a href="#<?=$this->wrapperid?>_tabs-1">Form</a></li>
+  </ul>
+  <div id="<?=$this->wrapperid?>_tabs-1">
+    <h4><?=  ucfirst($this->form->sFormType) ?></h4>
+    <?
+    //only if no error
+    $this->form->setAction($this->url());
+    echo $this->form;
+   ?>
+  </div>
+  <? if ($this->form->sFormType=="update") { ?>
+  <div id="<?=$this->wrapperid?>_tabs-2">
+    
+  </div>
+  <? } ?>
+</div><!-- tabs -->
+
+
+<div class="clear"></div>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+  jQuery("#<?=$this->wrapperid?>_tabs" ).tabs();
+
+  jQuery("#<?=$sFormId?>").ajaxForm({
+    target: "#<?=$this->wrapperid?>wrapper"
+  });
+  
+});
+
+  
+</script>
