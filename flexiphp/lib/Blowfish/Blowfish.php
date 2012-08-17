@@ -21,6 +21,7 @@
 /**
  * Required PEAR package(s)
  */
+require_once 'PEAR.php';
 
 /**
  * Engine choice constants
@@ -138,7 +139,7 @@ class Crypt_Blowfish
     function Crypt_Blowfish($key)
     {
         $this->_crypt =& Crypt_Blowfish::factory('ecb', $key);
-        if (!PEAR::isError($this->_crypt)) {
+        if (!@PEAR::isError($this->_crypt)) {
             $this->_crypt->setKey($key);
         }
     }
@@ -195,7 +196,7 @@ class Crypt_Blowfish
 
         if (!is_null($key) || !is_null($iv)) {
             $result = $crypt->setKey($key, $iv);
-            if (PEAR::isError($result)) {
+            if (@PEAR::isError($result)) {
                 return $result;
             }
         }

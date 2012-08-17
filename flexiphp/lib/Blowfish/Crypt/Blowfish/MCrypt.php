@@ -155,25 +155,25 @@ class Crypt_Blowfish_MCrypt extends Crypt_Blowfish
         static $keyHash = null;
 
         if (!is_string($key)) {
-            return PEAR::raiseError('Key must be a string', 2);
+            return @PEAR::raiseError('Key must be a string', 2);
         }
 
         $len = strlen($key);
 
         if ($len > 56 || $len == 0) {
-            return PEAR::raiseError('Key must be less than 56 characters (bytes) and non-zero. Supplied key length: ' . $len, 3);
+            return @PEAR::raiseError('Key must be less than 56 characters (bytes) and non-zero. Supplied key length: ' . $len, 3);
         }
 
         if ($this->_iv_required) {
             if (strlen($iv) != 8) {
-                return PEAR::raiseError('IV must be 8-character (byte) long. Supplied IV length: ' . strlen($iv), 7);
+                return @PEAR::raiseError('IV must be 8-character (byte) long. Supplied IV length: ' . strlen($iv), 7);
             }
             $this->_iv = $iv;
         }
 
         $return = mcrypt_generic_init($this->_td, $key, $this->_iv);
         if ($return < 0) {
-            return PEAR::raiseError('Unknown PHP MCrypt library error', 4);
+            return @PEAR::raiseError('Unknown PHP MCrypt library error', 4);
         }
         return true;
     }
