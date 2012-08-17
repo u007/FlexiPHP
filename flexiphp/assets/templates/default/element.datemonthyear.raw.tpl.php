@@ -38,11 +38,11 @@ if (!empty($mValue)) {
 
 ?>
 <?=isset($vars["#prefix"]) ? $vars["#prefix"] : ""; ?>
-	<input type="text" name="<?=$vars["#name"]?>" <?=is_null($mValue) ? "" : " value=\"" . $sDisplayValue . "\""?><?=$sMaxLen?>
+	<input type="text" name="<?=$vars["#name"]?>label" <?=is_null($mValue) ? "" : " value=\"" . $sDisplayValue . "\""?><?=$sMaxLen?>
 		<?=empty($vars["#id"]) ? "" : " id=\"" . $vars["#id"] . "\""?><?=$bDisabled ? " disabled=\"disabled\"" : ""?>
 		<?=isset($vars["#size"]) ? " size=\"" . $vars["#size"] . "\"": ""?> 
 		<? if (isset($vars["#attributes"])) { echo FlexiStringUtil::attributesToString($vars["#attributes"]); } ?>>
-  <input type="hidden" name="<?=$vars["#name"]?>" id="<?=$vars["#id"]?>" value="<?=$mValue?>" />
+  <input type="hidden" name="<?=$vars["#name"]?>" id="<?=$vars["#id"]?>hidden" value="<?=$mValue?>" />
 	<? if(isset($vars["#notice"])) { ?>
 	<div class="flexiphp_div_notice"><?=$vars["#notice"]["msg"]?></div>
 	<? } ?>
@@ -56,6 +56,8 @@ if (!empty($mValue)) {
     jQuery("#<?=$vars["#id"]?>").datepicker( {
     changeMonth: true,
     changeYear: true,
+    altFormat: 'MM yy',
+    altField: '#<?=$vars["#id"]?>hidden',
     showButtonPanel: true,
     dateFormat: 'MM yy',
     <?=$sMinDate?>
