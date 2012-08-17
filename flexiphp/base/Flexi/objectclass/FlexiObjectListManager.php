@@ -450,7 +450,7 @@ class FlexiObjectListManager extends FlexiLogManager {
   }
   
   public function getNewObjectRow($aParam=array()) {
-    $oRow = & $this->oObject->getNewRow();
+    $oRow = $this->oObject->getNewRow();
     $this->aParam = $aParam;
     $this->onNewRow($oRow, $aParam);
     return $oRow;

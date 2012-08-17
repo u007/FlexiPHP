@@ -60,7 +60,7 @@ class FlexiBaseObjectManager {
    * @param type $sPrefix
    * @return string 
    */
-  public function store($sFile, $data, $sPrefix="") {
+  public function store($sFile, $data=null, $sPrefix="") {
     $sPath = $this->sPath;
     $sWriteFile = $sPath . "/" . $sPrefix . $sFile;
 

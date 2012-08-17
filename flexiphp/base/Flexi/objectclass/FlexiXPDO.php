@@ -25,7 +25,7 @@ class FlexiXPDO extends XPDO {
     $this->setPackage('flexiphp', dirname(dirname(dirname(dirname(__FILE__)))) . "/models");
   }
   
-  public function connect($driverOptions= array ()) {
+  public function connect($driverOptions= array (), array $options= array()) {
     if (! parent::connect($driverOptions)) {
       throw new Exception(__METHOD__ . ": Unable to connect");
     }

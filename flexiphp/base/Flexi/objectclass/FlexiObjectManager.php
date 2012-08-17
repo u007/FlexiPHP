@@ -397,24 +397,24 @@ class FlexiObjectManager extends FlexiBaseObjectManager {
     return FlexiModelUtil::getInstance()->getXPDOExecute($sSQL);
   }
 
-  public function delete($sName) {
+  public function delete($sName, $sPrefix="") {
     $sFile = $sName . ".object.php";
     return parent::delete($sFile);
   }
 
-  public function store(FlexiObject $oObject) {
+  public function store($oObject, $data=null, $sPrefix="")  {
     $this->checkValid($oObject);
     
     $sFile = $oObject->getName() . ".object.php";
     return parent::store($sFile, $oObject, "");
   }
 
-  public function load($sName) {
+  public function load($sName, $sPrefix = "") {
     $sFile = $sName . ".object.php";
     return parent::load($sFile);
   }
 
-  public function exists($sName) {
+  public function exists($sName, $sPrefix = "") {
     $sFile = $sName . ".object.php";
     return parent::exists($sFile);
   }

@@ -165,7 +165,7 @@ class FlexiController
 
     FlexiLogger::debug(__METHOD__, "module: " . $sModule . ", method: " . $sMethod);
 
-    $oClass = & self::getControllerInstance($sModule, $oView, $sMethodName, null);
+    $oClass = self::getControllerInstance($sModule, $oView, $sMethodName, null);
     self::$oActiveControl = $oClass;
 
     //trigger event for 1st time only
