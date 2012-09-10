@@ -53,7 +53,7 @@
         // Get all valid elements (linking to images / ATTR with image link):
         $collection = this.filter(':linkingToImage(' + s.srcAttr + ')');
         //$collection = this.filter('[rel]');
-        console.log($collection);
+        //console.log($collection);
         if ($collection.length < 1)
           return this;
         

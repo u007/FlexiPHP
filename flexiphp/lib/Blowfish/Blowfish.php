@@ -21,7 +21,7 @@
 /**
  * Required PEAR package(s)
  */
-require_once 'PEAR.php';
+require_once dirname(dirname(__FILE__)) . '/PEAR/PEAR.php';
 
 /**
  * Engine choice constants
