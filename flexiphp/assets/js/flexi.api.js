@@ -1,5 +1,67 @@
 var _targetPickElement = {fieldvalue:"",fieldlabel:""};
+var _lastnoticetime = new Date().getTime();
 
+function getFormAsArray(target) {
+  var aFields = jQuery(target + " input," + target + " select");
+  var result = {};
+  
+  for(var c=0; c < aFields.length; c++) {
+    var oField = aFields[c];
+    switch(oField.tagName) {
+      case "INPUT":
+      case "SELECT":
+        var sName = oField.getAttribute("name");
+        var sValue = jQuery(oField).val();
+        break;
+      default:
+        throw Error("Unknown type: " + oField.tagName)
+    }
+    
+    result[sName] = sValue;
+  }//foreach fields
+  return result;
+}
+
+function getMinuteDiff(startdate, enddate) {
+  var diff = enddate.getTime() - startdate.getTime();
+  var unit = 1000 * 60;//minute
+  
+  var result = Math.round(diff / unit);
+  return result;
+}
+
+function getWeekNo(date) {
+  var onejan = new Date(date.getFullYear(),0,1);
+  return Math.ceil((((date - onejan) / 86400000) + onejan.getDay()+1)/7);
+}
+
+function getDayName(date, shortday) {
+  var iDay = date.getDay();
+  switch(iDay) {
+    case 1:
+      return shortday ? "Mon": "Monday";
+      break;
+    case 2:
+      return shortday ? "Tues": "Tuesday";
+      break;
+    case 3:
+      return shortday ? "Wed": "Wednesday";
+      break;
+    case 4:
+      return shortday ? "Thu": "Thursday";
+      break;
+    case 5:
+      return shortday ? "Fri": "Friday";
+      break;
+    case 6:
+      return shortday ? "Sat": "Saturday";
+      break;
+    case 0:
+      return shortday ? "Sun": "Sunday";
+      break;
+  }
+  throw new Error("Invalid date: " + date);
+}
 
 function resetFields(target) {
   jQuery("#" + target + " input[type=textfield]").val("");
@@ -145,13 +207,32 @@ function appendGritterNote(msg, title, sticky, duration) {
 }
 
 function appendNotice(msg, type) {
+  var sType = ! type ? "info": type;
+  var canclose = sType != "error" && sType != "err";
+  cleanOldNotice();
   jQuery(_sNoticeTarget).append(getNoticeHTML(msg,type));
   cleanupNotice(function() {
     jQuery("#divNoticeMsg" + _iNoticeId).fadeIn("slow");
+    if (canclose && _iAutoClose > 0) {
+      setTimeout('jQuery("#divNoticeMsg' + _iNoticeId + '").hide("slow", function(e) { jQuery("#divNoticeMsg' + _iNoticeId + '").remove(); } )', _iAutoClose*1000);
+    }
   });
+  
+  _lastnoticetime = new Date().getTime();
+}
+
+function cleanOldNotice() {
+  var time = new Date().getTime();
+  if (time - _lastnoticetime > 1000) {
+    //not on the same time
+    //remove existing
+    jQuery(_sNoticeTarget + " div").remove();
+    return;
+  }
 }
 
 function cleanupNotice(event) {
+  
   if(jQuery(_sNoticeTarget + " div").length > _iNoticeMax) {
     jQuery(_sNoticeTarget + " div:first").fadeOut(100, function() {
       jQuery(_sNoticeTarget + " div:first").remove();
@@ -240,6 +321,32 @@ function doComboSelect(target, row, fieldlabel, fieldvalue) {
   jQuery(target).val(row[fieldvalue]);
   jQuery.colorbox.close();
   return true;
+}
+
+function doFillOptions(target, data) {
+	var sLastValue = "";
+  if (typeof(target)=="string") {
+    sLastValue = jQuery(target).val();
+    jQuery(target + " option").remove();
+  } else if(typeof(target)=="object") {
+    sLastValue = target.val();
+    jQuery("option", target).remove();
+  }
+	//console.log("last value: " + sLastValue);
+  var bStartGroup = false;
+  var sOption = "";var sLastGroup = "";
+  for(var i in data) {
+		jQuery(target).append(
+    	"<option value='" + i + "'>" + data[i] + "</option>\n"
+    );
+  }
+  
+  if (typeof(target)=="string") {
+    jQuery(target).val(sLastValue);
+  } else if(typeof(target)=="object") {
+    target.val(sLastValue);
+  }
+  
 }
 
 function doFillCombo(target, data, bRenderGroup) {
@@ -450,3 +557,34 @@ function doApplyPopup(sTargetValueField, sTargetLabelField, sURL, aiWidth, aiHei
 function showError(sError) {
   alert(sError);
 }
+
+function showTimeIn12Hours(time) {
+  var aTime = time.split(":");
+  var iHour = aTime[0]-0;
+  var iMin = aTime[1]-0;
+  var iSec = aTime.length > 2? aTime[2]-0: 0;
+  var sPeriod = iHour >= 12 ? "pm": "am";
+  //console.log(aTime[0]);
+  //console.log(iHour);
+  iHour = iHour > 12 ? iHour-12: iHour;
+  //console.log(iHour);
+  var sResult = (iHour < 10 ? "0": "") + iHour;
+  sResult += ":" + (iMin < 10 ? "0": "") + iMin;
+  
+  if (aTime.length > 2) {
+    sResult += ":" + (iSec < 10 ? "0": "") + iSec;
+  }
+  sResult += sPeriod;
+  
+  return sResult;
+}
+
+function showDuration(mins) {
+  var iHour = parseInt(mins / 60);
+  //console.log("hour: " + iHour);
+  var iMin = mins - (iHour * 60);
+  
+  return iHour + "hour" + (iHour > 1 ? "s": "") + ", " +
+    iMin + "min" + (iMin > 1 ? "s":"");
+}
+

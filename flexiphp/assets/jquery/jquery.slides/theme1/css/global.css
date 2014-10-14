@@ -1,0 +1,91 @@
+
+/*
+	Slides container
+	Important:
+	Set the width of your slides container
+	If height not specified height will be set by the slide content
+	Set to display none, prevents content flash
+*/
+
+.slides_container {
+	overflow:hidden;
+	position:relative;
+}
+
+/*
+	Each slide
+	Important:
+	Set the width of your slides
+	Offeset for the 20px of padding
+	If height not specified height will be set by the slide content
+	Set to display block
+*/
+
+#slides .slide {
+	display:block;
+}
+
+/*
+	Next/prev buttons
+*/
+#slides .next,#slides .prev {
+	position:absolute;
+	top:45%;
+	width:24px;
+	height:43px;
+	display:block;
+	z-index:101;
+}
+
+#slides .prev {
+	left: -24px;
+	background: url(../img/arrow-prev.png) no-repeat;
+}
+
+#slides .next {
+	right: -24px;
+	background: url(../img/arrow-next.png) no-repeat;
+}
+
+/*
+	Pagination
+*/
+
+.jqslider {
+  text-align: center;
+  position: relative;
+}
+
+.jqslider .pagination {
+	padding-right: 2px;
+	float: right;
+}
+
+.jqslider .pagination li {
+	float:left;
+	margin:0 1px;
+	list-style:none;
+}
+
+.jqslider .pagination li a {
+	border: none;
+	display:block;
+	width:12px;
+	height:0;
+	padding: 12px 0 0 0;
+	background-image:url(../img/pagination.png);
+	background-position:0 0;
+	float:left;
+	overflow:hidden;
+}
+
+.jqslider .pagination li.current a {
+	background-position:0 -12px;
+}
+
+
+#slides .link {
+	display:block;
+	margin-top:10px;
+	font-weight:800;
+}

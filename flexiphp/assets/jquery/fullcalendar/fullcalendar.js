@@ -392,6 +392,7 @@ function Calendar(element, options, eventSources) {
 				currentView.clearEvents();
 				forceEventRender = true;
 			}
+      
 			currentView.sizeDirty = false;
 			currentView.eventsDirty = false;
 			updateEvents(forceEventRender);
@@ -408,6 +409,7 @@ function Calendar(element, options, eventSources) {
 			}
 			
 			ignoreWindowResize--;
+      
 			currentView.trigger('viewDisplay', _element);
 		}
 	}
@@ -917,6 +919,8 @@ function EventManager(options, _sources) {
 				if (events) {
 					for (var i=0; i<events.length; i++) {
 						events[i].source = source;
+            //console.log("normalizing");
+            //console.log(events[i]);
 						normalizeEvent(events[i]);
 					}
 					cache = cache.concat(events);
@@ -1050,6 +1054,8 @@ function EventManager(options, _sources) {
 	
 	
 	function updateEvent(event) { // update an existing event
+    //console.log("update event");
+    //console.log(event);
 		var i, len = cache.length, e,
 			defaultEventEnd = getView().defaultEventEnd, // getView???
 			startDelta = event.start - event._start,

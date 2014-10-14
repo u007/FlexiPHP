@@ -1,0 +1,43 @@
+
+.slidesjs-pagination {
+  text-align: right;
+  float: right;
+  list-style: none;
+}
+
+.slidesjs-pagination-item {
+  float: left;
+}
+
+.slidesjs-pagination-item a {
+  text-align: center;
+  width: 15px;
+  display: block;
+  margin-right: 2px;
+  
+  background: url('img/pagination.png') no-repeat center 1px;
+  height: 14px;
+  overflow: hidden;
+}
+
+.slidesjs-pagination-item a.active {
+  background-position: center -12px;
+}
+
+
+.slidesjs-previous, .slidesjs-next {
+  display: none;
+}
+
+.slidesjs-stop, .slidesjs-start {
+  display: none;
+}
+
+/*.slidejs-pagination-item a:before {
+  content: "\f114"
+}
+
+.slidesjs-pagination-item a.active:before {
+  content: "\f07c";
+}
+*/

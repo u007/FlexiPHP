@@ -101,7 +101,7 @@ class Doctrine_Expression_Sqlite extends Doctrine_Expression_Driver
     }
     public static function nowImpl()
     {
-        return date('Y-m-d h:i:s');
+        return date('Y-m-d H:i:s');
     }
 
     /**
